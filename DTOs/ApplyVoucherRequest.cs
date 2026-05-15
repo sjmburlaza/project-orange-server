@@ -2,5 +2,5 @@ namespace ProjectOrangeApi.DTOs;
 
 public class ApplyVoucherRequest
 {
-  public string Code { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
 }

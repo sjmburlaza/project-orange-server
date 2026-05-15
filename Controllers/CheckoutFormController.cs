@@ -7,17 +7,17 @@ namespace ProjectOrangeApi.Controllers;
 [Route("api/checkoutForm")]
 public class CheckoutFormController : ControllerBase
 {
-  [HttpGet]
-  public IActionResult Get()
-  {
-    return Ok(new
+    [HttpGet]
+    public IActionResult Get()
     {
-      steps = new[]
-      {
-        new { code = "shipping", title = "Shipping" },
-        new { code = "payment", title = "Payment" },
-        new { code = "review", title = "Review" }
-      }
-    });
-  }
+        return Ok(new
+        {
+            steps = new[]
+            {
+                new { code = "shipping", title = "Shipping" },
+                new { code = "payment", title = "Payment" },
+                new { code = "review", title = "Review" }
+            }
+        });
+    }
 }

@@ -7,25 +7,34 @@ namespace ProjectOrangeApi.Controllers;
 [Route("api/carts")]
 public class CartsController : ControllerBase
 {
-  private readonly ICartService _cartService;
+    private readonly ICartService _cartService;
 
-  public CartsController(ICartService cartService)
-  {
-    _cartService = cartService;
-  }
+    public CartsController(ICartService cartService)
+    {
+        _cartService = cartService;
+    }
 
-  [HttpGet("{cartCode}")]
-  public async Task<ActionResult<CartResponseDto>> GetCart(string cartCode)
-  {
-    var cart = await _cartService.GetCartAsync(cartCode);
+    [HttpGet("{cartCode}")]
+    public async Task<ActionResult<CartResponseDto>> GetCart(string cartCode)
+    {
+        var cart = await _cartService.GetCartAsync(cartCode);
 
-    return Ok(cart);
-  }
+        return Ok(cart);
+    }
 
-  [HttpPost("{cartCode}/items")]
-    public async Task<ActionResult<CartResponseDto>> AddToCart(
-        string cartCode,
-        AddToCartRequest request)
+    [HttpPost("items")]
+    public async Task<ActionResult<CartResponseDto>> AddToNewCart(
+      AddToCartRequest request)
+    {
+        var cart = await _cartService.AddToCartAsync(null, request);
+
+        return Ok(cart);
+    }
+
+    [HttpPost("{cartCode}/items")]
+    public async Task<ActionResult<CartResponseDto>> AddToExistingCart(
+      string cartCode,
+      AddToCartRequest request)
     {
         var cart = await _cartService.AddToCartAsync(cartCode, request);
 
