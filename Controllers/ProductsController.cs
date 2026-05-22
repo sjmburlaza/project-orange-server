@@ -17,11 +17,11 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProducts([FromQuery] int? categoryId)
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts([FromQuery] int? categoryId)
     {
         var query = _context.Products
-                    .Include(p => p.Category)
-                    .AsQueryable();
+            .Include(p => p.Category)
+            .AsQueryable();
 
         if (categoryId.HasValue)
         {
@@ -29,16 +29,16 @@ public class ProductsController : ControllerBase
         }
 
         var products = await query
-            .Select(p => new
+            .Select(p => new ProductDto
             {
-                p.Id,
-                p.Name,
-                p.Description,
-                p.Price,
-                p.ImageUrl,
-                p.StockQuantity,
-                p.CategoryId,
-                CategoryName = p.Category != null ? p.Category.Name : null
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                StockQuantity = p.StockQuantity,
+                ImageUrl = p.ImageUrl,
+                CategoryId = p.CategoryId,
+                CategoryName = p.Category != null ? p.Category.Name : string.Empty
             })
             .ToListAsync();
 
