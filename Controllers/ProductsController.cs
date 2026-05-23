@@ -17,7 +17,12 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts([FromQuery] int? categoryId)
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts(
+        [FromQuery] int? categoryId,
+        [FromQuery] string? sortBy,
+        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? maxPrice
+    )
     {
         var query = _context.Products
             .Include(p => p.Category)
@@ -27,6 +32,25 @@ public class ProductsController : ControllerBase
         {
             query = query.Where(p => p.CategoryId == categoryId.Value);
         }
+
+        if (minPrice.HasValue)
+        {
+            query = query.Where(p => p.Price >= minPrice.Value);
+        }
+
+        if (maxPrice.HasValue)
+        {
+            query = query.Where(p => p.Price <= maxPrice.Value);
+        }
+
+        query = sortBy switch
+        {
+            "price-asc" => query.OrderBy(p => p.Price),
+            "price-desc" => query.OrderByDescending(p => p.Price),
+            "name-asc" => query.OrderBy(p => p.Name),
+            "name-desc" => query.OrderByDescending(p => p.Name),
+            _ => query.OrderBy(p => p.Id)
+        };
 
         var products = await query
             .Select(p => new ProductDto
