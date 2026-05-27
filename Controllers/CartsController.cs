@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectOrangeApi.DTOs;
+using ProjectOrangeApi.Services;
+using System.Security.Claims;
 
 namespace ProjectOrangeApi.Controllers;
 
@@ -13,11 +16,22 @@ public class CartsController : ControllerBase
     {
         _cartService = cartService;
     }
+    private string? UserId =>
+        User.FindFirstValue(ClaimTypes.NameIdentifier);
 
     [HttpGet("{cartCode}")]
     public async Task<ActionResult<CartResponseDto>> GetCart(string cartCode)
     {
-        var cart = await _cartService.GetCartAsync(cartCode);
+        var cart = await _cartService.GetCartAsync(cartCode, UserId);
+
+        return Ok(cart);
+    }
+
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<ActionResult<CartResponseDto>> GetMyCart()
+    {
+        var cart = await _cartService.GetCartByUserIdAsync(UserId!);
 
         return Ok(cart);
     }
@@ -26,7 +40,10 @@ public class CartsController : ControllerBase
     public async Task<ActionResult<CartResponseDto>> AddToNewCart(
       AddToCartRequest request)
     {
-        var cart = await _cartService.AddToCartAsync(null, request);
+        var cart = await _cartService.AddToCartAsync(
+            null,
+            request,
+            UserId);
 
         return Ok(cart);
     }
@@ -36,7 +53,10 @@ public class CartsController : ControllerBase
       string cartCode,
       AddToCartRequest request)
     {
-        var cart = await _cartService.AddToCartAsync(cartCode, request);
+        var cart = await _cartService.AddToCartAsync(
+            cartCode,
+            request,
+            UserId);
 
         return Ok(cart);
     }
@@ -47,7 +67,11 @@ public class CartsController : ControllerBase
         int productId,
         UpdateQuantityRequest request)
     {
-        var cart = await _cartService.UpdateQuantityAsync(cartCode, productId, request);
+        var cart = await _cartService.UpdateQuantityAsync(
+            cartCode,
+            productId,
+            request,
+            UserId);
 
         return Ok(cart);
     }
@@ -57,7 +81,10 @@ public class CartsController : ControllerBase
         string cartCode,
         int productId)
     {
-        var cart = await _cartService.RemoveItemAsync(cartCode, productId);
+        var cart = await _cartService.RemoveItemAsync(
+            cartCode,
+            productId,
+            UserId);
 
         return Ok(cart);
     }
@@ -67,7 +94,10 @@ public class CartsController : ControllerBase
         string cartCode,
         ApplyVoucherRequest request)
     {
-        var cart = await _cartService.ApplyVoucherAsync(cartCode, request);
+        var cart = await _cartService.ApplyVoucherAsync(
+            cartCode,
+            request,
+            UserId);
 
         return Ok(cart);
     }

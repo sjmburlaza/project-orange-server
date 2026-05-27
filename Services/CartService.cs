@@ -15,21 +15,21 @@ public class CartService : ICartService
         _context = context;
     }
 
-    public async Task<CartResponseDto> GetCartAsync(string cartCode)
+    public async Task<CartResponseDto> GetCartAsync(string cartCode, string? userId)
     {
-        var cart = await GetCartEntityAsync(cartCode);
+        var cart = await GetCartEntityAsync(cartCode, userId);
 
         return MapToResponse(cart);
     }
 
-    public async Task<CartResponseDto> AddToCartAsync(string? cartCode, AddToCartRequest request)
+    public async Task<CartResponseDto> AddToCartAsync(string? cartCode, AddToCartRequest request, string? userId)
     {
         if (request.Quantity <= 0)
         {
             throw new Exception("Quantity must be greater than zero.");
         }
 
-        var cart = await GetOrCreateCartAsync(cartCode);
+        var cart = await GetOrCreateCartAsync(cartCode, userId);
 
         var product = await _context.Products
             .Include(p => p.Category)
@@ -83,9 +83,10 @@ public class CartService : ICartService
     public async Task<CartResponseDto> UpdateQuantityAsync(
       string cartCode,
       int productId,
-      UpdateQuantityRequest request)
+      UpdateQuantityRequest request,
+      string? userId)
     {
-        var cart = await GetCartEntityAsync(cartCode);
+        var cart = await GetCartEntityAsync(cartCode, userId);
         var item = cart.Entries.FirstOrDefault(x => x.ProductId == productId);
 
         if (item is null)
@@ -104,9 +105,9 @@ public class CartService : ICartService
         return MapToResponse(cart);
     }
 
-    public async Task<CartResponseDto> RemoveItemAsync(string cartCode, int productId)
+    public async Task<CartResponseDto> RemoveItemAsync(string cartCode, int productId, string? userId)
     {
-        var cart = await GetCartEntityAsync(cartCode);
+        var cart = await GetCartEntityAsync(cartCode, userId);
         var item = cart.Entries.FirstOrDefault(x => x.ProductId == productId);
 
         if (item is null)
@@ -119,9 +120,9 @@ public class CartService : ICartService
         return MapToResponse(cart);
     }
 
-    public async Task<CartResponseDto> ApplyVoucherAsync(string cartCode, ApplyVoucherRequest request)
+    public async Task<CartResponseDto> ApplyVoucherAsync(string cartCode, ApplyVoucherRequest request, string? userId)
     {
-        var cart = await GetCartEntityAsync(cartCode);
+        var cart = await GetCartEntityAsync(cartCode, userId);
         var alreadyApplied = cart.AppliedVouchers.Any(v => v.Code == request.Code);
 
         if (!alreadyApplied)
@@ -139,31 +140,59 @@ public class CartService : ICartService
         return MapToResponse(cart);
     }
 
-    private async Task<Cart> GetOrCreateCartAsync(string? cartCode)
+    private async Task<Cart> GetOrCreateCartAsync(string? cartCode, string? userId)
     {
+        if (!string.IsNullOrWhiteSpace(userId))
+        {
+            var userCart = await LoadCartQuery()
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (userCart is not null)
+            {
+                return userCart;
+            }
+        }
+
         if (!string.IsNullOrWhiteSpace(cartCode))
         {
-            var existingCart = await _context.Carts
-                .Include(c => c.Entries)
-                    .ThenInclude(i => i.ItemSpecs)
-                .Include(c => c.Entries)
-                    .ThenInclude(i => i.Addons)
-                .Include(c => c.AppliedVouchers)
+            var existingCart = await LoadCartQuery()
                 .FirstOrDefaultAsync(c => c.Code == cartCode);
 
             if (existingCart is not null)
+            {
+                if (!string.IsNullOrWhiteSpace(userId) &&
+                    string.IsNullOrWhiteSpace(existingCart.UserId))
+                {
+                    existingCart.UserId = userId;
+
+                    await _context.SaveChangesAsync();
+                }
+
                 return existingCart;
+            }
         }
 
         var newCart = new Cart
         {
-            Code = GenerateCartCode()
+            Code = GenerateCartCode(),
+            UserId = userId
         };
 
         _context.Carts.Add(newCart);
+
         await _context.SaveChangesAsync();
 
         return newCart;
+    }
+
+    private IQueryable<Cart> LoadCartQuery()
+    {
+        return _context.Carts
+            .Include(c => c.Entries)
+                .ThenInclude(i => i.ItemSpecs)
+            .Include(c => c.Entries)
+                .ThenInclude(i => i.Addons)
+            .Include(c => c.AppliedVouchers);
     }
 
     private static string GenerateCartCode()
@@ -171,18 +200,17 @@ public class CartService : ICartService
         return $"CART-{Guid.NewGuid():N}".ToUpper()[..13];
     }
 
-    private async Task<Cart> GetCartEntityAsync(string cartCode)
+    private async Task<Cart> GetCartEntityAsync(string cartCode, string? userId)
     {
-        var cart = await _context.Carts
-            .Include(c => c.Entries)
-                .ThenInclude(i => i.ItemSpecs)
-            .Include(c => c.Entries)
-                .ThenInclude(i => i.Addons)
-            .Include(c => c.AppliedVouchers)
-            .FirstOrDefaultAsync(c => c.Code == cartCode);
+        var cart = await LoadCartQuery()
+            .FirstOrDefaultAsync(c =>
+                c.Code == cartCode &&
+                (c.UserId == null || c.UserId == userId));
 
         if (cart is null)
+        {
             throw new Exception("Cart not found.");
+        }
 
         return cart;
     }
@@ -258,5 +286,16 @@ public class CartService : ICartService
         }
           ]
         };
+    }
+
+    public async Task<CartResponseDto> GetCartByUserIdAsync(string userId)
+    {
+        var cart = await LoadCartQuery()
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        if (cart is null)
+            throw new Exception("Cart not found.");
+
+        return MapToResponse(cart);
     }
 }
