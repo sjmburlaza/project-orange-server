@@ -94,7 +94,7 @@
               "name": "region",
               "type": "select-search",
               "label": "Region",
-              "optionsApi": "/regions",
+              "optionsApi": "/api/options/regions",
               "validators": ["required"],
               "grid": {
                 "mobile": 12,
@@ -105,7 +105,7 @@
               "name": "city",
               "type": "select-search",
               "label": "City",
-              "optionsApi": "/cities",
+              "optionsApi": "/api/options/cities",
               "dependsOn": "region",
               "validators": ["required"],
               "grid": {
@@ -117,7 +117,7 @@
               "name": "barangay",
               "type": "select-search",
               "label": "Barangay",
-              "optionsApi": "barangays",
+              "optionsApi": "/api/options/barangays",
               "dependsOn": "city",
               "validators": ["required"],
               "grid": {
@@ -277,7 +277,7 @@
               "name": "region",
               "type": "select-search",
               "label": "Region",
-              "optionsApi": "/regions",
+              "optionsApi": "/api/options/regions",
               "validators": ["required"],
               "visibleIf": {
                 "field": "sameAsDeliveryAddress",
@@ -292,7 +292,7 @@
               "name": "city",
               "type": "select-search",
               "label": "City",
-              "optionsApi": "/cities",
+              "optionsApi": "/api/options/cities",
               "dependsOn": "region",
               "validators": ["required"],
               "visibleIf": {
@@ -308,7 +308,7 @@
               "name": "barangay",
               "type": "select-search",
               "label": "Barangay",
-              "optionsApi": "barangays",
+              "optionsApi": "/api/options/barangays",
               "dependsOn": "city",
               "validators": ["required"],
               "visibleIf": {
@@ -344,7 +344,47 @@
     },
     {
       "id": "shipping",
-      "label": "Shipping Options"
+      "label": "Shipping Options",
+      "component": "shipping-options",
+      "fields": [
+        {
+          "name": "shippingMethod",
+          "type": "radio-card",
+          "label": "Shipping Method",
+          "validators": ["required"],
+          "options": [
+            { "label": "Free Delivery", "value": "free", "price": 0 },
+            { "label": "Standard Delivery", "value": "standard", "price": 100 },
+            { "label": "Express Delivery", "value": "express", "price": 250 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "payment",
+      "label": "Payment",
+      "component": "payment-methods",
+      "fields": [
+        {
+          "name": "paymentMethod",
+          "type": "payment-card",
+          "label": "Payment Method",
+          "validators": ["required"],
+          "options": [
+            {
+              "label": "Credit / Debit Card",
+              "value": "card",
+              "icon": "credit_card"
+            },
+            {
+              "label": "GCash",
+              "value": "gcash",
+              "icon": "account_balance_wallet"
+            },
+            { "label": "Cash on Delivery", "value": "cod", "icon": "payments" }
+          ]
+        }
+      ]
     }
   ]
 }

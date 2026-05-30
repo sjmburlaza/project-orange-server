@@ -24,6 +24,16 @@ public class CheckoutFieldDto
     public string? OptionsApi { get; set; }
     public string? DependsOn { get; set; }
     public VisibleIfDto? VisibleIf { get; set; }
+
+    public List<FieldOptionDto>? Options { get; set; }
+}
+
+public class FieldOptionDto
+{
+    public string Label { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+    public decimal? Price { get; set; }
+    public string? Icon { get; set; }
 }
 
 public class GridDto
