@@ -19,6 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<CheckoutFormService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
