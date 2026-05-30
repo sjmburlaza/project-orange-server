@@ -35,9 +35,14 @@ public class AuthController : ControllerBase
         var result = await _userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
+        {
             return BadRequest(result.Errors);
+        }
 
-        return Ok();
+        return Ok(new
+        {
+            message = "Registration successful"
+        });
     }
 
     [HttpPost("login")]
@@ -48,7 +53,6 @@ public class AuthController : ControllerBase
         if (user is null)
         {
             return Unauthorized();
-
         }
 
         var validPassword = await _userManager.CheckPasswordAsync(user, request.Password);

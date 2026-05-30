@@ -1,0 +1,350 @@
+{
+  "version": "1.3",
+  "steps": [
+    {
+      "id": "customer",
+      "label": "Customer Details",
+      "fields": [
+        {
+          "name": "email",
+          "type": "email",
+          "label": "Email",
+          "validators": ["required", "email"],
+          "grid": {
+            "mobile": 12,
+            "desktop": 12
+          }
+        },
+        {
+          "name": "firstName",
+          "type": "text",
+          "label": "First Name",
+          "validators": ["required"],
+          "grid": {
+            "mobile": 12,
+            "desktop": 6
+          }
+        },
+        {
+          "name": "lastName",
+          "type": "text",
+          "label": "Last Name",
+          "validators": ["required"],
+          "grid": {
+            "mobile": 12,
+            "desktop": 6
+          }
+        },
+        {
+          "name": "mobileNumber",
+          "type": "text",
+          "label": "Mobile Number",
+          "validators": ["required"],
+          "grid": {
+            "mobile": 12,
+            "desktop": 6
+          }
+        },
+        {
+          "name": "altMobileNumber",
+          "type": "text",
+          "label": "Alternate Number",
+          "validators": [],
+          "grid": {
+            "mobile": 12,
+            "desktop": 6
+          }
+        },
+        {
+          "name": "marketing",
+          "type": "checkbox",
+          "label": "Keep me updated on the latest info about promos, products, services and relevant information from Samsung and its partners.",
+          "validators": [],
+          "grid": {
+            "mobile": 12,
+            "desktop": 12
+          }
+        },
+        {
+          "name": "deliveryAddress",
+          "type": "group",
+          "label": "Delivery Address",
+          "fields": [
+            {
+              "name": "addressLine1",
+              "type": "text",
+              "label": "Address Line 1",
+              "validators": ["required"],
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "addressLine2",
+              "type": "text",
+              "label": "Address Line 2",
+              "validators": [],
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "region",
+              "type": "select-search",
+              "label": "Region",
+              "optionsApi": "/regions",
+              "validators": ["required"],
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "city",
+              "type": "select-search",
+              "label": "City",
+              "optionsApi": "/cities",
+              "dependsOn": "region",
+              "validators": ["required"],
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "barangay",
+              "type": "select-search",
+              "label": "Barangay",
+              "optionsApi": "barangays",
+              "dependsOn": "city",
+              "validators": ["required"],
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "postalCode",
+              "type": "number",
+              "label": "Postal Code",
+              "validators": ["required"],
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "landmark",
+              "type": "text",
+              "label": "Landmark",
+              "validators": [],
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "deliveryEmail",
+              "type": "email",
+              "label": "Email",
+              "validators": ["required"],
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            }
+          ],
+          "grid": {
+            "mobile": 12,
+            "desktop": 12
+          }
+        },
+        {
+          "name": "billingAddress",
+          "type": "group",
+          "label": "Billing Address",
+          "fields": [
+            {
+              "name": "sameAsDeliveryAddress",
+              "type": "checkbox",
+              "label": "Same as delivery address",
+              "validators": [],
+              "grid": {
+                "mobile": 12,
+                "desktop": 12
+              }
+            },
+            {
+              "name": "firstName",
+              "type": "text",
+              "label": "First Name",
+              "validators": ["required"],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "lastName",
+              "type": "text",
+              "label": "Last Name",
+              "validators": ["required"],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "mobileNumber",
+              "type": "text",
+              "label": "Mobile Number",
+              "validators": ["required"],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "altMobileNumber",
+              "type": "text",
+              "label": "Alternate Number",
+              "validators": [],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "taxId",
+              "type": "text",
+              "label": "Tax ID No.",
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "addressLine1",
+              "type": "text",
+              "label": "Address Line 1",
+              "validators": ["required"],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "addressLine2",
+              "type": "text",
+              "label": "Address Line 2",
+              "validators": [],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "region",
+              "type": "select-search",
+              "label": "Region",
+              "optionsApi": "/regions",
+              "validators": ["required"],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "city",
+              "type": "select-search",
+              "label": "City",
+              "optionsApi": "/cities",
+              "dependsOn": "region",
+              "validators": ["required"],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "barangay",
+              "type": "select-search",
+              "label": "Barangay",
+              "optionsApi": "barangays",
+              "dependsOn": "city",
+              "validators": ["required"],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "postalCode",
+              "type": "number",
+              "label": "Postal Code",
+              "validators": ["required"],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            }
+          ],
+          "grid": {
+            "mobile": 12,
+            "desktop": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "shipping",
+      "label": "Shipping Options"
+    }
+  ]
+}
