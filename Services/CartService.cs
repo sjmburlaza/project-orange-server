@@ -9,10 +9,12 @@ namespace ProjectOrangeApi.Services;
 public class CartService : ICartService
 {
     private readonly AppDbContext _context;
+    private readonly ShippingPricingService _shippingPricingService;
 
-    public CartService(AppDbContext context)
+    public CartService(AppDbContext context, ShippingPricingService shippingPricingService)
     {
         _context = context;
+        _shippingPricingService = shippingPricingService;
     }
 
     public async Task<CartResponseDto> GetCartAsync(string cartCode, string? userId)
@@ -222,7 +224,9 @@ public class CartService : ICartService
           ? subtotal * 0.10m
           : 0;
 
-        var shipping = subtotal > 0 ? 150 : 0;
+        var hasSelectedShipping = cart.ShippingPrice.HasValue;
+        var shipping = cart.ShippingPrice.HasValue ? cart.ShippingPrice.Value : 0;
+
         var total = subtotal - discount + shipping;
 
         return new CartResponseDto
@@ -263,28 +267,29 @@ public class CartService : ICartService
             }).ToList(),
 
             CartSummary =
-          [
-            new CartSummaryAttributeDto
-        {
-          Name = "Subtotal",
-          Amount = subtotal
-        },
-        new CartSummaryAttributeDto
-        {
-          Name = "Discount",
-          Amount = -discount
-        },
-        new CartSummaryAttributeDto
-        {
-          Name = "Shipping",
-          Amount = shipping
-        },
-        new CartSummaryAttributeDto
-        {
-          Name = "Total",
-          Amount = total
-        }
-          ]
+            [
+                new CartSummaryAttributeDto
+                {
+                    Name = "Subtotal",
+                    Amount = subtotal
+                },
+                new CartSummaryAttributeDto
+                {
+                    Name = "Discount",
+                    Amount = -discount
+                },
+                new CartSummaryAttributeDto
+                {
+                    Name = "Shipping",
+                    Amount = hasSelectedShipping ? shipping : null,
+                    DisplayValue = hasSelectedShipping ? null : "To be calculated"
+                },
+                new CartSummaryAttributeDto
+                {
+                    Name = "Total",
+                    Amount = total
+                }
+            ]
         };
     }
 
@@ -295,6 +300,32 @@ public class CartService : ICartService
 
         if (cart is null)
             throw new Exception("Cart not found.");
+
+        return MapToResponse(cart);
+    }
+
+    public async Task<CartResponseDto> UpdateShippingAsync(
+        string cartCode,
+        UpdateCartShippingRequest request,
+        string? userId)
+    {
+        var cart = await GetCartEntityAsync(cartCode, userId);
+
+        var options = _shippingPricingService.GetRatesByPostalCode(request.PostalCode);
+
+        var selectedOption = options.FirstOrDefault(option =>
+            option.Code == request.ShippingMethodCode);
+
+        if (selectedOption is null)
+        {
+            throw new Exception("Invalid shipping option.");
+        }
+
+        cart.ShippingPostalCode = request.PostalCode;
+        cart.ShippingMethodCode = selectedOption.Code;
+        cart.ShippingPrice = selectedOption.Price;
+
+        await _context.SaveChangesAsync();
 
         return MapToResponse(cart);
     }

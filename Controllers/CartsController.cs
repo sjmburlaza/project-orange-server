@@ -101,4 +101,20 @@ public class CartsController : ControllerBase
 
         return Ok(cart);
     }
+
+    [HttpPut("{cartCode}/shipping")]
+    public async Task<ActionResult<CartResponseDto>> UpdateShipping(
+    string cartCode,
+    UpdateCartShippingRequest request)
+    {
+        var userId = User.Identity?.Name;
+
+        var cart = await _cartService.UpdateShippingAsync(
+            cartCode,
+            request,
+            userId
+        );
+
+        return Ok(cart);
+    }
 }
