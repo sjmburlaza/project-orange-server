@@ -18,7 +18,10 @@ public class CheckoutFieldDto
     public string Name { get; set; } = "";
     public string Type { get; set; } = "";
     public string Label { get; set; } = "";
-    public List<string> Validators { get; set; } = [];
+    public object? DefaultValue { get; set; }
+    public List<FieldValidatorDto> Validators { get; set; } = [];
+    public List<FieldValidatorDto> AsyncValidators { get; set; } = [];
+
     public GridDto? Grid { get; set; }
     public List<CheckoutFieldDto> Fields { get; set; } = [];
     public string? OptionsApi { get; set; }
@@ -26,6 +29,12 @@ public class CheckoutFieldDto
     public VisibleIfDto? VisibleIf { get; set; }
 
     public List<FieldOptionDto>? Options { get; set; }
+}
+
+public class FieldValidatorDto
+{
+    public string Name { get; set; } = "";
+    public object? Value { get; set; }
 }
 
 public class FieldOptionDto

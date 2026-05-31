@@ -9,7 +9,7 @@
           "name": "email",
           "type": "email",
           "label": "Email",
-          "validators": ["required", "email"],
+          "validators": [{ "name": "required" }, { "name": "email" }],
           "grid": {
             "mobile": 12,
             "desktop": 12
@@ -19,7 +19,7 @@
           "name": "firstName",
           "type": "text",
           "label": "First Name",
-          "validators": ["required"],
+          "validators": [{ "name": "required" }],
           "grid": {
             "mobile": 12,
             "desktop": 6
@@ -29,7 +29,7 @@
           "name": "lastName",
           "type": "text",
           "label": "Last Name",
-          "validators": ["required"],
+          "validators": [{ "name": "required" }],
           "grid": {
             "mobile": 12,
             "desktop": 6
@@ -39,7 +39,7 @@
           "name": "mobileNumber",
           "type": "text",
           "label": "Mobile Number",
-          "validators": ["required"],
+          "validators": [{ "name": "required" }],
           "grid": {
             "mobile": 12,
             "desktop": 6
@@ -58,7 +58,7 @@
         {
           "name": "marketing",
           "type": "checkbox",
-          "label": "Keep me updated on the latest info about promos, products, services and relevant information from Samsung and its partners.",
+          "label": "Keep me updated on the latest info about promos, products, services and relevant information from ORANGE and its partners.",
           "validators": [],
           "grid": {
             "mobile": 12,
@@ -74,7 +74,7 @@
               "name": "addressLine1",
               "type": "text",
               "label": "Address Line 1",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "grid": {
                 "mobile": 12,
                 "desktop": 6
@@ -95,7 +95,7 @@
               "type": "select-search",
               "label": "Region",
               "optionsApi": "/api/options/regions",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "grid": {
                 "mobile": 12,
                 "desktop": 6
@@ -107,7 +107,7 @@
               "label": "City",
               "optionsApi": "/api/options/cities",
               "dependsOn": "region",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "grid": {
                 "mobile": 12,
                 "desktop": 6
@@ -119,7 +119,7 @@
               "label": "Barangay",
               "optionsApi": "/api/options/barangays",
               "dependsOn": "city",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "grid": {
                 "mobile": 12,
                 "desktop": 6
@@ -127,9 +127,13 @@
             },
             {
               "name": "postalCode",
-              "type": "number",
+              "type": "text",
               "label": "Postal Code",
-              "validators": ["required"],
+              "validators": [
+                { "name": "required" },
+                { "name": "maxLength", "value": 4 }
+              ],
+              "asyncValidators": [{ "name": "serviceablePostalCode" }],
               "grid": {
                 "mobile": 12,
                 "desktop": 6
@@ -149,7 +153,7 @@
               "name": "deliveryEmail",
               "type": "email",
               "label": "Email",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "grid": {
                 "mobile": 12,
                 "desktop": 6
@@ -170,6 +174,7 @@
               "name": "sameAsDeliveryAddress",
               "type": "checkbox",
               "label": "Same as delivery address",
+              "defaultValue": true,
               "validators": [],
               "grid": {
                 "mobile": 12,
@@ -180,7 +185,7 @@
               "name": "firstName",
               "type": "text",
               "label": "First Name",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "visibleIf": {
                 "field": "sameAsDeliveryAddress",
                 "value": false
@@ -194,7 +199,7 @@
               "name": "lastName",
               "type": "text",
               "label": "Last Name",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "visibleIf": {
                 "field": "sameAsDeliveryAddress",
                 "value": false
@@ -208,7 +213,7 @@
               "name": "mobileNumber",
               "type": "text",
               "label": "Mobile Number",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "visibleIf": {
                 "field": "sameAsDeliveryAddress",
                 "value": false
@@ -249,7 +254,7 @@
               "name": "addressLine1",
               "type": "text",
               "label": "Address Line 1",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "visibleIf": {
                 "field": "sameAsDeliveryAddress",
                 "value": false
@@ -278,7 +283,7 @@
               "type": "select-search",
               "label": "Region",
               "optionsApi": "/api/options/regions",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "visibleIf": {
                 "field": "sameAsDeliveryAddress",
                 "value": false
@@ -294,7 +299,7 @@
               "label": "City",
               "optionsApi": "/api/options/cities",
               "dependsOn": "region",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "visibleIf": {
                 "field": "sameAsDeliveryAddress",
                 "value": false
@@ -310,7 +315,7 @@
               "label": "Barangay",
               "optionsApi": "/api/options/barangays",
               "dependsOn": "city",
-              "validators": ["required"],
+              "validators": [{ "name": "required" }],
               "visibleIf": {
                 "field": "sameAsDeliveryAddress",
                 "value": false
@@ -322,9 +327,13 @@
             },
             {
               "name": "postalCode",
-              "type": "number",
+              "type": "text",
               "label": "Postal Code",
-              "validators": ["required"],
+              "validators": [
+                { "name": "required" },
+                { "name": "maxLength", "value": 4 }
+              ],
+              "asyncValidators": [{ "name": "serviceablePostalCode" }],
               "visibleIf": {
                 "field": "sameAsDeliveryAddress",
                 "value": false
@@ -351,7 +360,7 @@
           "name": "shippingMethod",
           "type": "radio-card",
           "label": "Shipping Method",
-          "validators": ["required"],
+          "validators": [{ "name": "required" }],
           "options": [
             { "label": "Free Delivery", "value": "free", "price": 0 },
             { "label": "Standard Delivery", "value": "standard", "price": 100 },
@@ -369,7 +378,7 @@
           "name": "paymentMethod",
           "type": "payment-card",
           "label": "Payment Method",
-          "validators": ["required"],
+          "validators": [{ "name": "required" }],
           "options": [
             {
               "label": "Credit / Debit Card",
