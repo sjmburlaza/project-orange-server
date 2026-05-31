@@ -1,6 +1,6 @@
 using ProjectOrangeApi.Models;
 
-namespace ProjectOrangeApi.Data.Seed;
+namespace ProjectOrangeApi.Data.Seeds;
 
 public static class ProductSpecSeed
 {
