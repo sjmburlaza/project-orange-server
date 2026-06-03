@@ -22,30 +22,27 @@ public class CartsController : ControllerBase
     [HttpGet("{cartCode}")]
     public async Task<ActionResult<CartResponseDto>> GetCart(string cartCode)
     {
-        var cart = await _cartService.GetCartAsync(cartCode, UserId);
-
-        return Ok(cart);
+        return await ExecuteCartAction(() =>
+            _cartService.GetCartAsync(cartCode, UserId));
     }
 
     [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<CartResponseDto>> GetMyCart()
     {
-        var cart = await _cartService.GetCartByUserIdAsync(UserId!);
-
-        return Ok(cart);
+        return await ExecuteCartAction(() =>
+            _cartService.GetCartByUserIdAsync(UserId!));
     }
 
     [HttpPost("items")]
     public async Task<ActionResult<CartResponseDto>> AddToNewCart(
       AddToCartRequest request)
     {
-        var cart = await _cartService.AddToCartAsync(
-            null,
-            request,
-            UserId);
-
-        return Ok(cart);
+        return await ExecuteCartAction(() =>
+            _cartService.AddToCartAsync(
+                null,
+                request,
+                UserId));
     }
 
     [HttpPost("{cartCode}/items")]
@@ -53,12 +50,11 @@ public class CartsController : ControllerBase
       string cartCode,
       AddToCartRequest request)
     {
-        var cart = await _cartService.AddToCartAsync(
-            cartCode,
-            request,
-            UserId);
-
-        return Ok(cart);
+        return await ExecuteCartAction(() =>
+            _cartService.AddToCartAsync(
+                cartCode,
+                request,
+                UserId));
     }
 
     [HttpPut("{cartCode}/items/{productId}")]
@@ -67,13 +63,12 @@ public class CartsController : ControllerBase
         int productId,
         UpdateQuantityRequest request)
     {
-        var cart = await _cartService.UpdateQuantityAsync(
-            cartCode,
-            productId,
-            request,
-            UserId);
-
-        return Ok(cart);
+        return await ExecuteCartAction(() =>
+            _cartService.UpdateQuantityAsync(
+                cartCode,
+                productId,
+                request,
+                UserId));
     }
 
     [HttpDelete("{cartCode}/items/{productId}")]
@@ -81,12 +76,11 @@ public class CartsController : ControllerBase
         string cartCode,
         int productId)
     {
-        var cart = await _cartService.RemoveItemAsync(
-            cartCode,
-            productId,
-            UserId);
-
-        return Ok(cart);
+        return await ExecuteCartAction(() =>
+            _cartService.RemoveItemAsync(
+                cartCode,
+                productId,
+                UserId));
     }
 
     [HttpPost("{cartCode}/vouchers")]
@@ -94,12 +88,23 @@ public class CartsController : ControllerBase
         string cartCode,
         ApplyVoucherRequest request)
     {
-        var cart = await _cartService.ApplyVoucherAsync(
-            cartCode,
-            request,
-            UserId);
+        return await ExecuteCartAction(() =>
+            _cartService.ApplyVoucherAsync(
+                cartCode,
+                request,
+                UserId));
+    }
 
-        return Ok(cart);
+    [HttpDelete("{cartCode}/vouchers/{voucherCode}")]
+    public async Task<ActionResult<CartResponseDto>> RemoveVoucher(
+        string cartCode,
+        string voucherCode)
+    {
+        return await ExecuteCartAction(() =>
+            _cartService.RemoveVoucherAsync(
+                cartCode,
+                voucherCode,
+                UserId));
     }
 
     [HttpPut("{cartCode}/shipping")]
@@ -109,12 +114,46 @@ public class CartsController : ControllerBase
     {
         var userId = User.Identity?.Name;
 
-        var cart = await _cartService.UpdateShippingAsync(
-            cartCode,
-            request,
-            userId
-        );
+        return await ExecuteCartAction(() =>
+            _cartService.UpdateShippingAsync(
+                cartCode,
+                request,
+                userId
+            ));
+    }
 
-        return Ok(cart);
+    private async Task<ActionResult<CartResponseDto>> ExecuteCartAction(
+        Func<Task<CartResponseDto>> action)
+    {
+        try
+        {
+            var cart = await action();
+
+            return Ok(cart);
+        }
+        catch (ApiErrorException ex)
+        {
+            return CreateErrorResponse(ex);
+        }
+    }
+
+    private ObjectResult CreateErrorResponse(ApiErrorException exception)
+    {
+        var problem = new ProblemDetails
+        {
+            Status = exception.StatusCode,
+            Title = exception.Title,
+            Detail = exception.Message,
+            Type = $"https://project-orange-api/errors/{exception.Code.ToLowerInvariant()}"
+        };
+
+        problem.Extensions["code"] = exception.Code;
+
+        foreach (var detail in exception.ErrorDetails)
+        {
+            problem.Extensions[detail.Key] = detail.Value;
+        }
+
+        return StatusCode(exception.StatusCode, problem);
     }
 }
