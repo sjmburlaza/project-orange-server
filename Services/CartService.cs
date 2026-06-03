@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using ProjectOrangeApi.Data;
+using ProjectOrangeApi.Data.Seeds;
 using ProjectOrangeApi.DTOs;
 using ProjectOrangeApi.Models;
 
@@ -124,18 +125,64 @@ public class CartService : ICartService
 
     public async Task<CartResponseDto> ApplyVoucherAsync(string cartCode, ApplyVoucherRequest request, string? userId)
     {
-        var cart = await GetCartEntityAsync(cartCode, userId);
-        var alreadyApplied = cart.AppliedVouchers.Any(v => v.Code == request.Code);
+        var voucherCode = NormalizeVoucherCode(request.Code);
 
-        if (!alreadyApplied)
+        var voucher = VoucherSeed.FindByCode(voucherCode);
+
+        if (voucher is null)
         {
-            cart.AppliedVouchers.Add(new CartVoucher
-            {
-                Code = request.Code,
-                Name = "Promo Voucher",
-                Description = "Voucher applied successfully"
-            });
+            throw VoucherValidationException.NotApplicable();
         }
+
+        var cart = await GetCartEntityAsync(cartCode, userId);
+
+        if (!cart.Entries.Any())
+        {
+            throw VoucherValidationException.NotApplicable("Add at least one item before applying a voucher.");
+        }
+
+        ValidateVoucherEligibility(voucher, cart, DateTimeOffset.UtcNow);
+
+        var alreadyApplied = cart.AppliedVouchers.Any(v =>
+            string.Equals(v.Code, voucher.Code, StringComparison.OrdinalIgnoreCase));
+
+        if (alreadyApplied)
+        {
+            throw VoucherValidationException.AlreadyApplied();
+        }
+
+        if (cart.AppliedVouchers.Any())
+        {
+            throw VoucherValidationException.LimitReached();
+        }
+
+        cart.AppliedVouchers.Add(new CartVoucher
+        {
+            Code = voucher.Code,
+            Name = voucher.Name,
+            Description = voucher.Description
+        });
+
+        await _context.SaveChangesAsync();
+
+        return MapToResponse(cart);
+    }
+
+    public async Task<CartResponseDto> RemoveVoucherAsync(string cartCode, string voucherCode, string? userId)
+    {
+        var normalizedVoucherCode = NormalizeVoucherCode(voucherCode);
+        var cart = await GetCartEntityAsync(cartCode, userId);
+
+        var appliedVoucher = cart.AppliedVouchers.FirstOrDefault(voucher =>
+            string.Equals(voucher.Code, normalizedVoucherCode, StringComparison.OrdinalIgnoreCase));
+
+        if (appliedVoucher is null)
+        {
+            throw VoucherValidationException.NotApplicable("Voucher is not applied to this cart.");
+        }
+
+        cart.AppliedVouchers.Remove(appliedVoucher);
+        _context.CartVouchers.Remove(appliedVoucher);
 
         await _context.SaveChangesAsync();
 
@@ -211,7 +258,7 @@ public class CartService : ICartService
 
         if (cart is null)
         {
-            throw new Exception("Cart not found.");
+            throw new CartNotFoundException();
         }
 
         return cart;
@@ -219,10 +266,8 @@ public class CartService : ICartService
 
     private CartResponseDto MapToResponse(Cart cart)
     {
-        var subtotal = cart.Entries.Sum(item => item.Price * item.Quantity);
-        var discount = cart.AppliedVouchers.Any()
-          ? subtotal * 0.10m
-          : 0;
+        var subtotal = GetSubtotal(cart);
+        var discount = GetDiscount(cart, subtotal);
 
         var hasSelectedShipping = cart.ShippingPrice.HasValue;
         var shipping = cart.ShippingPrice.HasValue ? cart.ShippingPrice.Value : 0;
@@ -275,14 +320,14 @@ public class CartService : ICartService
                 },
                 new CartSummaryAttributeDto
                 {
-                    Name = "Discount",
-                    Amount = -discount
-                },
-                new CartSummaryAttributeDto
-                {
                     Name = "Shipping",
                     Amount = hasSelectedShipping ? shipping : null,
                     DisplayValue = hasSelectedShipping ? null : "To be calculated"
+                },
+                new CartSummaryAttributeDto
+                {
+                    Name = "Discount",
+                    Amount = -discount
                 },
                 new CartSummaryAttributeDto
                 {
@@ -299,7 +344,7 @@ public class CartService : ICartService
             .FirstOrDefaultAsync(c => c.UserId == userId);
 
         if (cart is null)
-            throw new Exception("Cart not found.");
+            throw new CartNotFoundException();
 
         return MapToResponse(cart);
     }
@@ -328,5 +373,96 @@ public class CartService : ICartService
         await _context.SaveChangesAsync();
 
         return MapToResponse(cart);
+    }
+
+    private static string NormalizeVoucherCode(string? code)
+    {
+        var normalizedCode = code?.Trim().ToUpperInvariant();
+
+        if (string.IsNullOrWhiteSpace(normalizedCode))
+        {
+            throw VoucherValidationException.InvalidFormat("Voucher code is required.");
+        }
+
+        if (normalizedCode.Length < 3)
+        {
+            throw VoucherValidationException.InvalidFormat("Voucher code must be at least 3 characters.");
+        }
+
+        if (normalizedCode.Length > 32)
+        {
+            throw VoucherValidationException.InvalidFormat("Voucher code must be 32 characters or fewer.");
+        }
+
+        if (!normalizedCode.All(IsVoucherCodeCharacter))
+        {
+            throw VoucherValidationException.InvalidFormat("Voucher code can only contain letters, numbers, hyphens, or underscores.");
+        }
+
+        return normalizedCode;
+    }
+
+    private static void ValidateVoucherEligibility(Voucher voucher, Cart cart, DateTimeOffset now)
+    {
+        if (voucher.Status == VoucherStatus.Expired)
+        {
+            throw VoucherValidationException.NotApplicable();
+        }
+
+        if (voucher.Status == VoucherStatus.Scheduled)
+        {
+            throw VoucherValidationException.NotApplicable();
+        }
+
+        if (voucher.Status != VoucherStatus.Active)
+        {
+            throw VoucherValidationException.NotApplicable();
+        }
+
+        if (voucher.StartsAtUtc.HasValue && now < voucher.StartsAtUtc.Value)
+        {
+            throw VoucherValidationException.NotApplicable();
+        }
+
+        if (voucher.ExpiresAtUtc.HasValue && now >= voucher.ExpiresAtUtc.Value)
+        {
+            throw VoucherValidationException.NotApplicable();
+        }
+
+        var subtotal = GetSubtotal(cart);
+
+        if (voucher.MinimumSubtotal > 0 && subtotal < voucher.MinimumSubtotal)
+        {
+            throw VoucherValidationException.MinimumSubtotalNotMet(voucher.MinimumSubtotal);
+        }
+    }
+
+    private static decimal GetDiscount(Cart cart, decimal subtotal)
+    {
+        var discount = cart.AppliedVouchers.Sum(voucher =>
+        {
+            var voucherRule = VoucherSeed.FindByCode(voucher.Code);
+
+            if (voucherRule is null)
+            {
+                return 0;
+            }
+
+            return subtotal * (voucherRule.DiscountPercent / 100);
+        });
+
+        return Math.Min(discount, subtotal);
+    }
+
+    private static decimal GetSubtotal(Cart cart)
+    {
+        return cart.Entries.Sum(item => item.Price * item.Quantity);
+    }
+
+    private static bool IsVoucherCodeCharacter(char character)
+    {
+        return character is >= 'A' and <= 'Z'
+            || character is >= '0' and <= '9'
+            || character is '-' or '_';
     }
 }

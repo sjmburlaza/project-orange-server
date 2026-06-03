@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,30 @@ builder.Services.AddControllers()
   {
       options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
   });
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var isVoucherEndpoint =
+            context.ActionDescriptor.RouteValues.TryGetValue("controller", out var controller) &&
+            controller == "Carts" &&
+            context.HttpContext.Request.Path.Value?.Contains("/vouchers", StringComparison.OrdinalIgnoreCase) == true;
+
+        var problem = new ProblemDetails
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Invalid request.",
+            Detail = "Request validation failed."
+        };
+
+        problem.Extensions["code"] = isVoucherEndpoint
+            ? ApiErrorCodes.VoucherCodeInvalidFormat
+            : "REQUEST_VALIDATION_FAILED";
+
+        return new BadRequestObjectResult(problem);
+    };
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
