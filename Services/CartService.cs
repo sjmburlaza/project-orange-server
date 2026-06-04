@@ -658,17 +658,36 @@ public class CartService : ICartService
         var optionName = string.IsNullOrWhiteSpace(session.Summary.Device)
             ? "Trade-In Credit"
             : $"{session.Summary.Device} Trade-In";
+        var amountDisplay = FormatPesoAmount(session.Summary.FinalAmount);
 
         var snapshot = CreateDisplayOnlyAddonSnapshot(addon);
         snapshot.OptionCode = session.SessionId;
         snapshot.OptionName = optionName;
         snapshot.Title = optionName;
         snapshot.Amount = -session.Summary.FinalAmount;
-        snapshot.AmountDisplay = FormatPesoAmount(session.Summary.FinalAmount);
+        snapshot.AmountDisplay = amountDisplay;
+        snapshot.Description = CreateTradeInAddonDescription(session.Summary, amountDisplay);
         snapshot.BillingType = BillingTypeCredit;
         snapshot.MultiplyByQuantity = false;
 
         return snapshot;
+    }
+
+    private static string CreateTradeInAddonDescription(StepOneSummaryDto summary, string amountDisplay)
+    {
+        var deviceDescription = string.Join(" ", new[]
+        {
+            summary.Brand,
+            summary.Device,
+            summary.Storage
+        }.Where(value => !string.IsNullOrWhiteSpace(value)));
+
+        if (string.IsNullOrWhiteSpace(deviceDescription))
+        {
+            return $"Estimated trade-in credit of {amountDisplay} has been applied.";
+        }
+
+        return $"Estimated trade-in credit of {amountDisplay} for {deviceDescription} has been applied.";
     }
 
     private static CartItemAddon CreateMobilePlanAddonSnapshot(
@@ -784,6 +803,13 @@ public class CartService : ICartService
 
             selectedTitle = plan?.Name ?? selectedTitle;
             selectedDescription = plan?.Description ?? selectedDescription;
+        }
+        else if (string.Equals(addon.Id, "trade-in", StringComparison.OrdinalIgnoreCase) &&
+            (string.IsNullOrWhiteSpace(selectedDescription) ||
+                string.Equals(selectedDescription, addon.Description, StringComparison.OrdinalIgnoreCase)) &&
+            !string.IsNullOrWhiteSpace(selectedAddon.AmountDisplay))
+        {
+            selectedDescription = $"Estimated trade-in credit of {selectedAddon.AmountDisplay} has been applied.";
         }
         else if (string.Equals(addon.Id, "mobile-plan", StringComparison.OrdinalIgnoreCase))
         {
