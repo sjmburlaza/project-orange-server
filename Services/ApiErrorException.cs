@@ -4,12 +4,45 @@ namespace ProjectOrangeApi.Services;
 
 public static class ApiErrorCodes
 {
+    public const string AddonLimitReached = "ADDON_LIMIT_REACHED";
+    public const string AddonNotAvailable = "ADDON_NOT_AVAILABLE";
+    public const string CartItemNotFound = "CART_ITEM_NOT_FOUND";
     public const string CartNotFound = "CART_NOT_FOUND";
     public const string VoucherAlreadyApplied = "VOUCHER_ALREADY_APPLIED";
     public const string VoucherCodeInvalidFormat = "VOUCHER_CODE_INVALID_FORMAT";
     public const string VoucherLimitReached = "VOUCHER_LIMIT_REACHED";
     public const string VoucherMinimumSubtotalNotMet = "VOUCHER_MINIMUM_SUBTOTAL_NOT_MET";
     public const string VoucherNotApplicable = "VOUCHER_NOT_APPLICABLE";
+}
+
+public class AddonValidationException : ApiErrorException
+{
+    private AddonValidationException(
+        string code,
+        int statusCode,
+        string message) : base(
+            code,
+            statusCode,
+            "Add-on validation failed.",
+            message)
+    {
+    }
+
+    public static AddonValidationException NotAvailable(string message = "Selected add-on is not available for this product.")
+    {
+        return new AddonValidationException(
+            ApiErrorCodes.AddonNotAvailable,
+            StatusCodes.Status422UnprocessableEntity,
+            message);
+    }
+
+    public static AddonValidationException LimitReached(string message)
+    {
+        return new AddonValidationException(
+            ApiErrorCodes.AddonLimitReached,
+            StatusCodes.Status409Conflict,
+            message);
+    }
 }
 
 public class ApiErrorException : Exception
@@ -40,6 +73,17 @@ public class CartNotFoundException : ApiErrorException
         StatusCodes.Status404NotFound,
         "Cart not found.",
         "Cart not found.")
+    {
+    }
+}
+
+public class CartItemNotFoundException : ApiErrorException
+{
+    public CartItemNotFoundException() : base(
+        ApiErrorCodes.CartItemNotFound,
+        StatusCodes.Status404NotFound,
+        "Cart item not found.",
+        "Cart item not found.")
     {
     }
 }

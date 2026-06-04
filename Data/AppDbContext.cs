@@ -35,6 +35,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
 			.Property(c => c.Price)
 			.HasPrecision(18, 2);
 
+		modelBuilder.Entity<CartItemAddon>()
+			.Property(a => a.Amount)
+			.HasPrecision(18, 2);
+
 		modelBuilder.Entity<Order>()
 			.Property(o => o.TotalAmount)
 			.HasPrecision(18, 2);

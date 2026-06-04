@@ -12,5 +12,11 @@ public class CartItemAddon
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
+    public string OptionCode { get; set; } = string.Empty;
+    public string OptionName { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public string AmountDisplay { get; set; } = string.Empty;
+    public string BillingType { get; set; } = string.Empty;
+    public bool MultiplyByQuantity { get; set; }
     public bool IsAdded { get; set; }
 }

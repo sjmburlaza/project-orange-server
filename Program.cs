@@ -46,6 +46,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<CheckoutFormService>();
 builder.Services.AddScoped<ShippingPricingService>();
+builder.Services.AddSingleton<TradeInSessionService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(

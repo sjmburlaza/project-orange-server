@@ -7,5 +7,8 @@ public class AddonDto
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
+    public string Amount { get; set; } = string.Empty;
+    public string SelectedOptionCode { get; set; } = string.Empty;
+    public string SelectedOptionName { get; set; } = string.Empty;
     public bool IsAdded { get; set; }
 }
