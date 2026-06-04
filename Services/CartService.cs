@@ -324,6 +324,38 @@ public class CartService : ICartService
         var shipping = cart.ShippingPrice.HasValue ? cart.ShippingPrice.Value : 0;
 
         var total = subtotal + addonTotal - discount + shipping;
+        var cartSummary = new List<CartSummaryAttributeDto>
+        {
+            new()
+            {
+                Name = "Subtotal",
+                Amount = subtotal
+            }
+        };
+
+        cartSummary.AddRange(addonSummary);
+
+        cartSummary.Add(new CartSummaryAttributeDto
+        {
+            Name = "Shipping",
+            Amount = hasSelectedShipping ? shipping : null,
+            DisplayValue = hasSelectedShipping ? null : "To be calculated"
+        });
+
+        if (discount > 0)
+        {
+            cartSummary.Add(new CartSummaryAttributeDto
+            {
+                Name = "Discount",
+                Amount = -discount
+            });
+        }
+
+        cartSummary.Add(new CartSummaryAttributeDto
+        {
+            Name = "Total",
+            Amount = total
+        });
 
         return new CartResponseDto
         {
@@ -354,31 +386,7 @@ public class CartService : ICartService
                 Description = voucher.Description
             }).ToList(),
 
-            CartSummary =
-            [
-                new CartSummaryAttributeDto
-                {
-                    Name = "Subtotal",
-                    Amount = subtotal
-                },
-                .. addonSummary,
-                new CartSummaryAttributeDto
-                {
-                    Name = "Shipping",
-                    Amount = hasSelectedShipping ? shipping : null,
-                    DisplayValue = hasSelectedShipping ? null : "To be calculated"
-                },
-                new CartSummaryAttributeDto
-                {
-                    Name = "Discount",
-                    Amount = -discount
-                },
-                new CartSummaryAttributeDto
-                {
-                    Name = "Total",
-                    Amount = total
-                }
-            ]
+            CartSummary = cartSummary
         };
     }
 
