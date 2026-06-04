@@ -83,6 +83,36 @@ public class CartsController : ControllerBase
                 UserId));
     }
 
+    [HttpPut("{cartCode}/items/{productId}/addons/{addonId}")]
+    public async Task<ActionResult<CartResponseDto>> UpsertCartItemAddon(
+        string cartCode,
+        int productId,
+        string addonId,
+        UpdateCartItemAddonRequest request)
+    {
+        return await ExecuteCartAction(() =>
+            _cartService.UpsertCartItemAddonAsync(
+                cartCode,
+                productId,
+                addonId,
+                request,
+                UserId));
+    }
+
+    [HttpDelete("{cartCode}/items/{productId}/addons/{addonId}")]
+    public async Task<ActionResult<CartResponseDto>> RemoveCartItemAddon(
+        string cartCode,
+        int productId,
+        string addonId)
+    {
+        return await ExecuteCartAction(() =>
+            _cartService.RemoveCartItemAddonAsync(
+                cartCode,
+                productId,
+                addonId,
+                UserId));
+    }
+
     [HttpPost("{cartCode}/vouchers")]
     public async Task<ActionResult<CartResponseDto>> ApplyVoucher(
         string cartCode,

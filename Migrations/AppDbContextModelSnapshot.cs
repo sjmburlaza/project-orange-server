@@ -335,6 +335,18 @@ namespace ProjectOrangeApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("AmountDisplay")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BillingType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CartItemId")
                         .HasColumnType("int");
 
@@ -350,6 +362,17 @@ namespace ProjectOrangeApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("MultiplyByQuantity")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OptionCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OptionName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

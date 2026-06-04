@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectOrangeApi.Data;
+using ProjectOrangeApi.Data.Seeds;
 using ProjectOrangeApi.DTOs;
 
 namespace ProjectOrangeApi.Controllers;
@@ -106,5 +107,61 @@ public class ProductsController : ControllerBase
             return NotFound();
 
         return Ok(product);
+    }
+
+    [HttpGet("{id}/addons")]
+    public async Task<ActionResult<IEnumerable<AddonDto>>> GetProductAddons(int id)
+    {
+        var product = await _context.Products
+            .Include(p => p.Category)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (product is null)
+            return NotFound();
+
+        var categoryName = product.Category?.Name ?? string.Empty;
+        var addons = AddonSeed.GetEligibleAddons(categoryName)
+            .Select(addon => new AddonDto
+            {
+                Id = addon.Id,
+                Name = addon.Name,
+                Title = addon.Title,
+                Description = addon.Description,
+                ImageUrl = addon.ImageUrl,
+                IsAdded = false
+            })
+            .ToList();
+
+        return Ok(addons);
+    }
+
+    [HttpGet("{id}/insurance-plans")]
+    public async Task<ActionResult<IEnumerable<InsurancePlanDto>>> GetProductInsurancePlans(int id)
+    {
+        var product = await _context.Products
+            .Include(p => p.Category)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (product is null)
+            return NotFound();
+
+        var categoryName = product.Category?.Name ?? string.Empty;
+
+        return Ok(InsurancePlanSeed.GetPlans(categoryName));
+    }
+
+    [HttpGet("{id}/mobile-plans")]
+    public async Task<ActionResult<IEnumerable<MobilePlanDto>>> GetProductMobilePlans(int id)
+    {
+        var product = await _context.Products
+            .Include(p => p.Category)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (product is null)
+            return NotFound();
+
+        var categoryName = product.Category?.Name ?? string.Empty;
+
+        return Ok(MobilePlanSeed.GetPlans(categoryName));
     }
 }
