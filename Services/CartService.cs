@@ -4,6 +4,7 @@ using ProjectOrangeApi.Data;
 using ProjectOrangeApi.Data.Seeds;
 using ProjectOrangeApi.DTOs;
 using ProjectOrangeApi.Models;
+using ProjectOrangeApi.Contracts;
 
 namespace ProjectOrangeApi.Services;
 

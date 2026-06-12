@@ -1,6 +1,6 @@
 using ProjectOrangeApi.DTOs;
 
-namespace ProjectOrangeApi.Services;
+namespace ProjectOrangeApi.Contracts;
 
 public interface ICartService
 {

@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProjectOrangeApi.Data;
 using ProjectOrangeApi.Services;
 using ProjectOrangeApi.Models;
+using ProjectOrangeApi.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
