@@ -52,6 +52,11 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<CheckoutFormService>();
 builder.Services.AddScoped<ShippingPricingService>();
 builder.Services.AddSingleton<TradeInSessionService>();
+builder.Services.AddHttpClient<GeoCountryService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(2);
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("ProjectOrangeApi/1.0");
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(

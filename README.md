@@ -22,6 +22,7 @@ Project Orange API is an ASP.NET Core Web API for an ecommerce checkout flow. It
 - Product add-ons, insurance plans, mobile plans, and trade-in selections
 - Voucher application and voucher removal
 - Shipping-price lookup by postal code
+- Country detection from edge provider headers or client IP lookup
 - Checkout form configuration loaded from JSON
 - Postal-code serviceability validation
 - Basic order creation with stock validation
@@ -344,6 +345,12 @@ Content-Type: application/json
 | --- | --- | --- |
 | `GET` | `/api/shipping/options?postalCode={postalCode}` | Get serviceable shipping options |
 | `GET` | `/api/postal-codes/validate?postalCode={postalCode}` | Validate whether a postal code is serviceable |
+
+### Geo
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/geo/country` | Detect the request country code from Cloudflare, Vercel, CloudFront, other geo headers, or client IP lookup |
 
 ### Address Options
 
