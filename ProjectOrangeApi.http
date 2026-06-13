@@ -1,3 +1,8 @@
 @ProjectOrangeApi_HostAddress = http://localhost:5175
 
 ###
+
+GET {{ProjectOrangeApi_HostAddress}}/api/geo/country
+CF-IPCountry: PH
+
+###
