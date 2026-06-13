@@ -9,7 +9,7 @@ Project Orange API is an ASP.NET Core Web API for an ecommerce checkout flow. It
 - Entity Framework Core
 - SQL Server
 - ASP.NET Core Identity
-- JWT bearer authentication
+- Secure cookie-backed JWT sessions
 - Swagger/OpenAPI via Swashbuckle
 
 ## Features
@@ -26,7 +26,7 @@ Project Orange API is an ASP.NET Core Web API for an ecommerce checkout flow. It
 - Postal-code serviceability validation
 - Basic order creation with stock validation
 - Trade-in configuration and in-memory trade-in session flow
-- User registration and login with JWT tokens
+- User registration and login with secure cookie-backed sessions
 
 ## Project Structure
 
@@ -155,18 +155,71 @@ Content-Type: application/json
 }
 ```
 
-The login endpoint returns a JWT token:
+Registered users are assigned the `customer` role by default.
+
+The login endpoint validates the credentials, creates a server-side session, and sets a secure HttpOnly session cookie. The response returns the user access profile and a session summary:
 
 ```json
 {
-  "token": "<jwt-token>"
+  "user": {
+    "id": "<user-id>",
+    "email": "juan@example.com",
+    "fullName": "Juan Dela Cruz",
+    "roles": ["customer"],
+    "permissions": ["products.read"]
+  },
+  "session": {
+    "id": "<session-id>",
+    "createdAtUtc": "2026-06-13T00:00:00+00:00",
+    "expiresAtUtc": "2026-06-13T02:00:00+00:00"
+  }
 }
 ```
 
-Use the token for protected endpoints:
+Fetch the current session:
 
 ```http
-Authorization: Bearer <jwt-token>
+GET /api/auth/session
+```
+
+Logout revokes the current server-side session and clears the session cookie:
+
+```http
+POST /api/auth/logout
+```
+
+Development sample accounts are created automatically when the API starts in the `Development` environment:
+
+| Role | Email | Password |
+| --- | --- | --- |
+| `admin` | `admin@example.com` | `Admin123!` |
+| `customer` | `customer@example.com` | `Customer123!` |
+| `support-agent` | `support@example.com` | `Support123!` |
+| `inventory-manager` | `inventory@example.com` | `Inventory123!` |
+
+Built-in roles:
+
+```text
+admin
+customer
+support-agent
+inventory-manager
+```
+
+Built-in permissions:
+
+```text
+products.read
+products.create
+products.update
+products.delete
+orders.read
+orders.update
+orders.cancel
+users.read
+users.manage
+inventory.read
+inventory.update
 ```
 
 ## API Overview
@@ -176,7 +229,10 @@ Authorization: Bearer <jwt-token>
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `POST` | `/api/auth/register` | Register a new user |
-| `POST` | `/api/auth/login` | Login and receive a JWT token |
+| `POST` | `/api/auth/login` | Login, set the secure session cookie, and return the session summary |
+| `GET` | `/api/auth/session` | Get the current user, roles, permissions, and session summary |
+| `POST` | `/api/auth/logout` | Revoke the current session and clear the session cookie |
+| `GET` | `/api/auth/me` | Get the authenticated user profile |
 
 ### Products
 

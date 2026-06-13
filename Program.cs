@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
@@ -7,6 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 using ProjectOrangeApi.Data;
 using ProjectOrangeApi.Services;
 using ProjectOrangeApi.Models;
+using ProjectOrangeApi.Contracts;
+using ProjectOrangeApi.Authorization;
+using ProjectOrangeApi.Data.Seeds;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,14 +64,47 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
 
-builder.Services.AddAuthentication()
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+});
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new()
@@ -81,16 +119,69 @@ builder.Services.AddAuthentication()
 
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
-            )
+            ),
+
+            NameClaimType = ClaimTypes.NameIdentifier,
+            RoleClaimType = ClaimTypes.Role
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (string.IsNullOrWhiteSpace(context.Token) &&
+                    context.Request.Cookies.TryGetValue(AuthCookies.Session, out var token))
+                {
+                    context.Token = token;
+                }
+
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = async context =>
+            {
+                var sessionId = context.Principal?.FindFirstValue(ClaimTypes.Sid);
+                var userId = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrWhiteSpace(sessionId) || string.IsNullOrWhiteSpace(userId))
+                {
+                    context.Fail("The authentication session is missing.");
+                    return;
+                }
+
+                var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+                var now = DateTimeOffset.UtcNow;
+
+                var isActiveSession = await db.AuthSessions
+                    .AsNoTracking()
+                    .AnyAsync(session =>
+                        session.Id == sessionId &&
+                        session.UserId == userId &&
+                        session.RevokedAtUtc == null &&
+                        session.ExpiresAtUtc > now);
+
+                if (!isActiveSession)
+                {
+                    context.Fail("The authentication session is no longer active.");
+                }
+            }
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    foreach (var permission in AppPermissions.All)
+    {
+        options.AddPolicy(permission, policy =>
+            policy.RequireClaim(AppClaimTypes.Permission, permission));
+    }
+});
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    await DevelopmentUserSeed.SeedAsync(app.Services);
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }

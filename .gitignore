@@ -483,3 +483,15 @@ $RECYCLE.BIN/
 
 # app settings
 appsettings.Development.json
+
+# Local database and IDE cache artifacts
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+*.lscache

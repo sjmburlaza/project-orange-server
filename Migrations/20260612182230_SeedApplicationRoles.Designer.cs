@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectOrangeApi.Data;
 
@@ -11,9 +12,11 @@ using ProjectOrangeApi.Data;
 namespace ProjectOrangeApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260612182230_SeedApplicationRoles")]
+    partial class SeedApplicationRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -277,39 +280,6 @@ namespace ProjectOrangeApi.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("ProjectOrangeApi.Models.AuthSession", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTimeOffset>("CreatedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedByIpAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("ExpiresAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("RevokedAtUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("RevokedByIpAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExpiresAtUtc");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AuthSessions");
                 });
 
             modelBuilder.Entity("ProjectOrangeApi.Models.Cart", b =>
@@ -1221,17 +1191,6 @@ namespace ProjectOrangeApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.AuthSession", b =>
-                {
-                    b.HasOne("ProjectOrangeApi.Models.AppUser", "User")
-                        .WithMany("AuthSessions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ProjectOrangeApi.Models.Cart", b =>
                 {
                     b.HasOne("ProjectOrangeApi.Models.AppUser", "User")
@@ -1313,8 +1272,6 @@ namespace ProjectOrangeApi.Migrations
 
             modelBuilder.Entity("ProjectOrangeApi.Models.AppUser", b =>
                 {
-                    b.Navigation("AuthSessions");
-
                     b.Navigation("Carts");
                 });
 

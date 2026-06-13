@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using ProjectOrangeApi.Models;
 using ProjectOrangeApi.Data.Seeds;
 
@@ -21,11 +22,14 @@ public class AppDbContext : IdentityDbContext<AppUser>
 	public DbSet<CartItemAddon> CartItemAddons => Set<CartItemAddon>();
 	public DbSet<CartVoucher> CartVouchers => Set<CartVoucher>();
 	public DbSet<ProductSpec> ProductSpecs => Set<ProductSpec>();
+	public DbSet<AuthSession> AuthSessions => Set<AuthSession>();
 
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		base.OnModelCreating(modelBuilder);
+
+		modelBuilder.Entity<IdentityRole>().HasData(RoleSeed.Roles);
 
 		modelBuilder.Entity<Product>()
 			.Property(p => p.Price)
@@ -62,6 +66,18 @@ public class AppDbContext : IdentityDbContext<AppUser>
 		modelBuilder.Entity<Cart>()
 			.Property(c => c.ShippingPrice)
 			.HasColumnType("decimal(18,2)");
+
+		modelBuilder.Entity<AuthSession>()
+			.HasOne(s => s.User)
+			.WithMany(u => u.AuthSessions)
+			.HasForeignKey(s => s.UserId)
+			.OnDelete(DeleteBehavior.Cascade);
+
+		modelBuilder.Entity<AuthSession>()
+			.HasIndex(s => s.UserId);
+
+		modelBuilder.Entity<AuthSession>()
+			.HasIndex(s => s.ExpiresAtUtc);
 
 		modelBuilder.Entity<CartItem>()
 			.HasMany(i => i.Addons)
