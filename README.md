@@ -1,6 +1,6 @@
 # Project Orange API
 
-Project Orange API is an ASP.NET Core Web API for an ecommerce checkout flow. It provides product browsing, categories, cart management, vouchers, shipping options, checkout form configuration, orders, authentication, and trade-in session endpoints for a frontend client.
+Project Orange Server is an ASP.NET Core Web API for a multi-site ecommerce checkout flow. It provides site-aware product browsing, categories, cart management, vouchers, shipping options, checkout form configuration, orders, authentication, and trade-in session endpoints for a frontend client.
 
 ## Tech Stack
 
@@ -14,26 +14,30 @@ Project Orange API is an ASP.NET Core Web API for an ecommerce checkout flow. It
 
 ## Features
 
+- Multi-site storefront support for the Philippines, France, China, and Japan
+- Site resolution by `/api/{siteCode}/...` route prefix, `X-Site-Code` header, `siteCode` query parameter, or default site fallback
+- Site-scoped product catalog, categories, carts, orders, auth sessions, and checkout forms
+- Localized seeded product data with site currencies
 - Product catalog with category, price filtering, sorting, and product specs
 - Category management
 - Cart creation and cart lookup by cart code
 - Authenticated user cart lookup
 - Cart item quantity updates and removal
-- Product add-ons, insurance plans, mobile plans, and trade-in selections
-- Voucher application and voucher removal
-- Shipping-price lookup by postal code
+- Product add-ons, insurance plans, mobile plans, and trade-in selections with site feature flags
+- Voucher application and voucher removal with site feature flags
+- Site-specific shipping-price lookup by postal code
 - Country detection from edge provider headers or client IP lookup
-- Checkout form configuration loaded from JSON
-- Postal-code serviceability validation
-- Basic order creation with stock validation
-- Trade-in configuration and in-memory trade-in session flow
-- User registration and login with secure cookie-backed sessions
+- Checkout form configuration loaded from site-specific JSON files
+- Site-specific postal-code serviceability validation
+- Basic site-scoped order creation with stock validation
+- Trade-in configuration and in-memory site-scoped trade-in session flow
+- User registration and login with secure cookie-backed, site-scoped sessions
 
 ## Project Structure
 
 ```text
 .
-├── Config/                  # JSON-driven checkout form configuration
+├── Config/                  # Default and site-specific checkout form configuration
 ├── Contracts/               # Service interfaces
 ├── Controllers/             # API controllers and routes
 ├── DTOs/                    # Request and response DTOs
@@ -92,6 +96,54 @@ Jwt__Issuer
 Jwt__Audience
 Jwt__Key
 ```
+
+## Multi-Site Support
+
+The API seeds and serves four active sites:
+
+| Code | Country     | Locale  | Currency | Default language | Insurance | Trade-ins | Vouchers |
+| ---- | ----------- | ------- | -------- | ---------------- | --------- | --------- | -------- |
+| `ph` | Philippines | `en-PH` | `PHP`    | `en`             | Yes       | Yes       | Yes      |
+| `fr` | France      | `fr-FR` | `EUR`    | `fr`             | Yes       | No        | Yes      |
+| `cn` | China       | `zh-CN` | `CNY`    | `zh`             | Yes       | Yes       | Yes      |
+| `jp` | Japan       | `ja-JP` | `JPY`    | `ja`             | Yes       | Yes       | Yes      |
+
+`ph` is the default site. Site-scoped API requests can select a site in any of these ways:
+
+```http
+GET /api/jp/products
+```
+
+```http
+GET /api/products?siteCode=fr
+```
+
+```http
+GET /api/products
+X-Site-Code: cn
+```
+
+Resolution order is route value, `X-Site-Code` header, `siteCode` query parameter, then the default `ph` site. Unsupported site codes return:
+
+```json
+{
+  "code": "SITE_NOT_FOUND",
+  "message": "Site '<site-code>' is not supported."
+}
+```
+
+Site-scoped controllers support both legacy routes such as `/api/products` and prefixed routes such as `/api/fr/products`. `GET /api/sites` and `GET /api/sites/{code}` are not site-prefixed.
+
+Site selection affects:
+
+- Products and categories returned by catalog endpoints
+- Cart lookup and cart creation
+- Order lookup and order creation
+- Auth session creation, validation, and logout
+- Checkout form JSON, loaded from `Config/sites/{siteCode}/checkout-form.json` with fallback to `Config/checkout-form.json`
+- Shipping and postal-code validation
+- Feature availability for insurance, trade-ins, and vouchers
+- Display amounts for insurance, mobile plans, trade-in credits, and voucher minimums
 
 ## Getting Started
 
@@ -158,7 +210,7 @@ Content-Type: application/json
 
 Registered users are assigned the `customer` role by default.
 
-The login endpoint validates the credentials, creates a server-side session, and sets a secure HttpOnly session cookie. The response returns the user access profile and a session summary:
+The login endpoint validates the credentials, creates a server-side session for the current site, and sets a secure HttpOnly session cookie. The response returns the user access profile and a session summary:
 
 ```json
 {
@@ -189,13 +241,15 @@ Logout revokes the current server-side session and clears the session cookie:
 POST /api/auth/logout
 ```
 
+Auth sessions are site-scoped. A session cookie created under one site code is rejected if it is used with another site code.
+
 Development sample accounts are created automatically when the API starts in the `Development` environment:
 
-| Role | Email | Password |
-| --- | --- | --- |
-| `admin` | `admin@example.com` | `Admin123!` |
-| `customer` | `customer@example.com` | `Customer123!` |
-| `support-agent` | `support@example.com` | `Support123!` |
+| Role                | Email                   | Password        |
+| ------------------- | ----------------------- | --------------- |
+| `admin`             | `admin@example.com`     | `Admin123!`     |
+| `customer`          | `customer@example.com`  | `Customer123!`  |
+| `support-agent`     | `support@example.com`   | `Support123!`   |
 | `inventory-manager` | `inventory@example.com` | `Inventory123!` |
 
 Built-in roles:
@@ -225,34 +279,43 @@ inventory.update
 
 ## API Overview
 
+Unless noted otherwise, endpoint tables show the non-prefixed route. Site-scoped controllers also support `/api/{siteCode}/...` routes, for example `/api/fr/products`, `/api/cn/carts/items`, and `/api/jp/checkout/form`.
+
+### Sites
+
+| Method | Endpoint            | Description                                  |
+| ------ | ------------------- | -------------------------------------------- |
+| `GET`  | `/api/sites`        | Get active supported sites and feature flags |
+| `GET`  | `/api/sites/{code}` | Get one active site by code                  |
+
 ### Auth
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `POST` | `/api/auth/register` | Register a new user |
-| `POST` | `/api/auth/login` | Login, set the secure session cookie, and return the session summary |
-| `GET` | `/api/auth/session` | Get the current user, roles, permissions, and session summary |
-| `POST` | `/api/auth/logout` | Revoke the current session and clear the session cookie |
-| `GET` | `/api/auth/me` | Get the authenticated user profile |
+| Method | Endpoint             | Description                                                          |
+| ------ | -------------------- | -------------------------------------------------------------------- |
+| `POST` | `/api/auth/register` | Register a new user                                                  |
+| `POST` | `/api/auth/login`    | Login, set the secure session cookie, and return the session summary |
+| `GET`  | `/api/auth/session`  | Get the current user, roles, permissions, and session summary        |
+| `POST` | `/api/auth/logout`   | Revoke the current session and clear the session cookie              |
+| `GET`  | `/api/auth/me`       | Get the authenticated user profile                                   |
 
 ### Products
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/api/products` | Get products |
-| `GET` | `/api/products/{id}` | Get one product |
-| `GET` | `/api/products/{id}/addons` | Get add-ons available for a product |
-| `GET` | `/api/products/{id}/insurance-plans` | Get available insurance plans |
-| `GET` | `/api/products/{id}/mobile-plans` | Get available mobile plans |
+| Method | Endpoint                             | Description                         |
+| ------ | ------------------------------------ | ----------------------------------- |
+| `GET`  | `/api/products`                      | Get products                        |
+| `GET`  | `/api/products/{id}`                 | Get one product                     |
+| `GET`  | `/api/products/{id}/addons`          | Get add-ons available for a product |
+| `GET`  | `/api/products/{id}/insurance-plans` | Get available insurance plans       |
+| `GET`  | `/api/products/{id}/mobile-plans`    | Get available mobile plans          |
 
 Product list query parameters:
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `categoryId` | `int` | Filter by category |
-| `sortBy` | `string` | `price-asc`, `price-desc`, `name-asc`, or `name-desc` |
-| `minPrice` | `decimal` | Minimum price |
-| `maxPrice` | `decimal` | Maximum price |
+| Parameter    | Type      | Description                                           |
+| ------------ | --------- | ----------------------------------------------------- |
+| `categoryId` | `int`     | Filter by category                                    |
+| `sortBy`     | `string`  | `price-asc`, `price-desc`, `name-asc`, or `name-desc` |
+| `minPrice`   | `decimal` | Minimum price                                         |
+| `maxPrice`   | `decimal` | Maximum price                                         |
 
 Example:
 
@@ -260,28 +323,32 @@ Example:
 GET /api/products?categoryId=1&sortBy=price-asc&minPrice=1000&maxPrice=50000
 ```
 
+Product and category IDs are scoped to the current site. Prices are stored in the site's seeded currency.
+
 ### Categories
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/api/categories` | Get all categories |
-| `POST` | `/api/categories` | Create a category |
+| Method | Endpoint          | Description        |
+| ------ | ----------------- | ------------------ |
+| `GET`  | `/api/categories` | Get all categories |
+| `POST` | `/api/categories` | Create a category  |
+
+Created categories are assigned to the current site.
 
 ### Carts
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/api/carts/{cartCode}` | Get a cart by code |
-| `GET` | `/api/carts/me` | Get the authenticated user's cart |
-| `POST` | `/api/carts/items` | Add an item to a new cart |
-| `POST` | `/api/carts/{cartCode}/items` | Add an item to an existing cart |
-| `PUT` | `/api/carts/{cartCode}/items/{productId}` | Update item quantity |
-| `DELETE` | `/api/carts/{cartCode}/items/{productId}` | Remove an item |
-| `PUT` | `/api/carts/{cartCode}/items/{productId}/addons/{addonId}` | Add or update an item add-on |
-| `DELETE` | `/api/carts/{cartCode}/items/{productId}/addons/{addonId}` | Remove an item add-on |
-| `POST` | `/api/carts/{cartCode}/vouchers` | Apply a voucher |
-| `DELETE` | `/api/carts/{cartCode}/vouchers/{voucherCode}` | Remove a voucher |
-| `PUT` | `/api/carts/{cartCode}/shipping` | Update selected shipping method |
+| Method   | Endpoint                                                   | Description                       |
+| -------- | ---------------------------------------------------------- | --------------------------------- |
+| `GET`    | `/api/carts/{cartCode}`                                    | Get a cart by code                |
+| `GET`    | `/api/carts/me`                                            | Get the authenticated user's cart |
+| `POST`   | `/api/carts/items`                                         | Add an item to a new cart         |
+| `POST`   | `/api/carts/{cartCode}/items`                              | Add an item to an existing cart   |
+| `PUT`    | `/api/carts/{cartCode}/items/{productId}`                  | Update item quantity              |
+| `DELETE` | `/api/carts/{cartCode}/items/{productId}`                  | Remove an item                    |
+| `PUT`    | `/api/carts/{cartCode}/items/{productId}/addons/{addonId}` | Add or update an item add-on      |
+| `DELETE` | `/api/carts/{cartCode}/items/{productId}/addons/{addonId}` | Remove an item add-on             |
+| `POST`   | `/api/carts/{cartCode}/vouchers`                           | Apply a voucher                   |
+| `DELETE` | `/api/carts/{cartCode}/vouchers/{voucherCode}`             | Remove a voucher                  |
+| `PUT`    | `/api/carts/{cartCode}/shipping`                           | Update selected shipping method   |
 
 Add an item:
 
@@ -333,40 +400,57 @@ Content-Type: application/json
 }
 ```
 
+Carts are scoped to the current site. A cart code can only be fetched or updated from the same site where it was created. Voucher, insurance, and trade-in add-ons follow the current site's feature flags.
+
 ### Checkout
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/api/checkout/form` | Get checkout form configuration from `Config/checkout-form.json` |
+| Method | Endpoint             | Description                                          |
+| ------ | -------------------- | ---------------------------------------------------- |
+| `GET`  | `/api/checkout/form` | Get checkout form configuration for the current site |
+
+Checkout forms are loaded from `Config/sites/{siteCode}/checkout-form.json` when available, then fall back to `Config/checkout-form.json`.
 
 ### Shipping and Postal Codes
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/api/shipping/options?postalCode={postalCode}` | Get serviceable shipping options |
-| `GET` | `/api/postal-codes/validate?postalCode={postalCode}` | Validate whether a postal code is serviceable |
+| Method | Endpoint                                             | Description                                   |
+| ------ | ---------------------------------------------------- | --------------------------------------------- |
+| `GET`  | `/api/shipping/options?postalCode={postalCode}`      | Get serviceable shipping options              |
+| `GET`  | `/api/postal-codes/validate?postalCode={postalCode}` | Validate whether a postal code is serviceable |
+
+Postal-code validation is site-specific:
+
+| Site | Rule                                                                 |
+| ---- | -------------------------------------------------------------------- |
+| `ph` | Must match seeded Philippine serviceable postal codes                |
+| `fr` | Must be 5 digits                                                     |
+| `cn` | Must be 6 digits                                                     |
+| `jp` | Must be 7 digits, with an optional hyphen accepted before validation |
+
+Non-Philippine sites return default `standard` and `express` shipping options using site-local price values.
 
 ### Geo
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/api/geo/country` | Detect the request country code from Cloudflare, Vercel, CloudFront, other geo headers, or client IP lookup |
+| Method | Endpoint           | Description                                                                                                 |
+| ------ | ------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `GET`  | `/api/geo/country` | Detect the request country code from Cloudflare, Vercel, CloudFront, other geo headers, or client IP lookup |
 
 ### Address Options
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/api/options/regions` | Get region options |
-| `GET` | `/api/options/cities?parent={regionCode}` | Get city options by region |
-| `GET` | `/api/options/barangays?parent={cityCode}` | Get barangay options by city |
+| Method | Endpoint                                   | Description                  |
+| ------ | ------------------------------------------ | ---------------------------- |
+| `GET`  | `/api/options/regions`                     | Get region options           |
+| `GET`  | `/api/options/cities?parent={regionCode}`  | Get city options by region   |
+| `GET`  | `/api/options/barangays?parent={cityCode}` | Get barangay options by city |
 
 All address option endpoints accept an optional `search` query parameter.
 
+Address options currently return Philippine region, city, and barangay data only. Non-`ph` sites return empty option lists.
+
 ### Orders
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/api/orders` | Get all orders |
+| Method | Endpoint      | Description     |
+| ------ | ------------- | --------------- |
+| `GET`  | `/api/orders` | Get all orders  |
 | `POST` | `/api/orders` | Create an order |
 
 Create an order:
@@ -387,21 +471,23 @@ Content-Type: application/json
 }
 ```
 
+Order listing and creation are scoped to the current site. Products from another site are rejected as missing.
+
 ### Trade-ins
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/api/trade-ins/config` | Get trade-in UI/configuration data |
-| `GET` | `/api/trade-ins/categories` | Get trade-in categories |
-| `GET` | `/api/trade-ins/brands?categoryCode={categoryCode}` | Get brands by category |
-| `GET` | `/api/trade-ins/devices?categoryCode={categoryCode}&brandCode={brandCode}` | Get devices |
-| `GET` | `/api/trade-ins/storages?deviceCode={deviceCode}` | Get storage options |
-| `POST` | `/api/trade-in-sessions` | Create a trade-in session |
-| `GET` | `/api/trade-in-sessions/{sessionId}` | Get a trade-in session |
-| `PATCH` | `/api/trade-in-sessions/{sessionId}/step-one` | Update trade-in step one |
-| `PATCH` | `/api/trade-in-sessions/{sessionId}/step-two` | Update trade-in step two |
-| `PATCH` | `/api/trade-in-sessions/{sessionId}/step-three` | Update trade-in step three |
-| `PATCH` | `/api/trade-in-sessions/{sessionId}/confirm` | Confirm a trade-in session |
+| Method  | Endpoint                                                                   | Description                        |
+| ------- | -------------------------------------------------------------------------- | ---------------------------------- |
+| `GET`   | `/api/trade-ins/config`                                                    | Get trade-in UI/configuration data |
+| `GET`   | `/api/trade-ins/categories`                                                | Get trade-in categories            |
+| `GET`   | `/api/trade-ins/brands?categoryCode={categoryCode}`                        | Get brands by category             |
+| `GET`   | `/api/trade-ins/devices?categoryCode={categoryCode}&brandCode={brandCode}` | Get devices                        |
+| `GET`   | `/api/trade-ins/storages?deviceCode={deviceCode}`                          | Get storage options                |
+| `POST`  | `/api/trade-in-sessions`                                                   | Create a trade-in session          |
+| `GET`   | `/api/trade-in-sessions/{sessionId}`                                       | Get a trade-in session             |
+| `PATCH` | `/api/trade-in-sessions/{sessionId}/step-one`                              | Update trade-in step one           |
+| `PATCH` | `/api/trade-in-sessions/{sessionId}/step-two`                              | Update trade-in step two           |
+| `PATCH` | `/api/trade-in-sessions/{sessionId}/step-three`                            | Update trade-in step three         |
+| `PATCH` | `/api/trade-in-sessions/{sessionId}/confirm`                               | Confirm a trade-in session         |
 
 Create a trade-in session:
 
@@ -414,6 +500,8 @@ Content-Type: application/json
   "productId": 1
 }
 ```
+
+Trade-in endpoints return `404` when trade-ins are disabled for the current site. Trade-in sessions include a `siteCode` and can only be retrieved or updated from the same site.
 
 ## Error Responses
 
@@ -448,6 +536,7 @@ The app registers `AppDbContext` with SQL Server in `Program.cs`.
 
 Seed data is configured for:
 
+- Sites
 - Categories
 - Products
 - Product specs
@@ -459,6 +548,8 @@ Seed data is configured for:
 - Insurance plans
 - Mobile plans
 - Trade-in options
+
+Categories, products, carts, orders, and auth sessions are site-scoped. The current migrations seed distinct category and product rows per site.
 
 Run migrations after changing entities or seed data:
 
