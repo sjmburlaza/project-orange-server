@@ -6,6 +6,7 @@ namespace ProjectOrangeApi.Controllers;
 
 [ApiController]
 [Route("api/shipping")]
+[Route("api/{siteCode:alpha:length(2)}/shipping")]
 public class ShippingController : ControllerBase
 {
 	private readonly ShippingPricingService _shippingPricingService;

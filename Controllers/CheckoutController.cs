@@ -6,6 +6,7 @@ namespace ProjectOrangeApi.Controllers;
 
 [ApiController]
 [Route("api/checkout")]
+[Route("api/{siteCode:alpha:length(2)}/checkout")]
 public class CheckoutController : ControllerBase
 {
     private readonly CheckoutFormService _checkoutFormService;

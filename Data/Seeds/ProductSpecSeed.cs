@@ -4,7 +4,7 @@ namespace ProjectOrangeApi.Data.Seeds;
 
 public static class ProductSpecSeed
 {
-	public static ProductSpec[] ProductSpecs =>
+	private static readonly ProductSpec[] BaseProductSpecs =
 	[
 		new ProductSpec { Id = 1, ProductId = 1, Name = "Storage", Value = "128GB" },
 		new ProductSpec { Id = 2, ProductId = 1, Name = "Color", Value = "Black" },
@@ -72,4 +72,16 @@ public static class ProductSpecSeed
 		new ProductSpec { Id = 45, ProductId = 20, Name = "Resolution", Value = "QHD" },
 		new ProductSpec { Id = 46, ProductId = 20, Name = "Color", Value = "Black" }
 	];
+
+	public static ProductSpec[] ProductSpecs =>
+		SiteSeed.Sites
+			.SelectMany((site, siteIndex) =>
+				BaseProductSpecs.Select(spec => new ProductSpec
+				{
+					Id = (siteIndex * 100) + spec.Id,
+					ProductId = (siteIndex * 20) + spec.ProductId,
+					Name = spec.Name,
+					Value = spec.Value
+				}))
+			.ToArray();
 }

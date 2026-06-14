@@ -1,13 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
-using ProjectOrangeApi.Data.Seeds;
 using ProjectOrangeApi.DTOs;
+using ProjectOrangeApi.Services;
 
 namespace ProjectOrangeApi.Controllers;
 
 [ApiController]
 [Route("api/postal-codes")]
+[Route("api/{siteCode:alpha:length(2)}/postal-codes")]
 public class PostalCodesController : ControllerBase
 {
+    private readonly ShippingPricingService _shippingPricingService;
+
+    public PostalCodesController(ShippingPricingService shippingPricingService)
+    {
+        _shippingPricingService = shippingPricingService;
+    }
+
     [HttpGet("validate")]
     public ActionResult<PostalCodeValidationDto> ValidatePostalCode(
         [FromQuery] string postalCode
@@ -22,18 +30,7 @@ public class PostalCodesController : ControllerBase
             });
         }
 
-        var normalizedPostalCode = postalCode.Trim();
-
-        if (normalizedPostalCode.Length != 4)
-        {
-            return Ok(new PostalCodeValidationDto
-            {
-                IsValid = false,
-                Message = "Postal code must be 4 digits."
-            });
-        }
-
-        var isValid = PostalCodeSeed.IsServiceable(normalizedPostalCode);
+        var isValid = _shippingPricingService.IsPostalCodeServiceable(postalCode);
 
         return Ok(new PostalCodeValidationDto
         {

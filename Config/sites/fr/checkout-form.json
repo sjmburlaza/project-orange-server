@@ -1,0 +1,209 @@
+{
+  "version": "fr-1.0",
+  "steps": [
+    {
+      "id": "customer",
+      "label": "Coordonnees client",
+      "fields": [
+        {
+          "name": "email",
+          "type": "email",
+          "label": "E-mail",
+          "validators": [{ "name": "required" }, { "name": "email" }],
+          "grid": { "mobile": 12, "desktop": 12 }
+        },
+        {
+          "name": "firstName",
+          "type": "text",
+          "label": "Prenom",
+          "validators": [{ "name": "required" }],
+          "grid": { "mobile": 12, "desktop": 6 }
+        },
+        {
+          "name": "lastName",
+          "type": "text",
+          "label": "Nom",
+          "validators": [{ "name": "required" }],
+          "grid": { "mobile": 12, "desktop": 6 }
+        },
+        {
+          "name": "mobileNumber",
+          "type": "text",
+          "label": "Telephone mobile",
+          "validators": [{ "name": "required" }],
+          "grid": { "mobile": 12, "desktop": 6 }
+        },
+        {
+          "name": "altMobileNumber",
+          "type": "text",
+          "label": "Telephone secondaire",
+          "validators": [],
+          "grid": { "mobile": 12, "desktop": 6 }
+        },
+        {
+          "name": "marketing",
+          "type": "checkbox",
+          "label": "Je souhaite recevoir les actualites, offres et informations utiles d'ORANGE et de ses partenaires.",
+          "validators": [],
+          "grid": { "mobile": 12, "desktop": 12 }
+        },
+        {
+          "name": "deliveryAddress",
+          "type": "group",
+          "label": "Adresse de livraison",
+          "fields": [
+            {
+              "name": "addressLine1",
+              "type": "text",
+              "label": "Adresse",
+              "validators": [{ "name": "required" }],
+              "grid": { "mobile": 12, "desktop": 8 }
+            },
+            {
+              "name": "addressLine2",
+              "type": "text",
+              "label": "Complement d'adresse",
+              "validators": [],
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "postalCode",
+              "type": "text",
+              "label": "Code postal",
+              "validators": [
+                { "name": "required" },
+                { "name": "maxLength", "value": 5 }
+              ],
+              "asyncValidators": [{ "name": "serviceablePostalCode" }],
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "city",
+              "type": "text",
+              "label": "Ville",
+              "validators": [{ "name": "required" }],
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "region",
+              "type": "text",
+              "label": "Departement",
+              "validators": [],
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "deliveryEmail",
+              "type": "email",
+              "label": "E-mail de livraison",
+              "validators": [{ "name": "required" }, { "name": "email" }],
+              "grid": { "mobile": 12, "desktop": 6 }
+            }
+          ],
+          "grid": { "mobile": 12, "desktop": 12 }
+        },
+        {
+          "name": "billingAddress",
+          "type": "group",
+          "label": "Adresse de facturation",
+          "fields": [
+            {
+              "name": "sameAsDeliveryAddress",
+              "type": "checkbox",
+              "label": "Identique a l'adresse de livraison",
+              "defaultValue": true,
+              "validators": [],
+              "grid": { "mobile": 12, "desktop": 12 }
+            },
+            {
+              "name": "firstName",
+              "type": "text",
+              "label": "Prenom",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "lastName",
+              "type": "text",
+              "label": "Nom",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "addressLine1",
+              "type": "text",
+              "label": "Adresse",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 8 }
+            },
+            {
+              "name": "postalCode",
+              "type": "text",
+              "label": "Code postal",
+              "validators": [
+                { "name": "required" },
+                { "name": "maxLength", "value": 5 }
+              ],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "city",
+              "type": "text",
+              "label": "Ville",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "taxId",
+              "type": "text",
+              "label": "Numero de TVA",
+              "validators": [],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            }
+          ],
+          "grid": { "mobile": 12, "desktop": 12 }
+        }
+      ]
+    },
+    {
+      "id": "shipping",
+      "label": "Livraison",
+      "component": "shipping-options",
+      "fields": [
+        {
+          "name": "shippingMethod",
+          "type": "radio-card",
+          "label": "Mode de livraison",
+          "validators": [{ "name": "required" }],
+          "options": [
+            { "label": "Livraison standard", "value": "standard", "price": 6.9 },
+            { "label": "Livraison express", "value": "express", "price": 14.9 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "payment",
+      "label": "Paiement",
+      "component": "payment-methods",
+      "fields": [
+        {
+          "name": "paymentMethod",
+          "type": "payment-card",
+          "label": "Moyen de paiement",
+          "validators": [{ "name": "required" }],
+          "options": [
+            { "label": "Carte bancaire", "value": "card", "icon": "credit_card" },
+            { "label": "PayPal", "value": "paypal", "icon": "account_balance_wallet" },
+            { "label": "Virement bancaire", "value": "bank-transfer", "icon": "account_balance" }
+          ]
+        }
+      ]
+    }
+  ]
+}

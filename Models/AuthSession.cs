@@ -3,6 +3,8 @@ namespace ProjectOrangeApi.Models;
 public class AuthSession
 {
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
+    public int SiteId { get; set; }
+    public Site Site { get; set; } = null!;
     public string UserId { get; set; } = string.Empty;
     public AppUser User { get; set; } = null!;
     public DateTimeOffset CreatedAtUtc { get; set; }

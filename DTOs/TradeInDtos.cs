@@ -52,6 +52,7 @@ public class UpdateTradeInStepThreeRequest
 public class TradeInSessionDto
 {
     public string SessionId { get; set; } = string.Empty;
+    public string SiteCode { get; set; } = string.Empty;
     public int CurrentStep { get; set; } = 1;
     public List<StepOneFieldDto>? StepOne { get; set; }
     public TradeInFormDataDto? FormData { get; set; }

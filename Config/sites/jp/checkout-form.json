@@ -1,0 +1,217 @@
+{
+  "version": "jp-1.0",
+  "steps": [
+    {
+      "id": "customer",
+      "label": "お客様情報",
+      "fields": [
+        {
+          "name": "email",
+          "type": "email",
+          "label": "メールアドレス",
+          "validators": [{ "name": "required" }, { "name": "email" }],
+          "grid": { "mobile": 12, "desktop": 12 }
+        },
+        {
+          "name": "lastName",
+          "type": "text",
+          "label": "姓",
+          "validators": [{ "name": "required" }],
+          "grid": { "mobile": 12, "desktop": 6 }
+        },
+        {
+          "name": "firstName",
+          "type": "text",
+          "label": "名",
+          "validators": [{ "name": "required" }],
+          "grid": { "mobile": 12, "desktop": 6 }
+        },
+        {
+          "name": "mobileNumber",
+          "type": "text",
+          "label": "携帯電話番号",
+          "validators": [{ "name": "required" }],
+          "grid": { "mobile": 12, "desktop": 6 }
+        },
+        {
+          "name": "altMobileNumber",
+          "type": "text",
+          "label": "予備電話番号",
+          "validators": [],
+          "grid": { "mobile": 12, "desktop": 6 }
+        },
+        {
+          "name": "marketing",
+          "type": "checkbox",
+          "label": "ORANGEおよびパートナーからのキャンペーン、製品、サービス情報を受け取ります。",
+          "validators": [],
+          "grid": { "mobile": 12, "desktop": 12 }
+        },
+        {
+          "name": "deliveryAddress",
+          "type": "group",
+          "label": "配送先住所",
+          "fields": [
+            {
+              "name": "postalCode",
+              "type": "text",
+              "label": "郵便番号",
+              "validators": [
+                { "name": "required" },
+                { "name": "maxLength", "value": 8 }
+              ],
+              "asyncValidators": [{ "name": "serviceablePostalCode" }],
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "region",
+              "type": "text",
+              "label": "都道府県",
+              "validators": [{ "name": "required" }],
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "city",
+              "type": "text",
+              "label": "市区町村",
+              "validators": [{ "name": "required" }],
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "addressLine1",
+              "type": "text",
+              "label": "町名・番地",
+              "validators": [{ "name": "required" }],
+              "grid": { "mobile": 12, "desktop": 8 }
+            },
+            {
+              "name": "addressLine2",
+              "type": "text",
+              "label": "建物名・部屋番号",
+              "validators": [],
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "deliveryEmail",
+              "type": "email",
+              "label": "配送連絡用メール",
+              "validators": [{ "name": "required" }, { "name": "email" }],
+              "grid": { "mobile": 12, "desktop": 6 }
+            }
+          ],
+          "grid": { "mobile": 12, "desktop": 12 }
+        },
+        {
+          "name": "billingAddress",
+          "type": "group",
+          "label": "請求先住所",
+          "fields": [
+            {
+              "name": "sameAsDeliveryAddress",
+              "type": "checkbox",
+              "label": "配送先住所と同じ",
+              "defaultValue": true,
+              "validators": [],
+              "grid": { "mobile": 12, "desktop": 12 }
+            },
+            {
+              "name": "lastName",
+              "type": "text",
+              "label": "姓",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "firstName",
+              "type": "text",
+              "label": "名",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "postalCode",
+              "type": "text",
+              "label": "郵便番号",
+              "validators": [
+                { "name": "required" },
+                { "name": "maxLength", "value": 8 }
+              ],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "region",
+              "type": "text",
+              "label": "都道府県",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "city",
+              "type": "text",
+              "label": "市区町村",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 4 }
+            },
+            {
+              "name": "addressLine1",
+              "type": "text",
+              "label": "町名・番地",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 8 }
+            },
+            {
+              "name": "taxId",
+              "type": "text",
+              "label": "登録番号",
+              "validators": [],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 4 }
+            }
+          ],
+          "grid": { "mobile": 12, "desktop": 12 }
+        }
+      ]
+    },
+    {
+      "id": "shipping",
+      "label": "配送方法",
+      "component": "shipping-options",
+      "fields": [
+        {
+          "name": "shippingMethod",
+          "type": "radio-card",
+          "label": "配送方法",
+          "validators": [{ "name": "required" }],
+          "options": [
+            { "label": "通常配送", "value": "standard", "price": 700 },
+            { "label": "お急ぎ配送", "value": "express", "price": 1200 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "payment",
+      "label": "お支払い",
+      "component": "payment-methods",
+      "fields": [
+        {
+          "name": "paymentMethod",
+          "type": "payment-card",
+          "label": "お支払い方法",
+          "validators": [{ "name": "required" }],
+          "options": [
+            { "label": "クレジット / デビットカード", "value": "card", "icon": "credit_card" },
+            { "label": "コンビニ払い", "value": "konbini", "icon": "store" },
+            { "label": "代金引換", "value": "cod", "icon": "payments" }
+          ]
+        }
+      ]
+    }
+  ]
+}

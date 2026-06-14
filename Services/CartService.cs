@@ -17,15 +17,18 @@ public class CartService : ICartService
     private readonly AppDbContext _context;
     private readonly ShippingPricingService _shippingPricingService;
     private readonly TradeInSessionService _tradeInSessionService;
+    private readonly ISiteContext _siteContext;
 
     public CartService(
         AppDbContext context,
         ShippingPricingService shippingPricingService,
-        TradeInSessionService tradeInSessionService)
+        TradeInSessionService tradeInSessionService,
+        ISiteContext siteContext)
     {
         _context = context;
         _shippingPricingService = shippingPricingService;
         _tradeInSessionService = tradeInSessionService;
+        _siteContext = siteContext;
     }
 
     public async Task<CartResponseDto> GetCartAsync(string cartCode, string? userId)
@@ -47,7 +50,9 @@ public class CartService : ICartService
         var product = await _context.Products
             .Include(p => p.Category)
             .Include(p => p.ItemSpecs)
-            .FirstOrDefaultAsync(p => p.Id == request.ProductId)
+            .FirstOrDefaultAsync(p =>
+                p.Id == request.ProductId &&
+                p.SiteId == _siteContext.SiteId)
             ?? throw new Exception("Product not found.");
 
         var selectedAddons = GetSelectedAddonSnapshots(product, request);
@@ -177,7 +182,12 @@ public class CartService : ICartService
     {
         var voucherCode = NormalizeVoucherCode(request.Code);
 
-        var voucher = VoucherSeed.FindByCode(voucherCode);
+        if (!_siteContext.VouchersEnabled)
+        {
+            throw VoucherValidationException.NotApplicable("Vouchers are not available for this site.");
+        }
+
+        var voucher = FindVoucherRule(voucherCode);
 
         if (voucher is null)
         {
@@ -273,6 +283,7 @@ public class CartService : ICartService
 
         var newCart = new Cart
         {
+            SiteId = _siteContext.SiteId,
             Code = GenerateCartCode(),
             UserId = userId
         };
@@ -287,6 +298,7 @@ public class CartService : ICartService
     private IQueryable<Cart> LoadCartQuery()
     {
         return _context.Carts
+            .Where(c => c.SiteId == _siteContext.SiteId)
             .Include(c => c.Entries)
                 .ThenInclude(i => i.ItemSpecs)
             .Include(c => c.Entries)
@@ -490,11 +502,11 @@ public class CartService : ICartService
         }
     }
 
-    private static decimal GetDiscount(Cart cart, decimal subtotal)
+    private decimal GetDiscount(Cart cart, decimal subtotal)
     {
         var discount = cart.AppliedVouchers.Sum(voucher =>
         {
-            var voucherRule = VoucherSeed.FindByCode(voucher.Code);
+            var voucherRule = FindVoucherRule(voucher.Code);
 
             if (voucherRule is null)
             {
@@ -505,6 +517,30 @@ public class CartService : ICartService
         });
 
         return Math.Min(discount, subtotal);
+    }
+
+    private Voucher? FindVoucherRule(string code)
+    {
+        var voucher = VoucherSeed.FindByCode(code);
+
+        if (voucher is null)
+        {
+            return null;
+        }
+
+        return new Voucher
+        {
+            Code = voucher.Code,
+            Name = voucher.Name,
+            Description = voucher.Description,
+            Status = voucher.Status,
+            DiscountPercent = voucher.DiscountPercent,
+            StartsAtUtc = voucher.StartsAtUtc,
+            ExpiresAtUtc = voucher.ExpiresAtUtc,
+            MinimumSubtotal = SiteCurrency.ConvertPhpAmount(
+                voucher.MinimumSubtotal,
+                _siteContext.Currency)
+        };
     }
 
     private static decimal GetSubtotal(Cart cart)
@@ -528,16 +564,16 @@ public class CartService : ICartService
             ?? throw new CartItemNotFoundException();
     }
 
-    private static Addon GetEligibleAddonOrThrow(string categoryName, string addonId)
+    private Addon GetEligibleAddonOrThrow(string categoryName, string addonId)
     {
         var addon = AddonSeed.FindById(addonId);
 
-        if (addon is null)
+        if (addon is null || !IsAddonEnabled(addon))
         {
             throw AddonValidationException.NotAvailable();
         }
 
-        var isEligible = AddonSeed.GetEligibleAddons(categoryName).Any(eligibleAddon =>
+        var isEligible = GetEligibleAddons(categoryName).Any(eligibleAddon =>
             string.Equals(eligibleAddon.Id, addon.Id, StringComparison.OrdinalIgnoreCase));
 
         if (!isEligible)
@@ -582,14 +618,14 @@ public class CartService : ICartService
         }
 
         var categoryName = product.Category?.Name ?? string.Empty;
-        var eligibleAddons = AddonSeed.GetEligibleAddons(categoryName);
+        var eligibleAddons = GetEligibleAddons(categoryName);
         var selectedAddons = new List<CartItemAddon>();
 
         foreach (var addonId in selectedAddonIds)
         {
             var addon = AddonSeed.FindById(addonId);
 
-            if (addon is null || !eligibleAddons.Any(eligibleAddon =>
+            if (addon is null || !IsAddonEnabled(addon) || !eligibleAddons.Any(eligibleAddon =>
                     string.Equals(eligibleAddon.Id, addon.Id, StringComparison.OrdinalIgnoreCase)))
             {
                 throw AddonValidationException.NotAvailable();
@@ -615,7 +651,7 @@ public class CartService : ICartService
         };
     }
 
-    private static CartItemAddon CreateInsuranceAddonSnapshot(
+    private CartItemAddon CreateInsuranceAddonSnapshot(
         Addon addon,
         string categoryName,
         AddonSelectionRequest request)
@@ -633,12 +669,16 @@ public class CartService : ICartService
         }
 
         var snapshot = CreateDisplayOnlyAddonSnapshot(addon);
+        var amount = SiteCurrency.ConvertPhpAmount(
+            SiteCurrency.ParseAmount(plan.Amount),
+            _siteContext.Currency);
+
         snapshot.OptionCode = plan.Code;
         snapshot.OptionName = plan.Name;
         snapshot.Title = plan.Name;
         snapshot.Description = plan.Description;
-        snapshot.Amount = ParseCurrencyAmount(plan.Amount);
-        snapshot.AmountDisplay = plan.Amount;
+        snapshot.Amount = amount;
+        snapshot.AmountDisplay = SiteCurrency.FormatAmount(amount, _siteContext.Currency);
         snapshot.BillingType = BillingTypeOneTime;
         snapshot.MultiplyByQuantity = true;
 
@@ -647,12 +687,19 @@ public class CartService : ICartService
 
     private CartItemAddon CreateTradeInAddonSnapshot(Addon addon, AddonSelectionRequest request)
     {
+        if (!_siteContext.TradeInEnabled)
+        {
+            throw AddonValidationException.NotAvailable("Trade-in is not available for this site.");
+        }
+
         if (string.IsNullOrWhiteSpace(request.TradeInSessionId))
         {
             throw AddonValidationException.NotAvailable("Complete a trade-in session before adding trade-in to cart.");
         }
 
-        var session = _tradeInSessionService.GetSession(request.TradeInSessionId);
+        var session = _tradeInSessionService.GetSession(
+            request.TradeInSessionId,
+            _siteContext.SiteCode);
 
         if (session is null || !session.IsConfirmed || session.Summary is null)
         {
@@ -667,13 +714,16 @@ public class CartService : ICartService
         var optionName = string.IsNullOrWhiteSpace(session.Summary.Device)
             ? "Trade-In Credit"
             : $"{session.Summary.Device} Trade-In";
-        var amountDisplay = FormatPesoAmount(session.Summary.FinalAmount);
+        var amount = SiteCurrency.ConvertPhpAmount(
+            session.Summary.FinalAmount,
+            _siteContext.Currency);
+        var amountDisplay = SiteCurrency.FormatAmount(amount, _siteContext.Currency);
 
         var snapshot = CreateDisplayOnlyAddonSnapshot(addon);
         snapshot.OptionCode = session.SessionId;
         snapshot.OptionName = optionName;
         snapshot.Title = optionName;
-        snapshot.Amount = -session.Summary.FinalAmount;
+        snapshot.Amount = -amount;
         snapshot.AmountDisplay = amountDisplay;
         snapshot.Description = CreateTradeInAddonDescription(session.Summary, amountDisplay);
         snapshot.BillingType = BillingTypeCredit;
@@ -699,7 +749,7 @@ public class CartService : ICartService
         return $"Estimated trade-in credit of {amountDisplay} for {deviceDescription} has been applied.";
     }
 
-    private static CartItemAddon CreateMobilePlanAddonSnapshot(
+    private CartItemAddon CreateMobilePlanAddonSnapshot(
         Addon addon,
         string categoryName,
         AddonSelectionRequest request)
@@ -717,12 +767,16 @@ public class CartService : ICartService
         }
 
         var snapshot = CreateDisplayOnlyAddonSnapshot(addon);
+        var amount = SiteCurrency.ConvertPhpAmount(
+            SiteCurrency.ParseAmount(plan.Amount),
+            _siteContext.Currency);
+
         snapshot.OptionCode = plan.Code;
         snapshot.OptionName = plan.Name;
         snapshot.Title = plan.Name;
         snapshot.Description = plan.Description;
-        snapshot.Amount = ParseCurrencyAmount(plan.Amount);
-        snapshot.AmountDisplay = plan.Amount;
+        snapshot.Amount = amount;
+        snapshot.AmountDisplay = SiteCurrency.FormatAmount(amount, _siteContext.Currency, monthly: true);
         snapshot.BillingType = BillingTypeMonthly;
         snapshot.MultiplyByQuantity = false;
 
@@ -765,7 +819,7 @@ public class CartService : ICartService
         return $"{addon.AddonId}:{addon.OptionCode}";
     }
 
-    private static List<AddonDto> MapAvailableAddons(CartItem item)
+    private List<AddonDto> MapAvailableAddons(CartItem item)
     {
         var selectedAddons = item.Addons
             .Where(addon => addon.IsAdded)
@@ -775,9 +829,26 @@ public class CartService : ICartService
                 group => group.First(),
                 StringComparer.OrdinalIgnoreCase);
 
-        return AddonSeed.GetEligibleAddons(item.CategoryName)
+        return GetEligibleAddons(item.CategoryName)
             .Select(addon => MapAvailableAddon(item, addon, selectedAddons))
             .ToList();
+    }
+
+    private List<Addon> GetEligibleAddons(string categoryName)
+    {
+        return AddonSeed.GetEligibleAddons(categoryName)
+            .Where(IsAddonEnabled)
+            .ToList();
+    }
+
+    private bool IsAddonEnabled(Addon addon)
+    {
+        return addon.Id switch
+        {
+            "insurance" => _siteContext.InsuranceEnabled,
+            "trade-in" => _siteContext.TradeInEnabled,
+            _ => true
+        };
     }
 
     private static AddonDto MapAvailableAddon(
@@ -875,22 +946,6 @@ public class CartService : ICartService
                 };
             })
             .ToList();
-    }
-
-    private static decimal ParseCurrencyAmount(string amount)
-    {
-        var amountText = new string(amount
-            .Where(character => char.IsDigit(character) || character == '.' || character == '-')
-            .ToArray());
-
-        return decimal.TryParse(amountText, out var value)
-            ? value
-            : 0;
-    }
-
-    private static string FormatPesoAmount(decimal amount)
-    {
-        return $"P{amount:N0}";
     }
 
     private static bool IsVoucherCodeCharacter(char character)

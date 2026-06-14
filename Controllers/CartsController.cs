@@ -9,6 +9,7 @@ namespace ProjectOrangeApi.Controllers;
 
 [ApiController]
 [Route("api/carts")]
+[Route("api/{siteCode:alpha:length(2)}/carts")]
 public class CartsController : ControllerBase
 {
     private readonly ICartService _cartService;
@@ -143,13 +144,11 @@ public class CartsController : ControllerBase
     string cartCode,
     UpdateCartShippingRequest request)
     {
-        var userId = User.Identity?.Name;
-
         return await ExecuteCartAction(() =>
             _cartService.UpdateShippingAsync(
                 cartCode,
                 request,
-                userId
+                UserId
             ));
     }
 

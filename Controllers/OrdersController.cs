@@ -3,24 +3,29 @@ using Microsoft.EntityFrameworkCore;
 using ProjectOrangeApi.Data;
 using ProjectOrangeApi.DTOs;
 using ProjectOrangeApi.Models;
+using ProjectOrangeApi.Services;
 
 namespace ProjectOrangeApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Route("api/{siteCode:alpha:length(2)}/[controller]")]
 public class OrdersController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly ISiteContext _siteContext;
 
-    public OrdersController(AppDbContext context)
+    public OrdersController(AppDbContext context, ISiteContext siteContext)
     {
         _context = context;
+        _siteContext = siteContext;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
     {
         var orders = await _context.Orders
+          .Where(o => o.SiteId == _siteContext.SiteId)
           .Include(o => o.Items)
           .ThenInclude(i => i.Product)
           .ToListAsync();
@@ -38,11 +43,14 @@ public class OrdersController : ControllerBase
         var products = await _context.Products
             .Include(p => p.Category)
             .Include(p => p.ItemSpecs)
-            .Where(p => productIds.Contains(p.Id))
+            .Where(p =>
+                p.SiteId == _siteContext.SiteId &&
+                productIds.Contains(p.Id))
             .ToListAsync();
 
         var order = new Order
         {
+            SiteId = _siteContext.SiteId,
             CustomerName = dto.CustomerName,
             CustomerEmail = dto.CustomerEmail,
             Items = new List<OrderItem>()

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectOrangeApi.Data;
 
@@ -11,9 +12,11 @@ using ProjectOrangeApi.Data;
 namespace ProjectOrangeApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260614020327_MakeSiteProductsDistinct")]
+    partial class MakeSiteProductsDistinct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -940,7 +943,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 22,
                             CategoryId = 4,
-                            Description = "Smartphone 5G avec écran AMOLED et grande autonomie.",
+                            Description = "Smartphone 5G avec ecran AMOLED et grande autonomie.",
                             ImageUrl = "",
                             Name = "Samsung Galaxy A55 5G",
                             Price = 499m,
@@ -951,7 +954,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 23,
                             CategoryId = 4,
-                            Description = "Smartphone durable conçu pour être réparé plus facilement.",
+                            Description = "Smartphone durable concu pour etre repare plus facilement.",
                             ImageUrl = "",
                             Name = "Fairphone 5",
                             Price = 699m,
@@ -984,7 +987,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 26,
                             CategoryId = 5,
-                            Description = "Ordinateur portable Apple pour les flux créatifs exigeants.",
+                            Description = "Ordinateur portable Apple pour les flux creatifs exigeants.",
                             ImageUrl = "",
                             Name = "MacBook Pro 14 M3",
                             Price = 1999m,
@@ -1006,7 +1009,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 28,
                             CategoryId = 5,
-                            Description = "PC convertible OLED pour le travail mobile.",
+                            Description = "PC convertible OLED pour travail mobile.",
                             ImageUrl = "",
                             Name = "HP Spectre x360 14",
                             Price = 1599m,
@@ -1017,7 +1020,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 29,
                             CategoryId = 5,
-                            Description = "Ultrabook OLED léger avec processeur Intel Core Ultra.",
+                            Description = "Ultrabook OLED leger avec processeur Intel Core Ultra.",
                             ImageUrl = "",
                             Name = "ASUS Zenbook 14 OLED",
                             Price = 1199m,
@@ -1028,7 +1031,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 30,
                             CategoryId = 5,
-                            Description = "Portable fin et silencieux pour la productivité quotidienne.",
+                            Description = "Portable fin et silencieux pour productivite quotidienne.",
                             ImageUrl = "",
                             Name = "Lenovo Yoga Slim 7",
                             Price = 999m,
@@ -1039,7 +1042,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 31,
                             CategoryId = 6,
-                            Description = "Chargeur magnétique compatible avec l’iPhone.",
+                            Description = "Chargeur magnetique compatible iPhone.",
                             ImageUrl = "",
                             Name = "Chargeur MagSafe",
                             Price = 49m,
@@ -1050,7 +1053,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 32,
                             CategoryId = 6,
-                            Description = "Chargeur secteur USB-C compact pour prise européenne.",
+                            Description = "Chargeur secteur USB-C compact pour prise europeenne.",
                             ImageUrl = "",
                             Name = "Adaptateur USB-C Europe",
                             Price = 29m,
@@ -1072,7 +1075,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 34,
                             CategoryId = 6,
-                            Description = "Souris sans fil conçue pour une utilisation prolongée.",
+                            Description = "Souris sans fil concue pour une utilisation prolongee.",
                             ImageUrl = "",
                             Name = "Souris Ergonomique",
                             Price = 59m,
@@ -1083,7 +1086,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 35,
                             CategoryId = 6,
-                            Description = "Casque Bluetooth avec réduction active du bruit.",
+                            Description = "Casque Bluetooth avec reduction active du bruit.",
                             ImageUrl = "",
                             Name = "Casque Audio ANC",
                             Price = 199m,
@@ -1105,7 +1108,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 37,
                             CategoryId = 6,
-                            Description = "Housse rembourrée pour ordinateur portable.",
+                            Description = "Housse rembourree pour ordinateur portable.",
                             ImageUrl = "",
                             Name = "Housse Laptop 14 pouces",
                             Price = 39m,
@@ -1116,7 +1119,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 38,
                             CategoryId = 6,
-                            Description = "Stockage externe rapide pour photos et vidéos.",
+                            Description = "Stockage externe rapide pour photos et videos.",
                             ImageUrl = "",
                             Name = "SSD Externe 2 To",
                             Price = 159m,
@@ -1138,7 +1141,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 40,
                             CategoryId = 6,
-                            Description = "Écran bureautique Full HD avec pied réglable.",
+                            Description = "Ecran bureautique Full HD avec pied reglable.",
                             ImageUrl = "",
                             Name = "Moniteur 24 pouces FHD",
                             Price = 179m,
@@ -1149,7 +1152,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 41,
                             CategoryId = 7,
-                            Description = "高端智能手机，配备先进的移动影像能力。",
+                            Description = "High-end smartphone with advanced mobile photography.",
                             ImageUrl = "",
                             Name = "Huawei Mate 60 Pro",
                             Price = 6999m,
@@ -1160,7 +1163,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 42,
                             CategoryId = 7,
-                            Description = "旗舰影像手机，搭载徕卡光学系统。",
+                            Description = "Flagship camera phone with Leica optics.",
                             ImageUrl = "",
                             Name = "Xiaomi 14 Ultra",
                             Price = 6499m,
@@ -1171,7 +1174,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 43,
                             CategoryId = 7,
-                            Description = "高端安卓手机，拥有持久续航表现。",
+                            Description = "Premium Android phone with long battery life.",
                             ImageUrl = "",
                             Name = "Honor Magic6 Pro",
                             Price = 5699m,
@@ -1182,7 +1185,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 44,
                             CategoryId = 7,
-                            Description = "专注影像体验的手机，采用蔡司影像调校。",
+                            Description = "Imaging-focused phone with Zeiss camera tuning.",
                             ImageUrl = "",
                             Name = "vivo X100",
                             Price = 3999m,
@@ -1193,7 +1196,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 45,
                             CategoryId = 7,
-                            Description = "轻薄旗舰手机，支持快速充电。",
+                            Description = "Slim flagship phone with fast charging.",
                             ImageUrl = "",
                             Name = "OPPO Find X7",
                             Price = 4299m,
@@ -1204,7 +1207,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 46,
                             CategoryId = 8,
-                            Description = "轻薄高端笔记本，配备高分辨率显示屏。",
+                            Description = "Lightweight premium laptop with high-resolution display.",
                             ImageUrl = "",
                             Name = "Huawei MateBook X Pro",
                             Price = 9999m,
@@ -1215,7 +1218,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 47,
                             CategoryId = 8,
-                            Description = "便携高性能笔记本，适合日常办公与创作。",
+                            Description = "Portable productivity laptop with strong performance.",
                             ImageUrl = "",
                             Name = "Lenovo Xiaoxin Pro 14",
                             Price = 5799m,
@@ -1226,7 +1229,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 48,
                             CategoryId = 8,
-                            Description = "大屏笔记本，兼顾工作与影音娱乐。",
+                            Description = "Large-screen laptop for work and entertainment.",
                             ImageUrl = "",
                             Name = "Xiaomi Notebook Pro 16",
                             Price = 6999m,
@@ -1237,7 +1240,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 49,
                             CategoryId = 8,
-                            Description = "日常办公笔记本，拥有长续航表现。",
+                            Description = "Everyday laptop with long battery life.",
                             ImageUrl = "",
                             Name = "Honor MagicBook 14",
                             Price = 4999m,
@@ -1248,7 +1251,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 50,
                             CategoryId = 8,
-                            Description = "轻薄游戏本，配备独立显卡。",
+                            Description = "Thin gaming laptop with dedicated graphics.",
                             ImageUrl = "",
                             Name = "ASUS Tianxuan Air",
                             Price = 7499m,
@@ -1259,7 +1262,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 51,
                             CategoryId = 9,
-                            Description = "小巧高功率充电器，适用于手机和笔记本。",
+                            Description = "Compact high-wattage charger for phones and laptops.",
                             ImageUrl = "",
                             Name = "120W GaN Charger",
                             Price = 249m,
@@ -1270,7 +1273,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 52,
                             CategoryId = 9,
-                            Description = "耐用编织快充线。",
+                            Description = "Durable fast-charging cable.",
                             ImageUrl = "",
                             Name = "USB-C Braided Cable",
                             Price = 49m,
@@ -1281,7 +1284,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 53,
                             CategoryId = 9,
-                            Description = "降噪真无线耳机，适合通话和音乐。",
+                            Description = "Noise-cancelling earbuds for calls and music.",
                             ImageUrl = "",
                             Name = "True Wireless Earbuds Pro",
                             Price = 699m,
@@ -1292,7 +1295,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 54,
                             CategoryId = 9,
-                            Description = "可折叠磁吸手机支架。",
+                            Description = "Foldable phone stand with magnetic mount.",
                             ImageUrl = "",
                             Name = "Magnetic Phone Stand",
                             Price = 129m,
@@ -1303,7 +1306,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 55,
                             CategoryId = 9,
-                            Description = "双频路由器，适合家庭网络。",
+                            Description = "Dual-band router for home networks.",
                             ImageUrl = "",
                             Name = "Wi-Fi 6 Router",
                             Price = 399m,
@@ -1314,7 +1317,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 56,
                             CategoryId = 9,
-                            Description = "高速 USB-C 移动固态硬盘。",
+                            Description = "Fast external storage with USB-C.",
                             ImageUrl = "",
                             Name = "Portable SSD 1TB",
                             Price = 599m,
@@ -1325,7 +1328,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 57,
                             CategoryId = 9,
-                            Description = "低延迟无线鼠标，支持可调 DPI。",
+                            Description = "Low-latency wireless mouse with adjustable DPI.",
                             ImageUrl = "",
                             Name = "Gaming Mouse",
                             Price = 199m,
@@ -1336,7 +1339,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 58,
                             CategoryId = 9,
-                            Description = "紧凑型机械键盘，适合桌面办公和游戏。",
+                            Description = "Compact mechanical keyboard for desktop setups.",
                             ImageUrl = "",
                             Name = "Mechanical Keyboard 87-Key",
                             Price = 329m,
@@ -1347,7 +1350,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 59,
                             CategoryId = 9,
-                            Description = "大容量移动电源，支持快速充电。",
+                            Description = "Large-capacity power bank with fast charging.",
                             ImageUrl = "",
                             Name = "20000mAh Power Bank",
                             Price = 199m,
@@ -1358,7 +1361,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 60,
                             CategoryId = 9,
-                            Description = "清晰 2K 显示器，适合办公和游戏。",
+                            Description = "Sharp display for work and gaming.",
                             ImageUrl = "",
                             Name = "27-inch 2K Monitor",
                             Price = 1299m,
@@ -1369,7 +1372,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 61,
                             CategoryId = 10,
-                            Description = "USB-C と高性能カメラを備えた Apple のスマートフォン。",
+                            Description = "Apple smartphone with USB-C and advanced camera features.",
                             ImageUrl = "",
                             Name = "iPhone 15",
                             Price = 124800m,
@@ -1380,7 +1383,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 62,
                             CategoryId = 10,
-                            Description = "クリエイター向けのディスプレイとカメラを備えた Sony の上位モデル。",
+                            Description = "Premium Sony smartphone with creator-focused display and camera.",
                             ImageUrl = "",
                             Name = "Sony Xperia 1 VI",
                             Price = 189200m,
@@ -1391,7 +1394,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 63,
                             CategoryId = 10,
-                            Description = "AI 機能を搭載したコンパクトな Google スマートフォン。",
+                            Description = "Compact Google phone with AI features.",
                             ImageUrl = "",
                             Name = "Google Pixel 8a",
                             Price = 72600m,
@@ -1402,7 +1405,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 64,
                             CategoryId = 10,
-                            Description = "明るい Pro IGZO OLED ディスプレイを備えた国産 Android スマートフォン。",
+                            Description = "Japanese Android phone with bright Pro IGZO OLED display.",
                             ImageUrl = "",
                             Name = "Sharp AQUOS R9",
                             Price = 99800m,
@@ -1413,7 +1416,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 65,
                             CategoryId = 10,
-                            Description = "コンパクトなカバーディスプレイを備えた折りたたみスマートフォン。",
+                            Description = "Foldable smartphone with compact cover display.",
                             ImageUrl = "",
                             Name = "Galaxy Z Flip6",
                             Price = 159700m,
@@ -1424,7 +1427,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 66,
                             CategoryId = 11,
-                            Description = "持ち運びやすさを重視した軽量ビジネスノート。",
+                            Description = "Lightweight business laptop built for mobility.",
                             ImageUrl = "",
                             Name = "VAIO SX14",
                             Price = 249800m,
@@ -1435,7 +1438,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 67,
                             CategoryId = 11,
-                            Description = "軽量ボディと高い耐久性を備えたビジネスノート。",
+                            Description = "Durable business laptop with lightweight chassis.",
                             ImageUrl = "",
                             Name = "Panasonic Let's note FV5",
                             Price = 289800m,
@@ -1446,7 +1449,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 68,
                             CategoryId = 11,
-                            Description = "静音設計と長時間バッテリーを備えた Apple ノートブック。",
+                            Description = "Silent Apple laptop with all-day battery life.",
                             ImageUrl = "",
                             Name = "MacBook Air M3",
                             Price = 164800m,
@@ -1457,7 +1460,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 69,
                             CategoryId = 11,
-                            Description = "学生やビジネスユーザーに適した携帯性の高いノート PC。",
+                            Description = "Portable laptop for students and professionals.",
                             ImageUrl = "",
                             Name = "Dynabook RZ",
                             Price = 179800m,
@@ -1468,7 +1471,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 70,
                             CategoryId = 11,
-                            Description = "打ちやすいキーボードを備えたコンパクトなビジネスノート。",
+                            Description = "Compact business laptop with strong keyboard feel.",
                             ImageUrl = "",
                             Name = "ThinkPad X13 Gen 5",
                             Price = 198000m,
@@ -1479,7 +1482,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 71,
                             CategoryId = 12,
-                            Description = "毎日の持ち歩きに便利な小型 USB-C 充電器。",
+                            Description = "Compact USB-C charger for daily carry.",
                             ImageUrl = "",
                             Name = "Anker Nano Charger",
                             Price = 3990m,
@@ -1490,7 +1493,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 72,
                             CategoryId = 12,
-                            Description = "通勤や仕事に適したノイズキャンセリングヘッドホン。",
+                            Description = "Noise-cancelling headphones for commuting and work.",
                             ImageUrl = "",
                             Name = "Sony WH-1000XM5",
                             Price = 59400m,
@@ -1501,7 +1504,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 73,
                             CategoryId = 12,
-                            Description = "ノート PC 向けの HDMI・USB 対応マルチポートアダプター。",
+                            Description = "HDMI and USB hub for laptops.",
                             ImageUrl = "",
                             Name = "USB-C Multiport Adapter",
                             Price = 6980m,
@@ -1512,7 +1515,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 74,
                             CategoryId = 12,
-                            Description = "外出時に使いやすい薄型ノート PC スリーブ。",
+                            Description = "Slim protective sleeve for mobile work.",
                             ImageUrl = "",
                             Name = "Laptop Sleeve 13-inch",
                             Price = 3480m,
@@ -1523,7 +1526,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 75,
                             CategoryId = 12,
-                            Description = "デスク作業に適したエルゴノミックトラックボールマウス。",
+                            Description = "Ergonomic mouse for desk setups.",
                             ImageUrl = "",
                             Name = "Wireless Trackball Mouse",
                             Price = 7980m,
@@ -1534,7 +1537,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 76,
                             CategoryId = 12,
-                            Description = "写真や書類の保存に便利な高速外付け SSD。",
+                            Description = "Fast external SSD for photos and documents.",
                             ImageUrl = "",
                             Name = "Portable SSD 1TB",
                             Price = 16800m,
@@ -1545,7 +1548,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 77,
                             CategoryId = 12,
-                            Description = "モニター周りを照らす USB 給電式ライトバー。",
+                            Description = "USB-powered light bar for monitor setups.",
                             ImageUrl = "",
                             Name = "Desk Monitor Light",
                             Price = 5980m,
@@ -1556,7 +1559,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 78,
                             CategoryId = 12,
-                            Description = "省スペースで使えるタクタイルスイッチ搭載キーボード。",
+                            Description = "Space-saving keyboard with tactile switches.",
                             ImageUrl = "",
                             Name = "Compact Mechanical Keyboard",
                             Price = 12800m,
@@ -1567,7 +1570,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 79,
                             CategoryId = 12,
-                            Description = "USB-C 充電対応の薄型モバイルバッテリー。",
+                            Description = "Slim portable battery with USB-C charging.",
                             ImageUrl = "",
                             Name = "Power Bank 10000mAh",
                             Price = 4980m,
@@ -1578,7 +1581,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 80,
                             CategoryId = 12,
-                            Description = "作業効率を高める高解像度 4K ディスプレイ。",
+                            Description = "High-resolution display for productivity.",
                             ImageUrl = "",
                             Name = "27-inch 4K Monitor",
                             Price = 54800m,

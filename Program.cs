@@ -51,6 +51,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<CheckoutFormService>();
 builder.Services.AddScoped<ShippingPricingService>();
+builder.Services.AddScoped<SiteContext>();
+builder.Services.AddScoped<ISiteContext>(provider => provider.GetRequiredService<SiteContext>());
+builder.Services.AddScoped<ISiteContextAccessor>(provider => provider.GetRequiredService<SiteContext>());
 builder.Services.AddSingleton<TradeInSessionService>();
 builder.Services.AddHttpClient<GeoCountryService>(client =>
 {
@@ -146,20 +149,31 @@ builder.Services.AddAuthentication(options =>
             {
                 var sessionId = context.Principal?.FindFirstValue(ClaimTypes.Sid);
                 var userId = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var siteCode = context.Principal?.FindFirstValue(AppClaimTypes.SiteCode);
 
-                if (string.IsNullOrWhiteSpace(sessionId) || string.IsNullOrWhiteSpace(userId))
+                if (string.IsNullOrWhiteSpace(sessionId) ||
+                    string.IsNullOrWhiteSpace(userId) ||
+                    string.IsNullOrWhiteSpace(siteCode))
                 {
                     context.Fail("The authentication session is missing.");
                     return;
                 }
 
                 var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+                var siteContext = context.HttpContext.RequestServices.GetRequiredService<ISiteContext>();
                 var now = DateTimeOffset.UtcNow;
+
+                if (!string.Equals(siteContext.SiteCode, siteCode, StringComparison.OrdinalIgnoreCase))
+                {
+                    context.Fail("The authentication session belongs to a different site.");
+                    return;
+                }
 
                 var isActiveSession = await db.AuthSessions
                     .AsNoTracking()
                     .AnyAsync(session =>
                         session.Id == sessionId &&
+                        session.SiteId == siteContext.SiteId &&
                         session.UserId == userId &&
                         session.RevokedAtUtc == null &&
                         session.ExpiresAtUtc > now);
@@ -192,8 +206,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors("AllowAngularApp");
 
+app.UseMiddleware<SiteResolutionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectOrangeApi.Data;
 
@@ -11,9 +12,11 @@ using ProjectOrangeApi.Data;
 namespace ProjectOrangeApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260614010504_AddMultiSiteSupport")]
+    partial class AddMultiSiteSupport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -709,7 +712,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            Description = "Apple smartphone with all-day battery life.",
+                            Description = "Apple smartphone",
                             ImageUrl = "",
                             Name = "iPhone 15",
                             Price = 59999m,
@@ -720,7 +723,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 2,
                             CategoryId = 1,
-                            Description = "Android flagship smartphone with Galaxy AI features.",
+                            Description = "Android flagship smartphone",
                             ImageUrl = "",
                             Name = "Samsung Galaxy S24",
                             Price = 54999m,
@@ -731,7 +734,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 3,
                             CategoryId = 1,
-                            Description = "Google AI smartphone with clean Android software.",
+                            Description = "Google AI smartphone",
                             ImageUrl = "",
                             Name = "Google Pixel 8",
                             Price = 39999m,
@@ -742,7 +745,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 4,
                             CategoryId = 1,
-                            Description = "High-performance Android phone with Leica-tuned cameras.",
+                            Description = "High-performance Android phone",
                             ImageUrl = "",
                             Name = "Xiaomi 14",
                             Price = 32999m,
@@ -753,7 +756,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 5,
                             CategoryId = 1,
-                            Description = "Fast charging flagship phone with a smooth display.",
+                            Description = "Fast charging flagship phone",
                             ImageUrl = "",
                             Name = "OnePlus 12",
                             Price = 45999m,
@@ -764,7 +767,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 6,
                             CategoryId = 2,
-                            Description = "Lightweight Apple laptop for everyday productivity.",
+                            Description = "Lightweight Apple laptop",
                             ImageUrl = "",
                             Name = "MacBook Air M3",
                             Price = 69999m,
@@ -775,7 +778,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 7,
                             CategoryId = 2,
-                            Description = "Premium Windows ultrabook with a compact build.",
+                            Description = "Premium Windows ultrabook",
                             ImageUrl = "",
                             Name = "Dell XPS 13",
                             Price = 74999m,
@@ -786,7 +789,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 8,
                             CategoryId = 2,
-                            Description = "Business laptop with durable carbon-fiber design.",
+                            Description = "Business laptop",
                             ImageUrl = "",
                             Name = "Lenovo ThinkPad X1 Carbon",
                             Price = 89999m,
@@ -797,7 +800,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 9,
                             CategoryId = 2,
-                            Description = "Portable gaming laptop with high-refresh display.",
+                            Description = "Gaming laptop",
                             ImageUrl = "",
                             Name = "ASUS ROG Zephyrus G14",
                             Price = 94999m,
@@ -808,7 +811,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 10,
                             CategoryId = 2,
-                            Description = "Portable productivity laptop for students and professionals.",
+                            Description = "Portable productivity laptop",
                             ImageUrl = "",
                             Name = "Acer Swift Go 14",
                             Price = 39999m,
@@ -819,7 +822,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 11,
                             CategoryId = 3,
-                            Description = "Compact RGB mechanical keyboard.",
+                            Description = "RGB keyboard",
                             ImageUrl = "",
                             Name = "Mechanical Keyboard",
                             Price = 3500m,
@@ -830,7 +833,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 12,
                             CategoryId = 3,
-                            Description = "Ergonomic wireless mouse for work and gaming.",
+                            Description = "Ergonomic wireless mouse",
                             ImageUrl = "",
                             Name = "Wireless Mouse",
                             Price = 1200m,
@@ -841,7 +844,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 13,
                             CategoryId = 3,
-                            Description = "Multi-port USB-C adapter for laptops and tablets.",
+                            Description = "Multi-port USB-C adapter",
                             ImageUrl = "",
                             Name = "USB-C Hub",
                             Price = 1800m,
@@ -852,7 +855,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 14,
                             CategoryId = 3,
-                            Description = "Aluminum adjustable stand for better desk ergonomics.",
+                            Description = "Aluminum adjustable stand",
                             ImageUrl = "",
                             Name = "Laptop Stand",
                             Price = 1500m,
@@ -863,7 +866,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 15,
                             CategoryId = 3,
-                            Description = "Wireless over-ear headphones with active noise cancelling.",
+                            Description = "Wireless over-ear headphones",
                             ImageUrl = "",
                             Name = "Noise Cancelling Headphones",
                             Price = 8999m,
@@ -874,7 +877,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 16,
                             CategoryId = 3,
-                            Description = "Portable speaker with splash resistance.",
+                            Description = "Portable speaker",
                             ImageUrl = "",
                             Name = "Bluetooth Speaker",
                             Price = 2500m,
@@ -885,7 +888,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 17,
                             CategoryId = 3,
-                            Description = "Full HD webcam for video meetings.",
+                            Description = "Full HD webcam",
                             ImageUrl = "",
                             Name = "Webcam 1080p",
                             Price = 2200m,
@@ -896,7 +899,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 18,
                             CategoryId = 3,
-                            Description = "Portable high-speed SSD for file backups.",
+                            Description = "Portable high-speed SSD",
                             ImageUrl = "",
                             Name = "External SSD 1TB",
                             Price = 6500m,
@@ -907,7 +910,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 19,
                             CategoryId = 3,
-                            Description = "Fast-charging power bank for phones and tablets.",
+                            Description = "Fast-charging power bank",
                             ImageUrl = "",
                             Name = "Power Bank 20000mAh",
                             Price = 2000m,
@@ -918,7 +921,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 20,
                             CategoryId = 3,
-                            Description = "QHD productivity monitor for hybrid work.",
+                            Description = "QHD productivity monitor",
                             ImageUrl = "",
                             Name = "27-inch Monitor",
                             Price = 12999m,
@@ -929,109 +932,109 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 21,
                             CategoryId = 4,
-                            Description = "Smartphone Apple en titane avec puce A17 Pro.",
+                            Description = "Apple smartphone",
                             ImageUrl = "",
-                            Name = "iPhone 15 Pro",
-                            Price = 1229m,
-                            SiteId = 2,
-                            StockQuantity = 8
-                        },
-                        new
-                        {
-                            Id = 22,
-                            CategoryId = 4,
-                            Description = "Smartphone 5G avec écran AMOLED et grande autonomie.",
-                            ImageUrl = "",
-                            Name = "Samsung Galaxy A55 5G",
-                            Price = 499m,
-                            SiteId = 2,
-                            StockQuantity = 18
-                        },
-                        new
-                        {
-                            Id = 23,
-                            CategoryId = 4,
-                            Description = "Smartphone durable conçu pour être réparé plus facilement.",
-                            ImageUrl = "",
-                            Name = "Fairphone 5",
-                            Price = 699m,
+                            Name = "iPhone 15",
+                            Price = 999.98m,
                             SiteId = 2,
                             StockQuantity = 10
                         },
                         new
                         {
+                            Id = 22,
+                            CategoryId = 4,
+                            Description = "Android flagship smartphone",
+                            ImageUrl = "",
+                            Name = "Samsung Galaxy S24",
+                            Price = 916.65m,
+                            SiteId = 2,
+                            StockQuantity = 12
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CategoryId = 4,
+                            Description = "Google AI smartphone",
+                            ImageUrl = "",
+                            Name = "Google Pixel 8",
+                            Price = 666.65m,
+                            SiteId = 2,
+                            StockQuantity = 8
+                        },
+                        new
+                        {
                             Id = 24,
                             CategoryId = 4,
-                            Description = "Smartphone Android au design Glyph distinctif.",
+                            Description = "High-performance Android phone",
                             ImageUrl = "",
-                            Name = "Nothing Phone (2a)",
-                            Price = 349m,
+                            Name = "Xiaomi 14",
+                            Price = 549.98m,
                             SiteId = 2,
-                            StockQuantity = 16
+                            StockQuantity = 15
                         },
                         new
                         {
                             Id = 25,
                             CategoryId = 4,
-                            Description = "Smartphone photo 200 MP avec charge rapide.",
+                            Description = "Fast charging flagship phone",
                             ImageUrl = "",
-                            Name = "Xiaomi Redmi Note 13 Pro",
-                            Price = 399m,
-                            SiteId = 2,
-                            StockQuantity = 20
-                        },
-                        new
-                        {
-                            Id = 26,
-                            CategoryId = 5,
-                            Description = "Ordinateur portable Apple pour les flux créatifs exigeants.",
-                            ImageUrl = "",
-                            Name = "MacBook Pro 14 M3",
-                            Price = 1999m,
-                            SiteId = 2,
-                            StockQuantity = 5
-                        },
-                        new
-                        {
-                            Id = 27,
-                            CategoryId = 5,
-                            Description = "PC portable professionnel avec Windows 11 Pro.",
-                            ImageUrl = "",
-                            Name = "Surface Laptop 6",
-                            Price = 1499m,
-                            SiteId = 2,
-                            StockQuantity = 7
-                        },
-                        new
-                        {
-                            Id = 28,
-                            CategoryId = 5,
-                            Description = "PC convertible OLED pour le travail mobile.",
-                            ImageUrl = "",
-                            Name = "HP Spectre x360 14",
-                            Price = 1599m,
-                            SiteId = 2,
-                            StockQuantity = 6
-                        },
-                        new
-                        {
-                            Id = 29,
-                            CategoryId = 5,
-                            Description = "Ultrabook OLED léger avec processeur Intel Core Ultra.",
-                            ImageUrl = "",
-                            Name = "ASUS Zenbook 14 OLED",
-                            Price = 1199m,
+                            Name = "OnePlus 12",
+                            Price = 766.65m,
                             SiteId = 2,
                             StockQuantity = 9
                         },
                         new
                         {
+                            Id = 26,
+                            CategoryId = 5,
+                            Description = "Lightweight Apple laptop",
+                            ImageUrl = "",
+                            Name = "MacBook Air M3",
+                            Price = 1166.65m,
+                            SiteId = 2,
+                            StockQuantity = 7
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CategoryId = 5,
+                            Description = "Premium Windows ultrabook",
+                            ImageUrl = "",
+                            Name = "Dell XPS 13",
+                            Price = 1249.98m,
+                            SiteId = 2,
+                            StockQuantity = 6
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CategoryId = 5,
+                            Description = "Business laptop",
+                            ImageUrl = "",
+                            Name = "Lenovo ThinkPad X1 Carbon",
+                            Price = 1499.98m,
+                            SiteId = 2,
+                            StockQuantity = 5
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CategoryId = 5,
+                            Description = "Gaming laptop",
+                            ImageUrl = "",
+                            Name = "ASUS ROG Zephyrus G14",
+                            Price = 1583.32m,
+                            SiteId = 2,
+                            StockQuantity = 4
+                        },
+                        new
+                        {
                             Id = 30,
                             CategoryId = 5,
-                            Description = "Portable fin et silencieux pour la productivité quotidienne.",
+                            Description = "Portable productivity laptop",
                             ImageUrl = "",
-                            Name = "Lenovo Yoga Slim 7",
-                            Price = 999m,
+                            Name = "Acer Swift Go 14",
+                            Price = 666.65m,
                             SiteId = 2,
                             StockQuantity = 11
                         },
@@ -1039,65 +1042,65 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 31,
                             CategoryId = 6,
-                            Description = "Chargeur magnétique compatible avec l’iPhone.",
+                            Description = "RGB keyboard",
                             ImageUrl = "",
-                            Name = "Chargeur MagSafe",
-                            Price = 49m,
+                            Name = "Mechanical Keyboard",
+                            Price = 58.33m,
                             SiteId = 2,
-                            StockQuantity = 35
+                            StockQuantity = 25
                         },
                         new
                         {
                             Id = 32,
                             CategoryId = 6,
-                            Description = "Chargeur secteur USB-C compact pour prise européenne.",
+                            Description = "Ergonomic wireless mouse",
                             ImageUrl = "",
-                            Name = "Adaptateur USB-C Europe",
-                            Price = 29m,
+                            Name = "Wireless Mouse",
+                            Price = 20m,
                             SiteId = 2,
-                            StockQuantity = 45
+                            StockQuantity = 40
                         },
                         new
                         {
                             Id = 33,
                             CategoryId = 6,
-                            Description = "Clavier sans fil AZERTY pour bureau et tablette.",
+                            Description = "Multi-port USB-C adapter",
                             ImageUrl = "",
-                            Name = "Clavier AZERTY Bluetooth",
-                            Price = 79m,
-                            SiteId = 2,
-                            StockQuantity = 24
-                        },
-                        new
-                        {
-                            Id = 34,
-                            CategoryId = 6,
-                            Description = "Souris sans fil conçue pour une utilisation prolongée.",
-                            ImageUrl = "",
-                            Name = "Souris Ergonomique",
-                            Price = 59m,
+                            Name = "USB-C Hub",
+                            Price = 30m,
                             SiteId = 2,
                             StockQuantity = 30
                         },
                         new
                         {
+                            Id = 34,
+                            CategoryId = 6,
+                            Description = "Aluminum adjustable stand",
+                            ImageUrl = "",
+                            Name = "Laptop Stand",
+                            Price = 25m,
+                            SiteId = 2,
+                            StockQuantity = 20
+                        },
+                        new
+                        {
                             Id = 35,
                             CategoryId = 6,
-                            Description = "Casque Bluetooth avec réduction active du bruit.",
+                            Description = "Wireless over-ear headphones",
                             ImageUrl = "",
-                            Name = "Casque Audio ANC",
-                            Price = 199m,
+                            Name = "Noise Cancelling Headphones",
+                            Price = 149.98m,
                             SiteId = 2,
-                            StockQuantity = 13
+                            StockQuantity = 14
                         },
                         new
                         {
                             Id = 36,
                             CategoryId = 6,
-                            Description = "Station compacte avec HDMI, Ethernet et ports USB.",
+                            Description = "Portable speaker",
                             ImageUrl = "",
-                            Name = "Station USB-C 8-en-1",
-                            Price = 89m,
+                            Name = "Bluetooth Speaker",
+                            Price = 41.67m,
                             SiteId = 2,
                             StockQuantity = 18
                         },
@@ -1105,43 +1108,43 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 37,
                             CategoryId = 6,
-                            Description = "Housse rembourrée pour ordinateur portable.",
+                            Description = "Full HD webcam",
                             ImageUrl = "",
-                            Name = "Housse Laptop 14 pouces",
-                            Price = 39m,
+                            Name = "Webcam 1080p",
+                            Price = 36.67m,
                             SiteId = 2,
-                            StockQuantity = 28
+                            StockQuantity = 22
                         },
                         new
                         {
                             Id = 38,
                             CategoryId = 6,
-                            Description = "Stockage externe rapide pour photos et vidéos.",
+                            Description = "Portable high-speed SSD",
                             ImageUrl = "",
-                            Name = "SSD Externe 2 To",
-                            Price = 159m,
+                            Name = "External SSD 1TB",
+                            Price = 108.33m,
                             SiteId = 2,
-                            StockQuantity = 12
+                            StockQuantity = 16
                         },
                         new
                         {
                             Id = 39,
                             CategoryId = 6,
-                            Description = "Batterie compacte avec USB-C Power Delivery.",
+                            Description = "Fast-charging power bank",
                             ImageUrl = "",
-                            Name = "Batterie Externe 10000mAh",
-                            Price = 39m,
+                            Name = "Power Bank 20000mAh",
+                            Price = 33.33m,
                             SiteId = 2,
-                            StockQuantity = 32
+                            StockQuantity = 28
                         },
                         new
                         {
                             Id = 40,
                             CategoryId = 6,
-                            Description = "Écran bureautique Full HD avec pied réglable.",
+                            Description = "QHD productivity monitor",
                             ImageUrl = "",
-                            Name = "Moniteur 24 pouces FHD",
-                            Price = 179m,
+                            Name = "27-inch Monitor",
+                            Price = 216.65m,
                             SiteId = 2,
                             StockQuantity = 10
                         },
@@ -1149,21 +1152,21 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 41,
                             CategoryId = 7,
-                            Description = "高端智能手机，配备先进的移动影像能力。",
+                            Description = "Apple smartphone",
                             ImageUrl = "",
-                            Name = "Huawei Mate 60 Pro",
-                            Price = 6999m,
+                            Name = "iPhone 15",
+                            Price = 7692.18m,
                             SiteId = 3,
-                            StockQuantity = 14
+                            StockQuantity = 10
                         },
                         new
                         {
                             Id = 42,
                             CategoryId = 7,
-                            Description = "旗舰影像手机，搭载徕卡光学系统。",
+                            Description = "Android flagship smartphone",
                             ImageUrl = "",
-                            Name = "Xiaomi 14 Ultra",
-                            Price = 6499m,
+                            Name = "Samsung Galaxy S24",
+                            Price = 7051.15m,
                             SiteId = 3,
                             StockQuantity = 12
                         },
@@ -1171,395 +1174,395 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 43,
                             CategoryId = 7,
-                            Description = "高端安卓手机，拥有持久续航表现。",
+                            Description = "Google AI smartphone",
                             ImageUrl = "",
-                            Name = "Honor Magic6 Pro",
-                            Price = 5699m,
+                            Name = "Google Pixel 8",
+                            Price = 5128.08m,
                             SiteId = 3,
-                            StockQuantity = 15
+                            StockQuantity = 8
                         },
                         new
                         {
                             Id = 44,
                             CategoryId = 7,
-                            Description = "专注影像体验的手机，采用蔡司影像调校。",
+                            Description = "High-performance Android phone",
                             ImageUrl = "",
-                            Name = "vivo X100",
-                            Price = 3999m,
+                            Name = "Xiaomi 14",
+                            Price = 4230.64m,
                             SiteId = 3,
-                            StockQuantity = 18
+                            StockQuantity = 15
                         },
                         new
                         {
                             Id = 45,
                             CategoryId = 7,
-                            Description = "轻薄旗舰手机，支持快速充电。",
+                            Description = "Fast charging flagship phone",
                             ImageUrl = "",
-                            Name = "OPPO Find X7",
-                            Price = 4299m,
+                            Name = "OnePlus 12",
+                            Price = 5897.31m,
                             SiteId = 3,
-                            StockQuantity = 16
+                            StockQuantity = 9
                         },
                         new
                         {
                             Id = 46,
                             CategoryId = 8,
-                            Description = "轻薄高端笔记本，配备高分辨率显示屏。",
+                            Description = "Lightweight Apple laptop",
                             ImageUrl = "",
-                            Name = "Huawei MateBook X Pro",
-                            Price = 9999m,
+                            Name = "MacBook Air M3",
+                            Price = 8974.23m,
                             SiteId = 3,
-                            StockQuantity = 6
+                            StockQuantity = 7
                         },
                         new
                         {
                             Id = 47,
                             CategoryId = 8,
-                            Description = "便携高性能笔记本，适合日常办公与创作。",
+                            Description = "Premium Windows ultrabook",
                             ImageUrl = "",
-                            Name = "Lenovo Xiaoxin Pro 14",
-                            Price = 5799m,
+                            Name = "Dell XPS 13",
+                            Price = 9615.26m,
                             SiteId = 3,
-                            StockQuantity = 11
+                            StockQuantity = 6
                         },
                         new
                         {
                             Id = 48,
                             CategoryId = 8,
-                            Description = "大屏笔记本，兼顾工作与影音娱乐。",
+                            Description = "Business laptop",
                             ImageUrl = "",
-                            Name = "Xiaomi Notebook Pro 16",
-                            Price = 6999m,
+                            Name = "Lenovo ThinkPad X1 Carbon",
+                            Price = 11538.33m,
                             SiteId = 3,
-                            StockQuantity = 8
+                            StockQuantity = 5
                         },
                         new
                         {
                             Id = 49,
                             CategoryId = 8,
-                            Description = "日常办公笔记本，拥有长续航表现。",
+                            Description = "Gaming laptop",
                             ImageUrl = "",
-                            Name = "Honor MagicBook 14",
-                            Price = 4999m,
+                            Name = "ASUS ROG Zephyrus G14",
+                            Price = 12179.36m,
                             SiteId = 3,
-                            StockQuantity = 13
+                            StockQuantity = 4
                         },
                         new
                         {
                             Id = 50,
                             CategoryId = 8,
-                            Description = "轻薄游戏本，配备独立显卡。",
+                            Description = "Portable productivity laptop",
                             ImageUrl = "",
-                            Name = "ASUS Tianxuan Air",
-                            Price = 7499m,
+                            Name = "Acer Swift Go 14",
+                            Price = 5128.08m,
                             SiteId = 3,
-                            StockQuantity = 5
+                            StockQuantity = 11
                         },
                         new
                         {
                             Id = 51,
                             CategoryId = 9,
-                            Description = "小巧高功率充电器，适用于手机和笔记本。",
+                            Description = "RGB keyboard",
                             ImageUrl = "",
-                            Name = "120W GaN Charger",
-                            Price = 249m,
+                            Name = "Mechanical Keyboard",
+                            Price = 448.72m,
                             SiteId = 3,
-                            StockQuantity = 40
+                            StockQuantity = 25
                         },
                         new
                         {
                             Id = 52,
                             CategoryId = 9,
-                            Description = "耐用编织快充线。",
+                            Description = "Ergonomic wireless mouse",
                             ImageUrl = "",
-                            Name = "USB-C Braided Cable",
-                            Price = 49m,
+                            Name = "Wireless Mouse",
+                            Price = 153.85m,
                             SiteId = 3,
-                            StockQuantity = 80
+                            StockQuantity = 40
                         },
                         new
                         {
                             Id = 53,
                             CategoryId = 9,
-                            Description = "降噪真无线耳机，适合通话和音乐。",
+                            Description = "Multi-port USB-C adapter",
                             ImageUrl = "",
-                            Name = "True Wireless Earbuds Pro",
-                            Price = 699m,
-                            SiteId = 3,
-                            StockQuantity = 24
-                        },
-                        new
-                        {
-                            Id = 54,
-                            CategoryId = 9,
-                            Description = "可折叠磁吸手机支架。",
-                            ImageUrl = "",
-                            Name = "Magnetic Phone Stand",
-                            Price = 129m,
+                            Name = "USB-C Hub",
+                            Price = 230.77m,
                             SiteId = 3,
                             StockQuantity = 30
                         },
                         new
                         {
+                            Id = 54,
+                            CategoryId = 9,
+                            Description = "Aluminum adjustable stand",
+                            ImageUrl = "",
+                            Name = "Laptop Stand",
+                            Price = 192.31m,
+                            SiteId = 3,
+                            StockQuantity = 20
+                        },
+                        new
+                        {
                             Id = 55,
                             CategoryId = 9,
-                            Description = "双频路由器，适合家庭网络。",
+                            Description = "Wireless over-ear headphones",
                             ImageUrl = "",
-                            Name = "Wi-Fi 6 Router",
-                            Price = 399m,
+                            Name = "Noise Cancelling Headphones",
+                            Price = 1153.72m,
                             SiteId = 3,
-                            StockQuantity = 18
+                            StockQuantity = 14
                         },
                         new
                         {
                             Id = 56,
                             CategoryId = 9,
-                            Description = "高速 USB-C 移动固态硬盘。",
+                            Description = "Portable speaker",
                             ImageUrl = "",
-                            Name = "Portable SSD 1TB",
-                            Price = 599m,
+                            Name = "Bluetooth Speaker",
+                            Price = 320.51m,
                             SiteId = 3,
-                            StockQuantity = 20
+                            StockQuantity = 18
                         },
                         new
                         {
                             Id = 57,
                             CategoryId = 9,
-                            Description = "低延迟无线鼠标，支持可调 DPI。",
+                            Description = "Full HD webcam",
                             ImageUrl = "",
-                            Name = "Gaming Mouse",
-                            Price = 199m,
-                            SiteId = 3,
-                            StockQuantity = 35
-                        },
-                        new
-                        {
-                            Id = 58,
-                            CategoryId = 9,
-                            Description = "紧凑型机械键盘，适合桌面办公和游戏。",
-                            ImageUrl = "",
-                            Name = "Mechanical Keyboard 87-Key",
-                            Price = 329m,
+                            Name = "Webcam 1080p",
+                            Price = 282.05m,
                             SiteId = 3,
                             StockQuantity = 22
                         },
                         new
                         {
+                            Id = 58,
+                            CategoryId = 9,
+                            Description = "Portable high-speed SSD",
+                            ImageUrl = "",
+                            Name = "External SSD 1TB",
+                            Price = 833.33m,
+                            SiteId = 3,
+                            StockQuantity = 16
+                        },
+                        new
+                        {
                             Id = 59,
                             CategoryId = 9,
-                            Description = "大容量移动电源，支持快速充电。",
+                            Description = "Fast-charging power bank",
                             ImageUrl = "",
-                            Name = "20000mAh Power Bank",
-                            Price = 199m,
+                            Name = "Power Bank 20000mAh",
+                            Price = 256.41m,
                             SiteId = 3,
-                            StockQuantity = 38
+                            StockQuantity = 28
                         },
                         new
                         {
                             Id = 60,
                             CategoryId = 9,
-                            Description = "清晰 2K 显示器，适合办公和游戏。",
+                            Description = "QHD productivity monitor",
                             ImageUrl = "",
-                            Name = "27-inch 2K Monitor",
-                            Price = 1299m,
+                            Name = "27-inch Monitor",
+                            Price = 1666.54m,
                             SiteId = 3,
-                            StockQuantity = 12
+                            StockQuantity = 10
                         },
                         new
                         {
                             Id = 61,
                             CategoryId = 10,
-                            Description = "USB-C と高性能カメラを備えた Apple のスマートフォン。",
+                            Description = "Apple smartphone",
                             ImageUrl = "",
                             Name = "iPhone 15",
-                            Price = 124800m,
-                            SiteId = 4,
-                            StockQuantity = 11
-                        },
-                        new
-                        {
-                            Id = 62,
-                            CategoryId = 10,
-                            Description = "クリエイター向けのディスプレイとカメラを備えた Sony の上位モデル。",
-                            ImageUrl = "",
-                            Name = "Sony Xperia 1 VI",
-                            Price = 189200m,
-                            SiteId = 4,
-                            StockQuantity = 6
-                        },
-                        new
-                        {
-                            Id = 63,
-                            CategoryId = 10,
-                            Description = "AI 機能を搭載したコンパクトな Google スマートフォン。",
-                            ImageUrl = "",
-                            Name = "Google Pixel 8a",
-                            Price = 72600m,
-                            SiteId = 4,
-                            StockQuantity = 18
-                        },
-                        new
-                        {
-                            Id = 64,
-                            CategoryId = 10,
-                            Description = "明るい Pro IGZO OLED ディスプレイを備えた国産 Android スマートフォン。",
-                            ImageUrl = "",
-                            Name = "Sharp AQUOS R9",
-                            Price = 99800m,
+                            Price = 161997m,
                             SiteId = 4,
                             StockQuantity = 10
                         },
                         new
                         {
-                            Id = 65,
+                            Id = 62,
                             CategoryId = 10,
-                            Description = "コンパクトなカバーディスプレイを備えた折りたたみスマートフォン。",
+                            Description = "Android flagship smartphone",
                             ImageUrl = "",
-                            Name = "Galaxy Z Flip6",
-                            Price = 159700m,
-                            SiteId = 4,
-                            StockQuantity = 7
-                        },
-                        new
-                        {
-                            Id = 66,
-                            CategoryId = 11,
-                            Description = "持ち運びやすさを重視した軽量ビジネスノート。",
-                            ImageUrl = "",
-                            Name = "VAIO SX14",
-                            Price = 249800m,
-                            SiteId = 4,
-                            StockQuantity = 5
-                        },
-                        new
-                        {
-                            Id = 67,
-                            CategoryId = 11,
-                            Description = "軽量ボディと高い耐久性を備えたビジネスノート。",
-                            ImageUrl = "",
-                            Name = "Panasonic Let's note FV5",
-                            Price = 289800m,
-                            SiteId = 4,
-                            StockQuantity = 4
-                        },
-                        new
-                        {
-                            Id = 68,
-                            CategoryId = 11,
-                            Description = "静音設計と長時間バッテリーを備えた Apple ノートブック。",
-                            ImageUrl = "",
-                            Name = "MacBook Air M3",
-                            Price = 164800m,
-                            SiteId = 4,
-                            StockQuantity = 9
-                        },
-                        new
-                        {
-                            Id = 69,
-                            CategoryId = 11,
-                            Description = "学生やビジネスユーザーに適した携帯性の高いノート PC。",
-                            ImageUrl = "",
-                            Name = "Dynabook RZ",
-                            Price = 179800m,
-                            SiteId = 4,
-                            StockQuantity = 6
-                        },
-                        new
-                        {
-                            Id = 70,
-                            CategoryId = 11,
-                            Description = "打ちやすいキーボードを備えたコンパクトなビジネスノート。",
-                            ImageUrl = "",
-                            Name = "ThinkPad X13 Gen 5",
-                            Price = 198000m,
-                            SiteId = 4,
-                            StockQuantity = 8
-                        },
-                        new
-                        {
-                            Id = 71,
-                            CategoryId = 12,
-                            Description = "毎日の持ち歩きに便利な小型 USB-C 充電器。",
-                            ImageUrl = "",
-                            Name = "Anker Nano Charger",
-                            Price = 3990m,
-                            SiteId = 4,
-                            StockQuantity = 45
-                        },
-                        new
-                        {
-                            Id = 72,
-                            CategoryId = 12,
-                            Description = "通勤や仕事に適したノイズキャンセリングヘッドホン。",
-                            ImageUrl = "",
-                            Name = "Sony WH-1000XM5",
-                            Price = 59400m,
+                            Name = "Samsung Galaxy S24",
+                            Price = 148497m,
                             SiteId = 4,
                             StockQuantity = 12
                         },
                         new
                         {
+                            Id = 63,
+                            CategoryId = 10,
+                            Description = "Google AI smartphone",
+                            ImageUrl = "",
+                            Name = "Google Pixel 8",
+                            Price = 107997m,
+                            SiteId = 4,
+                            StockQuantity = 8
+                        },
+                        new
+                        {
+                            Id = 64,
+                            CategoryId = 10,
+                            Description = "High-performance Android phone",
+                            ImageUrl = "",
+                            Name = "Xiaomi 14",
+                            Price = 89097m,
+                            SiteId = 4,
+                            StockQuantity = 15
+                        },
+                        new
+                        {
+                            Id = 65,
+                            CategoryId = 10,
+                            Description = "Fast charging flagship phone",
+                            ImageUrl = "",
+                            Name = "OnePlus 12",
+                            Price = 124197m,
+                            SiteId = 4,
+                            StockQuantity = 9
+                        },
+                        new
+                        {
+                            Id = 66,
+                            CategoryId = 11,
+                            Description = "Lightweight Apple laptop",
+                            ImageUrl = "",
+                            Name = "MacBook Air M3",
+                            Price = 188997m,
+                            SiteId = 4,
+                            StockQuantity = 7
+                        },
+                        new
+                        {
+                            Id = 67,
+                            CategoryId = 11,
+                            Description = "Premium Windows ultrabook",
+                            ImageUrl = "",
+                            Name = "Dell XPS 13",
+                            Price = 202497m,
+                            SiteId = 4,
+                            StockQuantity = 6
+                        },
+                        new
+                        {
+                            Id = 68,
+                            CategoryId = 11,
+                            Description = "Business laptop",
+                            ImageUrl = "",
+                            Name = "Lenovo ThinkPad X1 Carbon",
+                            Price = 242997m,
+                            SiteId = 4,
+                            StockQuantity = 5
+                        },
+                        new
+                        {
+                            Id = 69,
+                            CategoryId = 11,
+                            Description = "Gaming laptop",
+                            ImageUrl = "",
+                            Name = "ASUS ROG Zephyrus G14",
+                            Price = 256497m,
+                            SiteId = 4,
+                            StockQuantity = 4
+                        },
+                        new
+                        {
+                            Id = 70,
+                            CategoryId = 11,
+                            Description = "Portable productivity laptop",
+                            ImageUrl = "",
+                            Name = "Acer Swift Go 14",
+                            Price = 107997m,
+                            SiteId = 4,
+                            StockQuantity = 11
+                        },
+                        new
+                        {
+                            Id = 71,
+                            CategoryId = 12,
+                            Description = "RGB keyboard",
+                            ImageUrl = "",
+                            Name = "Mechanical Keyboard",
+                            Price = 9450m,
+                            SiteId = 4,
+                            StockQuantity = 25
+                        },
+                        new
+                        {
+                            Id = 72,
+                            CategoryId = 12,
+                            Description = "Ergonomic wireless mouse",
+                            ImageUrl = "",
+                            Name = "Wireless Mouse",
+                            Price = 3240m,
+                            SiteId = 4,
+                            StockQuantity = 40
+                        },
+                        new
+                        {
                             Id = 73,
                             CategoryId = 12,
-                            Description = "ノート PC 向けの HDMI・USB 対応マルチポートアダプター。",
+                            Description = "Multi-port USB-C adapter",
                             ImageUrl = "",
-                            Name = "USB-C Multiport Adapter",
-                            Price = 6980m,
+                            Name = "USB-C Hub",
+                            Price = 4860m,
                             SiteId = 4,
-                            StockQuantity = 26
+                            StockQuantity = 30
                         },
                         new
                         {
                             Id = 74,
                             CategoryId = 12,
-                            Description = "外出時に使いやすい薄型ノート PC スリーブ。",
+                            Description = "Aluminum adjustable stand",
                             ImageUrl = "",
-                            Name = "Laptop Sleeve 13-inch",
-                            Price = 3480m,
-                            SiteId = 4,
-                            StockQuantity = 32
-                        },
-                        new
-                        {
-                            Id = 75,
-                            CategoryId = 12,
-                            Description = "デスク作業に適したエルゴノミックトラックボールマウス。",
-                            ImageUrl = "",
-                            Name = "Wireless Trackball Mouse",
-                            Price = 7980m,
-                            SiteId = 4,
-                            StockQuantity = 18
-                        },
-                        new
-                        {
-                            Id = 76,
-                            CategoryId = 12,
-                            Description = "写真や書類の保存に便利な高速外付け SSD。",
-                            ImageUrl = "",
-                            Name = "Portable SSD 1TB",
-                            Price = 16800m,
-                            SiteId = 4,
-                            StockQuantity = 14
-                        },
-                        new
-                        {
-                            Id = 77,
-                            CategoryId = 12,
-                            Description = "モニター周りを照らす USB 給電式ライトバー。",
-                            ImageUrl = "",
-                            Name = "Desk Monitor Light",
-                            Price = 5980m,
+                            Name = "Laptop Stand",
+                            Price = 4050m,
                             SiteId = 4,
                             StockQuantity = 20
                         },
                         new
                         {
+                            Id = 75,
+                            CategoryId = 12,
+                            Description = "Wireless over-ear headphones",
+                            ImageUrl = "",
+                            Name = "Noise Cancelling Headphones",
+                            Price = 24297m,
+                            SiteId = 4,
+                            StockQuantity = 14
+                        },
+                        new
+                        {
+                            Id = 76,
+                            CategoryId = 12,
+                            Description = "Portable speaker",
+                            ImageUrl = "",
+                            Name = "Bluetooth Speaker",
+                            Price = 6750m,
+                            SiteId = 4,
+                            StockQuantity = 18
+                        },
+                        new
+                        {
+                            Id = 77,
+                            CategoryId = 12,
+                            Description = "Full HD webcam",
+                            ImageUrl = "",
+                            Name = "Webcam 1080p",
+                            Price = 5940m,
+                            SiteId = 4,
+                            StockQuantity = 22
+                        },
+                        new
+                        {
                             Id = 78,
                             CategoryId = 12,
-                            Description = "省スペースで使えるタクタイルスイッチ搭載キーボード。",
+                            Description = "Portable high-speed SSD",
                             ImageUrl = "",
-                            Name = "Compact Mechanical Keyboard",
-                            Price = 12800m,
+                            Name = "External SSD 1TB",
+                            Price = 17550m,
                             SiteId = 4,
                             StockQuantity = 16
                         },
@@ -1567,23 +1570,23 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 79,
                             CategoryId = 12,
-                            Description = "USB-C 充電対応の薄型モバイルバッテリー。",
+                            Description = "Fast-charging power bank",
                             ImageUrl = "",
-                            Name = "Power Bank 10000mAh",
-                            Price = 4980m,
+                            Name = "Power Bank 20000mAh",
+                            Price = 5400m,
                             SiteId = 4,
-                            StockQuantity = 36
+                            StockQuantity = 28
                         },
                         new
                         {
                             Id = 80,
                             CategoryId = 12,
-                            Description = "作業効率を高める高解像度 4K ディスプレイ。",
+                            Description = "QHD productivity monitor",
                             ImageUrl = "",
-                            Name = "27-inch 4K Monitor",
-                            Price = 54800m,
+                            Name = "27-inch Monitor",
+                            Price = 35097m,
                             SiteId = 4,
-                            StockQuantity = 9
+                            StockQuantity = 10
                         });
                 });
 
