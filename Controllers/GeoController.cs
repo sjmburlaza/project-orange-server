@@ -6,6 +6,7 @@ namespace ProjectOrangeApi.Controllers;
 
 [ApiController]
 [Route("api/geo")]
+[Route("api/{siteCode:alpha:length(2)}/geo")]
 public class GeoController : ControllerBase
 {
     private readonly GeoCountryService _geoCountryService;

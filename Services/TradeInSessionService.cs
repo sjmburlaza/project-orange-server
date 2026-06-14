@@ -8,7 +8,7 @@ public class TradeInSessionService
     private readonly Lock _lock = new();
     private readonly Dictionary<string, TradeInSessionDto> _sessions = new(StringComparer.OrdinalIgnoreCase);
 
-    public TradeInSessionDto CreateSession(CreateTradeInSessionRequest request)
+    public TradeInSessionDto CreateSession(CreateTradeInSessionRequest request, string siteCode)
     {
         var now = DateTimeOffset.UtcNow;
         var defaultSteps = TradeInSeed.CreateDefaultSteps();
@@ -16,6 +16,7 @@ public class TradeInSessionService
         var session = new TradeInSessionDto
         {
             SessionId = Guid.NewGuid().ToString("N"),
+            SiteCode = NormalizeSiteCode(siteCode),
             CurrentStep = 1,
             StepOne = defaultSteps.StepOne,
             FormData = defaultSteps.FormData,
@@ -35,19 +36,21 @@ public class TradeInSessionService
         return session;
     }
 
-    public TradeInSessionDto? GetSession(string sessionId)
+    public TradeInSessionDto? GetSession(string sessionId, string siteCode)
     {
         lock (_lock)
         {
-            return _sessions.GetValueOrDefault(sessionId);
+            return GetSessionForSite(sessionId, siteCode);
         }
     }
 
-    public TradeInSessionDto? UpdateStepOne(string sessionId, UpdateTradeInStepOneRequest request)
+    public TradeInSessionDto? UpdateStepOne(string sessionId, string siteCode, UpdateTradeInStepOneRequest request)
     {
         lock (_lock)
         {
-            if (!_sessions.TryGetValue(sessionId, out var session))
+            var session = GetSessionForSite(sessionId, siteCode);
+
+            if (session is null)
             {
                 return null;
             }
@@ -62,11 +65,13 @@ public class TradeInSessionService
         }
     }
 
-    public TradeInSessionDto? UpdateStepTwo(string sessionId, UpdateTradeInStepTwoRequest request)
+    public TradeInSessionDto? UpdateStepTwo(string sessionId, string siteCode, UpdateTradeInStepTwoRequest request)
     {
         lock (_lock)
         {
-            if (!_sessions.TryGetValue(sessionId, out var session))
+            var session = GetSessionForSite(sessionId, siteCode);
+
+            if (session is null)
             {
                 return null;
             }
@@ -79,11 +84,13 @@ public class TradeInSessionService
         }
     }
 
-    public TradeInSessionDto? UpdateStepThree(string sessionId, UpdateTradeInStepThreeRequest request)
+    public TradeInSessionDto? UpdateStepThree(string sessionId, string siteCode, UpdateTradeInStepThreeRequest request)
     {
         lock (_lock)
         {
-            if (!_sessions.TryGetValue(sessionId, out var session))
+            var session = GetSessionForSite(sessionId, siteCode);
+
+            if (session is null)
             {
                 return null;
             }
@@ -96,11 +103,13 @@ public class TradeInSessionService
         }
     }
 
-    public TradeInSessionDto? Confirm(string sessionId)
+    public TradeInSessionDto? Confirm(string sessionId, string siteCode)
     {
         lock (_lock)
         {
-            if (!_sessions.TryGetValue(sessionId, out var session))
+            var session = GetSessionForSite(sessionId, siteCode);
+
+            if (session is null)
             {
                 return null;
             }
@@ -111,5 +120,22 @@ public class TradeInSessionService
 
             return session;
         }
+    }
+
+    private TradeInSessionDto? GetSessionForSite(string sessionId, string siteCode)
+    {
+        if (!_sessions.TryGetValue(sessionId, out var session))
+        {
+            return null;
+        }
+
+        return string.Equals(session.SiteCode, NormalizeSiteCode(siteCode), StringComparison.OrdinalIgnoreCase)
+            ? session
+            : null;
+    }
+
+    private static string NormalizeSiteCode(string siteCode)
+    {
+        return siteCode.Trim().ToLowerInvariant();
     }
 }

@@ -10,11 +10,13 @@ using ProjectOrangeApi.Authorization;
 using ProjectOrangeApi.Data;
 using ProjectOrangeApi.DTOs;
 using ProjectOrangeApi.Models;
+using ProjectOrangeApi.Services;
 
 namespace ProjectOrangeApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Route("api/{siteCode:alpha:length(2)}/[controller]")]
 public class AuthController : ControllerBase
 {
     private static readonly TimeSpan SessionLifetime = TimeSpan.FromHours(2);
@@ -22,15 +24,18 @@ public class AuthController : ControllerBase
     private readonly UserManager<AppUser> _userManager;
     private readonly AppDbContext _db;
     private readonly IConfiguration _config;
+    private readonly ISiteContext _siteContext;
 
     public AuthController(
         UserManager<AppUser> userManager,
         AppDbContext db,
-        IConfiguration config)
+        IConfiguration config,
+        ISiteContext siteContext)
     {
         _userManager = userManager;
         _db = db;
         _config = config;
+        _siteContext = siteContext;
     }
 
     [HttpPost("register")]
@@ -129,7 +134,9 @@ public class AuthController : ControllerBase
         if (!string.IsNullOrWhiteSpace(sessionId))
         {
             var session = await _db.AuthSessions
-                .FirstOrDefaultAsync(authSession => authSession.Id == sessionId);
+                .FirstOrDefaultAsync(authSession =>
+                    authSession.Id == sessionId &&
+                    authSession.SiteId == _siteContext.SiteId);
 
             if (session is not null && session.RevokedAtUtc is null)
             {
@@ -178,7 +185,8 @@ public class AuthController : ControllerBase
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Name, user.Id),
             new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-            new Claim(ClaimTypes.Sid, session.Id)
+            new Claim(ClaimTypes.Sid, session.Id),
+            new Claim(AppClaimTypes.SiteCode, _siteContext.SiteCode)
         };
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -206,9 +214,10 @@ public class AuthController : ControllerBase
         var now = DateTimeOffset.UtcNow;
 
         return new AuthSession
-        {
-            UserId = user.Id,
-            CreatedAtUtc = now,
+            {
+                SiteId = _siteContext.SiteId,
+                UserId = user.Id,
+                CreatedAtUtc = now,
             ExpiresAtUtc = now.Add(SessionLifetime),
             CreatedByIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
         };
@@ -230,6 +239,7 @@ public class AuthController : ControllerBase
             .AsNoTracking()
             .FirstOrDefaultAsync(session =>
                 session.Id == sessionId &&
+                session.SiteId == _siteContext.SiteId &&
                 session.UserId == userId &&
                 session.RevokedAtUtc == null &&
                 session.ExpiresAtUtc > now);

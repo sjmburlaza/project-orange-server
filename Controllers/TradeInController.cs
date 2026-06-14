@@ -7,23 +7,46 @@ namespace ProjectOrangeApi.Controllers;
 
 [ApiController]
 [Route("api/trade-ins")]
+[Route("api/{siteCode:alpha:length(2)}/trade-ins")]
 public class TradeInsController : ControllerBase
 {
+    private readonly ISiteContext _siteContext;
+
+    public TradeInsController(ISiteContext siteContext)
+    {
+        _siteContext = siteContext;
+    }
+
     [HttpGet("config")]
     public ActionResult<TradeInDto> GetTradeIn()
     {
+        if (!_siteContext.TradeInEnabled)
+        {
+            return NotFound();
+        }
+
         return Ok(TradeInSeed.TradeIn);
     }
 
     [HttpGet("categories")]
     public ActionResult<List<CategoryTIDto>> GetCategories()
     {
+        if (!_siteContext.TradeInEnabled)
+        {
+            return NotFound();
+        }
+
         return Ok(TradeInSeed.Categories);
     }
 
     [HttpGet("brands")]
     public ActionResult<List<BrandTIDto>> GetBrands([FromQuery] string? categoryCode)
     {
+        if (!_siteContext.TradeInEnabled)
+        {
+            return NotFound();
+        }
+
         return Ok(TradeInSeed.GetBrands(categoryCode));
     }
 
@@ -32,43 +55,68 @@ public class TradeInsController : ControllerBase
         [FromQuery] string? categoryCode,
         [FromQuery] string? brandCode)
     {
+        if (!_siteContext.TradeInEnabled)
+        {
+            return NotFound();
+        }
+
         return Ok(TradeInSeed.GetDevices(categoryCode, brandCode));
     }
 
     [HttpGet("storages")]
     public ActionResult<List<StorageTIDto>> GetStorages([FromQuery] string? deviceCode)
     {
+        if (!_siteContext.TradeInEnabled)
+        {
+            return NotFound();
+        }
+
         return Ok(TradeInSeed.GetStorages(deviceCode));
     }
 }
 
 [ApiController]
 [Route("api/trade-in-sessions")]
+[Route("api/{siteCode:alpha:length(2)}/trade-in-sessions")]
 public class TradeInSessionsController : ControllerBase
 {
     private readonly TradeInSessionService _tradeInSessionService;
+    private readonly ISiteContext _siteContext;
 
-    public TradeInSessionsController(TradeInSessionService tradeInSessionService)
+    public TradeInSessionsController(
+        TradeInSessionService tradeInSessionService,
+        ISiteContext siteContext)
     {
         _tradeInSessionService = tradeInSessionService;
+        _siteContext = siteContext;
     }
 
     [HttpPost]
     public ActionResult<TradeInSessionDto> CreateSession(
         [FromBody] CreateTradeInSessionRequest? request)
     {
-        var session = _tradeInSessionService.CreateSession(request ?? new());
+        if (!_siteContext.TradeInEnabled)
+        {
+            return NotFound();
+        }
+
+        var session = _tradeInSessionService.CreateSession(request ?? new(), _siteContext.SiteCode);
 
         return CreatedAtAction(
             nameof(GetSession),
-            new { sessionId = session.SessionId },
+            new { siteCode = _siteContext.SiteCode, sessionId = session.SessionId },
             session);
     }
 
     [HttpGet("{sessionId}")]
     public ActionResult<TradeInSessionDto> GetSession(string sessionId)
     {
-        var session = _tradeInSessionService.GetSession(sessionId);
+        if (!_siteContext.TradeInEnabled)
+        {
+            return NotFound();
+        }
+
+        var session = _tradeInSessionService.GetSession(sessionId, _siteContext.SiteCode);
 
         if (session is null)
         {
@@ -83,7 +131,12 @@ public class TradeInSessionsController : ControllerBase
         string sessionId,
         UpdateTradeInStepOneRequest request)
     {
-        var session = _tradeInSessionService.UpdateStepOne(sessionId, request);
+        if (!_siteContext.TradeInEnabled)
+        {
+            return NotFound();
+        }
+
+        var session = _tradeInSessionService.UpdateStepOne(sessionId, _siteContext.SiteCode, request);
 
         if (session is null)
         {
@@ -98,7 +151,12 @@ public class TradeInSessionsController : ControllerBase
         string sessionId,
         UpdateTradeInStepTwoRequest request)
     {
-        var session = _tradeInSessionService.UpdateStepTwo(sessionId, request);
+        if (!_siteContext.TradeInEnabled)
+        {
+            return NotFound();
+        }
+
+        var session = _tradeInSessionService.UpdateStepTwo(sessionId, _siteContext.SiteCode, request);
 
         if (session is null)
         {
@@ -113,7 +171,12 @@ public class TradeInSessionsController : ControllerBase
         string sessionId,
         UpdateTradeInStepThreeRequest request)
     {
-        var session = _tradeInSessionService.UpdateStepThree(sessionId, request);
+        if (!_siteContext.TradeInEnabled)
+        {
+            return NotFound();
+        }
+
+        var session = _tradeInSessionService.UpdateStepThree(sessionId, _siteContext.SiteCode, request);
 
         if (session is null)
         {
@@ -126,7 +189,12 @@ public class TradeInSessionsController : ControllerBase
     [HttpPatch("{sessionId}/confirm")]
     public ActionResult<TradeInSessionDto> Confirm(string sessionId)
     {
-        var session = _tradeInSessionService.Confirm(sessionId);
+        if (!_siteContext.TradeInEnabled)
+        {
+            return NotFound();
+        }
+
+        var session = _tradeInSessionService.Confirm(sessionId, _siteContext.SiteCode);
 
         if (session is null)
         {

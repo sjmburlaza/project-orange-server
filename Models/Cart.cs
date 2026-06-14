@@ -3,6 +3,8 @@ namespace ProjectOrangeApi.Models;
 public class Cart
 {
     public int Id { get; set; }
+    public int SiteId { get; set; }
+    public Site Site { get; set; } = null!;
     public string Code { get; set; } = Guid.NewGuid().ToString("N");
 
     public string? UserId { get; set; }

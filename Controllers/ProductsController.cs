@@ -3,18 +3,22 @@ using Microsoft.EntityFrameworkCore;
 using ProjectOrangeApi.Data;
 using ProjectOrangeApi.Data.Seeds;
 using ProjectOrangeApi.DTOs;
+using ProjectOrangeApi.Services;
 
 namespace ProjectOrangeApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Route("api/{siteCode:alpha:length(2)}/[controller]")]
 public class ProductsController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly ISiteContext _siteContext;
 
-    public ProductsController(AppDbContext context)
+    public ProductsController(AppDbContext context, ISiteContext siteContext)
     {
         _context = context;
+        _siteContext = siteContext;
     }
 
     [HttpGet]
@@ -28,6 +32,7 @@ public class ProductsController : ControllerBase
         var query = _context.Products
             .Include(p => p.Category)
             .Include(p => p.ItemSpecs)
+            .Where(p => p.SiteId == _siteContext.SiteId)
             .AsQueryable();
 
         if (categoryId.HasValue)
@@ -83,7 +88,7 @@ public class ProductsController : ControllerBase
         var product = await _context.Products
             .Include(p => p.Category)
             .Include(p => p.ItemSpecs)
-            .Where(p => p.Id == id)
+            .Where(p => p.Id == id && p.SiteId == _siteContext.SiteId)
             .Select(p => new ProductDto
             {
                 Id = p.Id,
@@ -114,13 +119,14 @@ public class ProductsController : ControllerBase
     {
         var product = await _context.Products
             .Include(p => p.Category)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id && p.SiteId == _siteContext.SiteId);
 
         if (product is null)
             return NotFound();
 
         var categoryName = product.Category?.Name ?? string.Empty;
         var addons = AddonSeed.GetEligibleAddons(categoryName)
+            .Where(IsAddonEnabled)
             .Select(addon => new AddonDto
             {
                 Id = addon.Id,
@@ -138,16 +144,29 @@ public class ProductsController : ControllerBase
     [HttpGet("{id}/insurance-plans")]
     public async Task<ActionResult<IEnumerable<InsurancePlanDto>>> GetProductInsurancePlans(int id)
     {
+        if (!_siteContext.InsuranceEnabled)
+        {
+            return NotFound();
+        }
+
         var product = await _context.Products
             .Include(p => p.Category)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id && p.SiteId == _siteContext.SiteId);
 
         if (product is null)
             return NotFound();
 
         var categoryName = product.Category?.Name ?? string.Empty;
 
-        return Ok(InsurancePlanSeed.GetPlans(categoryName));
+        return Ok(InsurancePlanSeed.GetPlans(categoryName)
+            .Select(plan => new InsurancePlanDto
+            {
+                Name = plan.Name,
+                Code = plan.Code,
+                Description = plan.Description,
+                Amount = SiteCurrency.ConvertDisplayAmount(plan.Amount, _siteContext.Currency)
+            })
+            .ToList());
     }
 
     [HttpGet("{id}/mobile-plans")]
@@ -155,13 +174,32 @@ public class ProductsController : ControllerBase
     {
         var product = await _context.Products
             .Include(p => p.Category)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id && p.SiteId == _siteContext.SiteId);
 
         if (product is null)
             return NotFound();
 
         var categoryName = product.Category?.Name ?? string.Empty;
 
-        return Ok(MobilePlanSeed.GetPlans(categoryName));
+        return Ok(MobilePlanSeed.GetPlans(categoryName)
+            .Select(plan => new MobilePlanDto
+            {
+                Name = plan.Name,
+                Code = plan.Code,
+                Amount = SiteCurrency.ConvertDisplayAmount(plan.Amount, _siteContext.Currency),
+                DataAllowance = plan.DataAllowance,
+                Description = plan.Description
+            })
+            .ToList());
+    }
+
+    private bool IsAddonEnabled(Addon addon)
+    {
+        return addon.Id switch
+        {
+            "insurance" => _siteContext.InsuranceEnabled,
+            "trade-in" => _siteContext.TradeInEnabled,
+            _ => true
+        };
     }
 }
