@@ -164,7 +164,8 @@ public class ProductsController : ControllerBase
                 Name = plan.Name,
                 Code = plan.Code,
                 Description = plan.Description,
-                Amount = SiteCurrency.ConvertDisplayAmount(plan.Amount, _siteContext.Currency)
+                Amount = SiteCurrency.ConvertPhpAmount(plan.Amount, _siteContext.Currency),
+                BillingFrequency = plan.BillingFrequency ?? string.Empty
             })
             .ToList());
     }
@@ -186,7 +187,8 @@ public class ProductsController : ControllerBase
             {
                 Name = plan.Name,
                 Code = plan.Code,
-                Amount = SiteCurrency.ConvertDisplayAmount(plan.Amount, _siteContext.Currency),
+                Amount = SiteCurrency.ConvertPhpAmount(plan.Amount, _siteContext.Currency),
+                BillingFrequency = plan.BillingFrequency ?? string.Empty,
                 DataAllowance = plan.DataAllowance,
                 Description = plan.Description
             })

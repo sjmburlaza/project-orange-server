@@ -330,7 +330,9 @@ public class CartService : ICartService
     {
         var subtotal = GetSubtotal(cart);
         var addonSummary = GetAddonSummary(cart);
-        var addonTotal = addonSummary.Sum(summary => summary.Amount ?? 0);
+        var addonTotal = addonSummary
+            .Where(summary => string.IsNullOrWhiteSpace(summary.BillingFrequency))
+            .Sum(summary => summary.Amount ?? 0);
         var discount = GetDiscount(cart, subtotal);
 
         var hasSelectedShipping = cart.ShippingPrice.HasValue;
@@ -670,7 +672,7 @@ public class CartService : ICartService
 
         var snapshot = CreateDisplayOnlyAddonSnapshot(addon);
         var amount = SiteCurrency.ConvertPhpAmount(
-            SiteCurrency.ParseAmount(plan.Amount),
+            plan.Amount,
             _siteContext.Currency);
 
         snapshot.OptionCode = plan.Code;
@@ -768,7 +770,7 @@ public class CartService : ICartService
 
         var snapshot = CreateDisplayOnlyAddonSnapshot(addon);
         var amount = SiteCurrency.ConvertPhpAmount(
-            SiteCurrency.ParseAmount(plan.Amount),
+            plan.Amount,
             _siteContext.Currency);
 
         snapshot.OptionCode = plan.Code;
@@ -776,7 +778,10 @@ public class CartService : ICartService
         snapshot.Title = plan.Name;
         snapshot.Description = plan.Description;
         snapshot.Amount = amount;
-        snapshot.AmountDisplay = SiteCurrency.FormatAmount(amount, _siteContext.Currency, monthly: true);
+        snapshot.AmountDisplay = SiteCurrency.FormatAmount(
+            amount,
+            _siteContext.Currency,
+            monthly: string.Equals(plan.BillingFrequency, "month", StringComparison.OrdinalIgnoreCase));
         snapshot.BillingType = BillingTypeMonthly;
         snapshot.MultiplyByQuantity = false;
 
@@ -865,7 +870,8 @@ public class CartService : ICartService
                 Title = addon.Title,
                 Description = addon.Description,
                 ImageUrl = addon.ImageUrl,
-                Amount = string.Empty,
+                Amount = null,
+                BillingFrequency = string.Empty,
                 SelectedOptionCode = string.Empty,
                 SelectedOptionName = string.Empty,
                 IsAdded = false
@@ -906,7 +912,10 @@ public class CartService : ICartService
             Title = string.IsNullOrWhiteSpace(selectedTitle) ? addon.Title : selectedTitle,
             Description = string.IsNullOrWhiteSpace(selectedDescription) ? addon.Description : selectedDescription,
             ImageUrl = string.IsNullOrWhiteSpace(selectedAddon.ImageUrl) ? addon.ImageUrl : selectedAddon.ImageUrl,
-            Amount = selectedAddon.AmountDisplay,
+            Amount = selectedAddon.Amount,
+            BillingFrequency = string.Equals(selectedAddon.BillingType, BillingTypeMonthly, StringComparison.OrdinalIgnoreCase)
+                ? "month"
+                : string.Empty,
             SelectedOptionCode = selectedAddon.OptionCode,
             SelectedOptionName = selectedAddon.OptionName,
             IsAdded = true
@@ -925,16 +934,6 @@ public class CartService : ICartService
                     ? entry.Addon.Name
                     : $"{entry.Addon.Name} - {entry.Addon.OptionName}";
 
-                if (entry.Addon.BillingType == BillingTypeMonthly)
-                {
-                    return new CartSummaryAttributeDto
-                    {
-                        Name = name,
-                        Amount = null,
-                        DisplayValue = entry.Addon.AmountDisplay
-                    };
-                }
-
                 var amount = entry.Addon.MultiplyByQuantity
                     ? entry.Addon.Amount * entry.Item.Quantity
                     : entry.Addon.Amount;
@@ -942,7 +941,10 @@ public class CartService : ICartService
                 return new CartSummaryAttributeDto
                 {
                     Name = name,
-                    Amount = amount
+                    Amount = amount,
+                    BillingFrequency = string.Equals(entry.Addon.BillingType, BillingTypeMonthly, StringComparison.OrdinalIgnoreCase)
+                        ? "month"
+                        : string.Empty
                 };
             })
             .ToList();
