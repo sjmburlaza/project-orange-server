@@ -1,16 +1,15 @@
-using ProjectOrangeApi.DTOs;
-
 namespace ProjectOrangeApi.Data.Seeds;
 
 public static class MobilePlanSeed
 {
-    public static readonly List<MobilePlanDto> Plans =
+    public static readonly List<MobilePlan> Plans =
     [
         new()
         {
             Name = "Basic Mobile Plan",
             Code = "MOBILE_PLAN_BASIC",
-            Amount = "P599/month",
+            Amount = 599,
+            BillingFrequency = "month",
             DataAllowance = "10GB",
             Description = "10GB monthly data with unlimited texts and standard calls."
         },
@@ -18,7 +17,8 @@ public static class MobilePlanSeed
         {
             Name = "Plus Mobile Plan",
             Code = "MOBILE_PLAN_PLUS",
-            Amount = "P899/month",
+            Amount = 899,
+            BillingFrequency = "month",
             DataAllowance = "25GB",
             Description = "25GB monthly data with unlimited texts and calls."
         },
@@ -26,22 +26,33 @@ public static class MobilePlanSeed
         {
             Name = "Unlimited Mobile Plan",
             Code = "MOBILE_PLAN_UNLIMITED",
-            Amount = "P1,299/month",
+            Amount = 1299,
+            BillingFrequency = "month",
             DataAllowance = "Unlimited",
             Description = "Unlimited monthly data, calls, and texts."
         }
     ];
 
-    public static List<MobilePlanDto> GetPlans(string categoryName)
+    public static List<MobilePlan> GetPlans(string categoryName)
     {
         return string.Equals(categoryName, "Phones", StringComparison.OrdinalIgnoreCase)
             ? Plans
             : [];
     }
 
-    public static MobilePlanDto? FindPlan(string categoryName, string code)
+    public static MobilePlan? FindPlan(string categoryName, string code)
     {
         return GetPlans(categoryName).FirstOrDefault(plan =>
             string.Equals(plan.Code, code, StringComparison.OrdinalIgnoreCase));
     }
+}
+
+public class MobilePlan
+{
+    public string Name { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public string BillingFrequency { get; set; } = string.Empty;
+    public string DataAllowance { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 }
