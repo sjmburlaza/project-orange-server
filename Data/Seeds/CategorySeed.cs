@@ -4,27 +4,50 @@ namespace ProjectOrangeApi.Data.Seeds;
 
 public static class CategorySeed
 {
-    private static readonly string[] CategoryNames =
+    private const int LegacyCategoriesPerSite = 3;
+    private const int FirstAdditionalBaseCategoryId = LegacyCategoriesPerSite + 1;
+
+    private static readonly CategorySeedEntry[] CategoryEntries =
     [
-        "Phones",
-        "Laptops",
-        "Accessories"
+        new(1, "Phones"),
+        new(2, "Laptops"),
+        new(3, "Accessories"),
+        new(FirstAdditionalBaseCategoryId, "Monitors")
     ];
 
     public static Category[] Categories =>
         SiteSeed.Sites
-            .SelectMany((site, siteIndex) =>
-                CategoryNames.Select((name, categoryIndex) => new Category
+            .SelectMany(site =>
+                CategoryEntries.Select(category => new Category
                 {
-                    Id = (siteIndex * CategoryNames.Length) + categoryIndex + 1,
+                    Id = GetCategoryId(site.Id, category.BaseCategoryId),
                     SiteId = site.Id,
-                    Name = name
+                    Name = category.Name
                 }))
             .ToArray();
 
     public static int GetCategoryId(int siteId, int baseCategoryId)
     {
-        var siteIndex = siteId - 1;
-        return (siteIndex * CategoryNames.Length) + baseCategoryId;
+        if (!CategoryEntries.Any(category => category.BaseCategoryId == baseCategoryId))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(baseCategoryId),
+                baseCategoryId,
+                "Unknown base category id.");
+        }
+
+        return baseCategoryId < FirstAdditionalBaseCategoryId
+            ? GetLegacyCategoryId(siteId, baseCategoryId)
+            : GetAdditionalCategoryId(siteId, baseCategoryId);
     }
+
+    private static int GetLegacyCategoryId(int siteId, int baseCategoryId) =>
+        ((siteId - 1) * LegacyCategoriesPerSite) + baseCategoryId;
+
+    private static int GetAdditionalCategoryId(int siteId, int baseCategoryId) =>
+        (SiteSeed.Sites.Length * LegacyCategoriesPerSite)
+        + ((baseCategoryId - FirstAdditionalBaseCategoryId) * SiteSeed.Sites.Length)
+        + siteId;
+
+    private sealed record CategorySeedEntry(int BaseCategoryId, string Name);
 }

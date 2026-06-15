@@ -70,7 +70,24 @@ public static class ProductSpecSeed
 
 		new ProductSpec { Id = 44, ProductId = 20, Name = "Size", Value = "27-inch" },
 		new ProductSpec { Id = 45, ProductId = 20, Name = "Resolution", Value = "QHD" },
-		new ProductSpec { Id = 46, ProductId = 20, Name = "Color", Value = "Black" }
+		new ProductSpec { Id = 46, ProductId = 20, Name = "Color", Value = "Black" },
+		new ProductSpec { Id = 47, ProductId = 20, Name = "Refresh Rate", Value = "75Hz" },
+		new ProductSpec { Id = 48, ProductId = 20, Name = "Panel", Value = "IPS" },
+
+		new ProductSpec { Id = 49, ProductId = 21, Name = "Size", Value = "24-inch" },
+		new ProductSpec { Id = 50, ProductId = 21, Name = "Resolution", Value = "FHD" },
+		new ProductSpec { Id = 51, ProductId = 21, Name = "Refresh Rate", Value = "75Hz" },
+		new ProductSpec { Id = 52, ProductId = 21, Name = "Panel", Value = "IPS" },
+
+		new ProductSpec { Id = 53, ProductId = 22, Name = "Size", Value = "32-inch" },
+		new ProductSpec { Id = 54, ProductId = 22, Name = "Resolution", Value = "4K UHD" },
+		new ProductSpec { Id = 55, ProductId = 22, Name = "HDR", Value = "HDR10" },
+		new ProductSpec { Id = 56, ProductId = 22, Name = "Panel", Value = "IPS" },
+
+		new ProductSpec { Id = 57, ProductId = 23, Name = "Size", Value = "34-inch" },
+		new ProductSpec { Id = 58, ProductId = 23, Name = "Resolution", Value = "UWQHD" },
+		new ProductSpec { Id = 59, ProductId = 23, Name = "Refresh Rate", Value = "144Hz" },
+		new ProductSpec { Id = 60, ProductId = 23, Name = "Panel", Value = "VA" }
 	];
 
 	public static ProductSpec[] ProductSpecs =>
@@ -79,7 +96,7 @@ public static class ProductSpecSeed
 				BaseProductSpecs.Select(spec => new ProductSpec
 				{
 					Id = (siteIndex * 100) + spec.Id,
-					ProductId = (siteIndex * 20) + spec.ProductId,
+					ProductId = ProductSeed.GetProductId(site.Id, spec.ProductId),
 					Name = spec.Name,
 					Value = spec.Value
 				}))

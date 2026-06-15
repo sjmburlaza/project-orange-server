@@ -52,6 +52,30 @@ public static class InsurancePlanSeed
                     Description = "Comprehensive laptop protection with priority repairs, accidental damage coverage, and battery support.",
                     Amount = 5499
                 }
+            ],
+            ["Monitors"] =
+            [
+                new()
+                {
+                    Name = "Essential Monitor Care",
+                    Code = "MONITOR_CARE_ESSENTIAL",
+                    Description = "Covers panel diagnostics, standard repair support, and power-related issues.",
+                    Amount = 1199
+                },
+                new()
+                {
+                    Name = "Premium Monitor Care",
+                    Code = "MONITOR_CARE_PREMIUM",
+                    Description = "Adds accidental damage coverage, priority service, and extended parts support.",
+                    Amount = 1899
+                },
+                new()
+                {
+                    Name = "Complete Monitor Care",
+                    Code = "MONITOR_CARE_COMPLETE",
+                    Description = "Comprehensive monitor protection with priority repairs, accidental damage coverage, and replacement support.",
+                    Amount = 2499
+                }
             ]
         };
 
