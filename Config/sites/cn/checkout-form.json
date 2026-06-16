@@ -57,35 +57,35 @@
               "type": "text",
               "label": "省 / 直辖市",
               "validators": [{ "name": "required" }],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "city",
               "type": "text",
               "label": "城市",
               "validators": [{ "name": "required" }],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "district",
               "type": "text",
               "label": "区 / 县",
               "validators": [{ "name": "required" }],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "addressLine1",
               "type": "text",
               "label": "详细地址",
               "validators": [{ "name": "required" }],
-              "grid": { "mobile": 12, "desktop": 8 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "addressLine2",
               "type": "text",
               "label": "楼栋、单元、房号",
               "validators": [],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "postalCode",
@@ -96,14 +96,14 @@
                 { "name": "maxLength", "value": 6 }
               ],
               "asyncValidators": [{ "name": "serviceablePostalCode" }],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "deliveryEmail",
               "type": "email",
               "label": "收货通知邮箱",
               "validators": [{ "name": "required" }, { "name": "email" }],
-              "grid": { "mobile": 12, "desktop": 8 }
+              "grid": { "mobile": 12, "desktop": 6 }
             }
           ],
           "grid": { "mobile": 12, "desktop": 12 }
@@ -143,7 +143,7 @@
               "label": "省 / 直辖市",
               "validators": [{ "name": "required" }],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "city",
@@ -151,7 +151,7 @@
               "label": "城市",
               "validators": [{ "name": "required" }],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "addressLine1",
@@ -159,7 +159,7 @@
               "label": "详细地址",
               "validators": [{ "name": "required" }],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
-              "grid": { "mobile": 12, "desktop": 8 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "postalCode",
@@ -170,7 +170,7 @@
                 { "name": "maxLength", "value": 6 }
               ],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "taxId",
@@ -213,8 +213,16 @@
           "label": "支付方式",
           "validators": [{ "name": "required" }],
           "options": [
-            { "label": "银行卡 / 银联", "value": "unionpay", "icon": "credit_card" },
-            { "label": "支付宝", "value": "alipay", "icon": "account_balance_wallet" },
+            {
+              "label": "银行卡 / 银联",
+              "value": "unionpay",
+              "icon": "credit_card"
+            },
+            {
+              "label": "支付宝",
+              "value": "alipay",
+              "icon": "account_balance_wallet"
+            },
             { "label": "微信支付", "value": "wechat-pay", "icon": "qr_code" }
           ]
         }

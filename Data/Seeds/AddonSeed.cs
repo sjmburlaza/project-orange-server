@@ -20,7 +20,7 @@ public static class AddonSeed
             Title = "Protect your device",
             Description = "Choose a protection plan for accidental damage and repair support.",
             ImageUrl = "",
-            EligibleCategories = ["Phones", "Laptops"]
+            EligibleCategories = ["Phones", "Laptops", "Monitors"]
         },
         new()
         {

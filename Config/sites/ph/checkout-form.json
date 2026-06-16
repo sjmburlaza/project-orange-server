@@ -164,6 +164,99 @@
               "validators": [],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
               "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "addressLine1",
+              "type": "text",
+              "label": "Address Line 1",
+              "validators": [{ "name": "required" }],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "addressLine2",
+              "type": "text",
+              "label": "Address Line 2",
+              "validators": [],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "region",
+              "type": "select-search",
+              "label": "Region",
+              "optionsApi": "/api/options/regions",
+              "validators": [{ "name": "required" }],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "city",
+              "type": "select-search",
+              "label": "City",
+              "optionsApi": "/api/options/cities",
+              "dependsOn": "region",
+              "validators": [{ "name": "required" }],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "barangay",
+              "type": "select-search",
+              "label": "Barangay",
+              "optionsApi": "/api/options/barangays",
+              "dependsOn": "city",
+              "validators": [{ "name": "required" }],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
+            },
+            {
+              "name": "postalCode",
+              "type": "text",
+              "label": "Postal Code",
+              "validators": [
+                { "name": "required" },
+                { "name": "maxLength", "value": 4 }
+              ],
+              "asyncValidators": [{ "name": "serviceablePostalCode" }],
+              "visibleIf": {
+                "field": "sameAsDeliveryAddress",
+                "value": false
+              },
+              "grid": {
+                "mobile": 12,
+                "desktop": 6
+              }
             }
           ],
           "grid": { "mobile": 12, "desktop": 12 }
@@ -199,8 +292,16 @@
           "label": "Payment Method",
           "validators": [{ "name": "required" }],
           "options": [
-            { "label": "Credit / Debit Card", "value": "card", "icon": "credit_card" },
-            { "label": "GCash", "value": "gcash", "icon": "account_balance_wallet" },
+            {
+              "label": "Credit / Debit Card",
+              "value": "card",
+              "icon": "credit_card"
+            },
+            {
+              "label": "GCash",
+              "value": "gcash",
+              "icon": "account_balance_wallet"
+            },
             { "label": "Cash on Delivery", "value": "cod", "icon": "payments" }
           ]
         }

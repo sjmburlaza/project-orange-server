@@ -4,7 +4,8 @@ namespace ProjectOrangeApi.Data.Seeds;
 
 public static class ProductSeed
 {
-    private const int ProductsPerSite = 20;
+    private const int LegacyProductsPerSite = 20;
+    private const int FirstAdditionalProductId = LegacyProductsPerSite + 1;
 
     private static readonly Dictionary<string, ProductSeedEntry[]> ProductsBySite =
         new(StringComparer.OrdinalIgnoreCase)
@@ -32,7 +33,11 @@ public static class ProductSeed
                 new(17, "Webcam 1080p", "Full HD webcam for video meetings.", 2200, 22, "", 3),
                 new(18, "External SSD 1TB", "Portable high-speed SSD for file backups.", 6500, 16, "", 3),
                 new(19, "Power Bank 20000mAh", "Fast-charging power bank for phones and tablets.", 2000, 28, "", 3),
-                new(20, "27-inch Monitor", "QHD productivity monitor for hybrid work.", 12999, 10, "", 3)
+
+                new(20, "27-inch Monitor", "QHD productivity monitor for hybrid work.", 12999, 10, "", 4),
+                new(21, "24-inch FHD Monitor", "Compact Full HD monitor for study and office desks.", 7999, 14, "", 4),
+                new(22, "32-inch 4K Monitor", "Large UHD display with HDR support for creative work.", 24999, 8, "", 4),
+                new(23, "34-inch Ultrawide Monitor", "Curved ultrawide display for multitasking and immersive setups.", 27999, 6, "", 4)
             ],
             ["fr"] =
             [
@@ -57,7 +62,11 @@ public static class ProductSeed
                 new(17, "Housse Laptop 14 pouces", "Housse rembourrée pour ordinateur portable.", 39, 28, "", 3),
                 new(18, "SSD Externe 2 To", "Stockage externe rapide pour photos et vidéos.", 159, 12, "", 3),
                 new(19, "Batterie Externe 10000mAh", "Batterie compacte avec USB-C Power Delivery.", 39, 32, "", 3),
-                new(20, "Moniteur 24 pouces FHD", "Écran bureautique Full HD avec pied réglable.", 179, 10, "", 3)
+
+                new(20, "Moniteur 27 pouces QHD", "Écran QHD polyvalent avec dalle IPS pour le travail quotidien.", 299, 9, "", 4),
+                new(21, "Moniteur 24 pouces FHD", "Écran bureautique Full HD avec pied réglable.", 179, 10, "", 4),
+                new(22, "Moniteur 32 pouces 4K", "Grand écran UHD avec HDR pour création et multitâche.", 449, 7, "", 4),
+                new(23, "Moniteur Ultrawide 34 pouces", "Écran incurvé UWQHD pour le multitâche et les configurations immersives.", 549, 6, "", 4)
             ],
             ["cn"] =
             [
@@ -82,7 +91,11 @@ public static class ProductSeed
                 new(17, "Gaming Mouse", "低延迟无线鼠标，支持可调 DPI。", 199, 35, "", 3),
                 new(18, "Mechanical Keyboard 87-Key", "紧凑型机械键盘，适合桌面办公和游戏。", 329, 22, "", 3),
                 new(19, "20000mAh Power Bank", "大容量移动电源，支持快速充电。", 199, 38, "", 3),
-                new(20, "27-inch 2K Monitor", "清晰 2K 显示器，适合办公和游戏。", 1299, 12, "", 3)
+
+                new(20, "27英寸 2K显示器", "清晰 2K 显示器，适合办公和游戏。", 1299, 12, "", 4),
+                new(21, "24英寸 全高清显示器", "紧凑全高清显示器，适合学习和日常办公。", 799, 18, "", 4),
+                new(22, "32英寸 4K显示器", "大尺寸 UHD 显示屏，适合创作和多任务处理。", 2499, 8, "", 4),
+                new(23, "34英寸 带鱼屏显示器", "曲面 UWQHD 宽屏显示器，适合多任务处理和沉浸式体验。", 2999, 6, "", 4)
             ],
             ["jp"] =
             [
@@ -107,16 +120,20 @@ public static class ProductSeed
                 new(17, "Desk Monitor Light", "モニター周りを照らす USB 給電式ライトバー。", 5980, 20, "", 3),
                 new(18, "Compact Mechanical Keyboard", "省スペースで使えるタクタイルスイッチ搭載キーボード。", 12800, 16, "", 3),
                 new(19, "Power Bank 10000mAh", "USB-C 充電対応の薄型モバイルバッテリー。", 4980, 36, "", 3),
-                new(20, "27-inch 4K Monitor", "作業効率を高める高解像度 4K ディスプレイ。", 54800, 9, "", 3)
+
+                new(20, "27インチ QHD モニター", "作業効率を高める高解像度 QHD ディスプレイ。", 44800, 9, "", 4),
+                new(21, "24インチ FHD モニター", "省スペースで使えるフル HD ディスプレイ。", 24800, 14, "", 4),
+                new(22, "32インチ 4K モニター", "制作作業や動画視聴に適した大画面 4K ディスプレイ。", 69800, 7, "", 4),
+                new(23, "34インチ ウルトラワイドモニター", "マルチタスクに便利な曲面 UWQHD ディスプレイ。", 79800, 6, "", 4)
             ]
         };
 
     public static Product[] Products =>
         SiteSeed.Sites
-            .SelectMany((site, siteIndex) =>
+            .SelectMany(site =>
                 ProductsBySite[site.Code].Select(product => new Product
                 {
-                    Id = (siteIndex * ProductsPerSite) + product.Id,
+                    Id = GetProductId(site.Id, product.Id),
                     SiteId = site.Id,
                     Name = product.Name,
                     Description = product.Description,
@@ -126,6 +143,19 @@ public static class ProductSeed
                     CategoryId = CategorySeed.GetCategoryId(site.Id, product.CategoryId)
                 }))
             .ToArray();
+
+    public static int GetProductId(int siteId, int baseProductId)
+    {
+        if (baseProductId <= LegacyProductsPerSite)
+        {
+            var siteIndex = siteId - 1;
+            return (siteIndex * LegacyProductsPerSite) + baseProductId;
+        }
+
+        return (SiteSeed.Sites.Length * LegacyProductsPerSite)
+            + ((baseProductId - FirstAdditionalProductId) * SiteSeed.Sites.Length)
+            + siteId;
+    }
 
     private sealed record ProductSeedEntry(
         int Id,
