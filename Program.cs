@@ -61,20 +61,9 @@ builder.Services.AddHttpClient<GeoCountryService>(client =>
     client.DefaultRequestHeaders.UserAgent.ParseAdd("ProjectOrangeApi/1.0");
 });
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
-}
-else
-{
-    builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseSqlServer(
-            builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
-}
-
-
+builder.Services.AddDbContext<AppDbContext>(options =>
+options.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors(options =>
 {
