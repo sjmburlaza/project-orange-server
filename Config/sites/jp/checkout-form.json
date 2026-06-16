@@ -61,35 +61,35 @@
                 { "name": "maxLength", "value": 8 }
               ],
               "asyncValidators": [{ "name": "serviceablePostalCode" }],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "region",
               "type": "text",
               "label": "都道府県",
               "validators": [{ "name": "required" }],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "city",
               "type": "text",
               "label": "市区町村",
               "validators": [{ "name": "required" }],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "addressLine1",
               "type": "text",
               "label": "町名・番地",
               "validators": [{ "name": "required" }],
-              "grid": { "mobile": 12, "desktop": 8 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "addressLine2",
               "type": "text",
               "label": "建物名・部屋番号",
               "validators": [],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "deliveryEmail",
@@ -139,7 +139,7 @@
                 { "name": "maxLength", "value": 8 }
               ],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "region",
@@ -147,7 +147,7 @@
               "label": "都道府県",
               "validators": [{ "name": "required" }],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "city",
@@ -155,7 +155,7 @@
               "label": "市区町村",
               "validators": [{ "name": "required" }],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "addressLine1",
@@ -163,7 +163,7 @@
               "label": "町名・番地",
               "validators": [{ "name": "required" }],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
-              "grid": { "mobile": 12, "desktop": 8 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "taxId",
@@ -171,7 +171,7 @@
               "label": "登録番号",
               "validators": [],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             }
           ],
           "grid": { "mobile": 12, "desktop": 12 }
@@ -206,7 +206,11 @@
           "label": "お支払い方法",
           "validators": [{ "name": "required" }],
           "options": [
-            { "label": "クレジット / デビットカード", "value": "card", "icon": "credit_card" },
+            {
+              "label": "クレジット / デビットカード",
+              "value": "card",
+              "icon": "credit_card"
+            },
             { "label": "コンビニ払い", "value": "konbini", "icon": "store" },
             { "label": "代金引換", "value": "cod", "icon": "payments" }
           ]

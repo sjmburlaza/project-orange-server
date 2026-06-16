@@ -57,14 +57,14 @@
               "type": "text",
               "label": "Adresse",
               "validators": [{ "name": "required" }],
-              "grid": { "mobile": 12, "desktop": 8 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "addressLine2",
               "type": "text",
               "label": "Complement d'adresse",
               "validators": [],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "postalCode",
@@ -75,21 +75,21 @@
                 { "name": "maxLength", "value": 5 }
               ],
               "asyncValidators": [{ "name": "serviceablePostalCode" }],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "city",
               "type": "text",
               "label": "Ville",
               "validators": [{ "name": "required" }],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "region",
               "type": "text",
               "label": "Departement",
               "validators": [],
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "deliveryEmail",
@@ -136,7 +136,7 @@
               "label": "Adresse",
               "validators": [{ "name": "required" }],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
-              "grid": { "mobile": 12, "desktop": 8 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "postalCode",
@@ -147,7 +147,7 @@
                 { "name": "maxLength", "value": 5 }
               ],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
-              "grid": { "mobile": 12, "desktop": 4 }
+              "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "city",
@@ -181,7 +181,11 @@
           "label": "Mode de livraison",
           "validators": [{ "name": "required" }],
           "options": [
-            { "label": "Livraison standard", "value": "standard", "price": 6.9 },
+            {
+              "label": "Livraison standard",
+              "value": "standard",
+              "price": 6.9
+            },
             { "label": "Livraison express", "value": "express", "price": 14.9 }
           ]
         }
@@ -198,9 +202,21 @@
           "label": "Moyen de paiement",
           "validators": [{ "name": "required" }],
           "options": [
-            { "label": "Carte bancaire", "value": "card", "icon": "credit_card" },
-            { "label": "PayPal", "value": "paypal", "icon": "account_balance_wallet" },
-            { "label": "Virement bancaire", "value": "bank-transfer", "icon": "account_balance" }
+            {
+              "label": "Carte bancaire",
+              "value": "card",
+              "icon": "credit_card"
+            },
+            {
+              "label": "PayPal",
+              "value": "paypal",
+              "icon": "account_balance_wallet"
+            },
+            {
+              "label": "Virement bancaire",
+              "value": "bank-transfer",
+              "icon": "account_balance"
+            }
           ]
         }
       ]
