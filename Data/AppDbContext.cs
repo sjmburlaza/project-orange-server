@@ -104,9 +104,77 @@ public class AppDbContext : IdentityDbContext<AppUser>
 			.Property(o => o.TotalAmount)
 			.HasPrecision(18, 2);
 
+		modelBuilder.Entity<Order>()
+			.Property(o => o.OrderNumber)
+			.HasMaxLength(32);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.PaymentStatus)
+			.HasMaxLength(32);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.OrderStatus)
+			.HasMaxLength(32);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.RecipientName)
+			.HasMaxLength(256);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.MobileNumber)
+			.HasMaxLength(32);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.AddressLine1)
+			.HasMaxLength(512);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.AddressLine2)
+			.HasMaxLength(512);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.Barangay)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.City)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.Region)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.PostalCode)
+			.HasMaxLength(32);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.Country)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.DeliveryEstimate)
+			.HasMaxLength(64);
+
+		modelBuilder.Entity<Order>()
+			.Property(o => o.CheckoutDataJson)
+			.HasColumnType("nvarchar(max)");
+
 		modelBuilder.Entity<OrderItem>()
 			.Property(o => o.Price)
 			.HasPrecision(18, 2);
+
+		modelBuilder.Entity<OrderItem>()
+			.Property(o => o.ProductName)
+			.HasMaxLength(256);
+
+		modelBuilder.Entity<OrderItem>()
+			.Property(o => o.ImageUrl)
+			.HasMaxLength(1024);
+
+		modelBuilder.Entity<OrderItem>()
+			.Property(o => o.CategoryName)
+			.HasMaxLength(128);
 
 		modelBuilder.Entity<Cart>()
 			.HasMany(c => c.Entries)
@@ -153,6 +221,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
 
 		modelBuilder.Entity<Order>()
 			.HasIndex(o => o.SiteId);
+
+		modelBuilder.Entity<Order>()
+			.HasIndex(o => new { o.SiteId, o.OrderNumber })
+			.IsUnique();
 
 		modelBuilder.Entity<AuthSession>()
 			.HasOne(s => s.User)

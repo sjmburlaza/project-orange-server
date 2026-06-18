@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ProjectOrangeApi.Data;
 using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Models;
 using ProjectOrangeApi.Services;
 
 namespace ProjectOrangeApi.Controllers;
@@ -12,80 +9,59 @@ namespace ProjectOrangeApi.Controllers;
 [Route("api/{siteCode:alpha:length(2)}/[controller]")]
 public class OrdersController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly ISiteContext _siteContext;
+    private readonly OrderService _orderService;
 
-    public OrdersController(AppDbContext context, ISiteContext siteContext)
+    public OrdersController(OrderService orderService)
     {
-        _context = context;
-        _siteContext = siteContext;
+        _orderService = orderService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+    public async Task<ActionResult<IEnumerable<OrderConfirmationDto>>> GetOrders()
     {
-        var orders = await _context.Orders
-          .Where(o => o.SiteId == _siteContext.SiteId)
-          .Include(o => o.Items)
-          .ThenInclude(i => i.Product)
-          .ToListAsync();
+        return Ok(await _orderService.GetOrdersAsync());
+    }
 
-        return Ok(orders);
+    [HttpGet("{orderNumber}")]
+    public async Task<ActionResult<OrderConfirmationDto>> GetOrder(string orderNumber)
+    {
+        var order = await _orderService.GetOrderAsync(orderNumber);
+
+        return order is null ? NotFound() : Ok(order);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Order>> CreateOrder(CreateOrderDto dto)
+    public async Task<ActionResult<OrderConfirmationDto>> CreateOrder(PlaceOrderRequestDto request)
     {
-        if (dto.Items == null || dto.Items.Count == 0)
-            return BadRequest("Order must contain at least one item.");
-
-        var productIds = dto.Items.Select(i => i.ProductId).ToList();
-        var products = await _context.Products
-            .Include(p => p.Category)
-            .Include(p => p.ItemSpecs)
-            .Where(p =>
-                p.SiteId == _siteContext.SiteId &&
-                productIds.Contains(p.Id))
-            .ToListAsync();
-
-        var order = new Order
+        try
         {
-            SiteId = _siteContext.SiteId,
-            CustomerName = dto.CustomerName,
-            CustomerEmail = dto.CustomerEmail,
-            Items = new List<OrderItem>()
+            var order = await _orderService.PlaceOrderAsync(request);
+
+            return Ok(order);
+        }
+        catch (ApiErrorException ex)
+        {
+            return CreateErrorResponse(ex);
+        }
+    }
+
+    private ObjectResult CreateErrorResponse(ApiErrorException exception)
+    {
+        var problem = new ProblemDetails
+        {
+            Status = exception.StatusCode,
+            Title = exception.Title,
+            Detail = exception.Message,
+            Type = $"https://project-orange-api/errors/{exception.Code.ToLowerInvariant()}"
         };
 
-        decimal total = 0;
+        problem.Extensions["code"] = exception.Code;
 
-        foreach (var item in dto.Items)
+        foreach (var detail in exception.ErrorDetails)
         {
-            var product = products.FirstOrDefault(p => p.Id == item.ProductId);
-            if (product == null)
-                return BadRequest($"Product with ID {item.ProductId} not found");
-
-            if (product.StockQuantity < item.Quantity)
-                return BadRequest($"Not enough stock for product: {product.Name}");
-
-            product.StockQuantity -= item.Quantity;
-
-            var orderItem = new OrderItem
-            {
-                ProductId = product.Id,
-                Quantity = item.Quantity,
-                Price = product.Price
-            };
-
-            order.Items.Add(orderItem);
-            total += product.Price * item.Quantity;
-
+            problem.Extensions[detail.Key] = detail.Value;
         }
 
-        order.TotalAmount = total;
-
-        _context.Orders.Add(order);
-        await _context.SaveChangesAsync();
-
-        return Ok(order);
+        return StatusCode(exception.StatusCode, problem);
     }
 }
