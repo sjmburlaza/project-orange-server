@@ -448,12 +448,66 @@ Address options currently return Philippine region, city, and barangay data only
 
 ### Orders
 
-| Method | Endpoint      | Description     |
-| ------ | ------------- | --------------- |
-| `GET`  | `/api/orders` | Get all orders  |
-| `POST` | `/api/orders` | Create an order |
+| Method | Endpoint                | Description                         |
+| ------ | ----------------------- | ----------------------------------- |
+| `GET`  | `/api/orders`           | Get all order confirmations         |
+| `GET`  | `/api/orders/{orderId}` | Get an order confirmation by number |
+| `POST` | `/api/orders`           | Place an order                      |
 
-Create an order:
+Place an order from the checkout/cart flow:
+
+```http
+POST /api/orders
+Content-Type: application/json
+
+{
+  "cart": {
+    "code": "CART-ABC12345",
+    "entries": [
+      {
+        "productId": 1,
+        "productName": "iPhone 15",
+        "price": 59999,
+        "quantity": 1,
+        "imageUrl": "",
+        "categoryName": "Phones",
+        "itemSpecs": [
+          { "name": "Storage", "value": "128GB" },
+          { "name": "Color", "value": "Black" }
+        ]
+      }
+    ],
+    "cartSummary": [
+      { "name": "Total", "amount": 59999 }
+    ]
+  },
+  "checkoutData": {
+    "customer": {
+      "firstName": "Juan",
+      "lastName": "Dela Cruz",
+      "email": "juan@example.com",
+      "mobileNumber": "09171234567",
+      "deliveryAddress": {
+        "addressLine1": "123 Orange Avenue",
+        "city": "Manila",
+        "postalCode": "1000"
+      }
+    },
+    "payment": {
+      "paymentMethod": "card"
+    },
+    "shipping": {
+      "shippingMethod": "standard"
+    }
+  }
+}
+```
+
+The response is an order confirmation with an order number, payment/order status, item snapshots, shipping address, delivery estimate, total, next steps, and placement timestamp.
+
+Checkout data is accepted as dynamic step-keyed field data. Known confirmation fields such as customer name, email, delivery address, shipping method, and payment method are resolved by field name from the dynamic payload, and the raw checkout data is stored with the order for future form fields.
+
+The legacy item-only body is still accepted:
 
 ```http
 POST /api/orders

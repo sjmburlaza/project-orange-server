@@ -8,6 +8,9 @@ public static class ApiErrorCodes
     public const string AddonNotAvailable = "ADDON_NOT_AVAILABLE";
     public const string CartItemNotFound = "CART_ITEM_NOT_FOUND";
     public const string CartNotFound = "CART_NOT_FOUND";
+    public const string OrderInsufficientStock = "ORDER_INSUFFICIENT_STOCK";
+    public const string OrderInvalidRequest = "ORDER_INVALID_REQUEST";
+    public const string OrderProductNotFound = "ORDER_PRODUCT_NOT_FOUND";
     public const string VoucherAlreadyApplied = "VOUCHER_ALREADY_APPLIED";
     public const string VoucherCodeInvalidFormat = "VOUCHER_CODE_INVALID_FORMAT";
     public const string VoucherLimitReached = "VOUCHER_LIMIT_REACHED";
@@ -85,6 +88,44 @@ public class CartItemNotFoundException : ApiErrorException
         "Cart item not found.",
         "Cart item not found.")
     {
+    }
+}
+
+public class OrderValidationException : ApiErrorException
+{
+    private OrderValidationException(
+        string code,
+        int statusCode,
+        string message) : base(
+            code,
+            statusCode,
+            "Order validation failed.",
+            message)
+    {
+    }
+
+    public static OrderValidationException InvalidRequest(string message)
+    {
+        return new OrderValidationException(
+            ApiErrorCodes.OrderInvalidRequest,
+            StatusCodes.Status400BadRequest,
+            message);
+    }
+
+    public static OrderValidationException ProductNotFound(int productId)
+    {
+        return new OrderValidationException(
+            ApiErrorCodes.OrderProductNotFound,
+            StatusCodes.Status400BadRequest,
+            $"Product with ID {productId} not found.");
+    }
+
+    public static OrderValidationException InsufficientStock(string productName)
+    {
+        return new OrderValidationException(
+            ApiErrorCodes.OrderInsufficientStock,
+            StatusCodes.Status409Conflict,
+            $"Not enough stock for product: {productName}");
     }
 }
 
