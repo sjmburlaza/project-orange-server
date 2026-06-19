@@ -25,3 +25,7 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{ProjectOrangeApi_HostAddress}}/api/orders/lookup?orderNumber=OR-20260619-1234&email=juan@example.com
+
+###
