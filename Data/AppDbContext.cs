@@ -24,6 +24,8 @@ public class AppDbContext : IdentityDbContext<AppUser>
 	public DbSet<CartVoucher> CartVouchers => Set<CartVoucher>();
 	public DbSet<ProductSpec> ProductSpecs => Set<ProductSpec>();
 	public DbSet<AuthSession> AuthSessions => Set<AuthSession>();
+	public DbSet<AnalyticsEvent> AnalyticsEvents => Set<AnalyticsEvent>();
+	public DbSet<AnalyticsEventItem> AnalyticsEventItems => Set<AnalyticsEventItem>();
 
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -250,6 +252,84 @@ public class AppDbContext : IdentityDbContext<AppUser>
 
 		modelBuilder.Entity<AuthSession>()
 			.HasIndex(s => new { s.SiteId, s.UserId });
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.HasKey(e => e.Id);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.Property(e => e.Id)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.Property(e => e.SiteId)
+			.HasDefaultValue(SiteSeed.DefaultId);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.HasOne(e => e.Site)
+			.WithMany(site => site.AnalyticsEvents)
+			.HasForeignKey(e => e.SiteId)
+			.OnDelete(DeleteBehavior.Restrict);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.Property(e => e.Type)
+			.HasMaxLength(32);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.Property(e => e.VisitorId)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.Property(e => e.SessionId)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.Property(e => e.ProductName)
+			.HasMaxLength(256);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.Property(e => e.CategoryName)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.Property(e => e.Value)
+			.HasPrecision(18, 2);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.Property(e => e.OrderNumber)
+			.HasMaxLength(64);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.Property(e => e.FailureReason)
+			.HasMaxLength(256);
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.HasIndex(e => new { e.SiteId, e.Type, e.OccurredAt });
+
+		modelBuilder.Entity<AnalyticsEvent>()
+			.HasIndex(e => new { e.SiteId, e.OrderNumber })
+			.HasFilter("[OrderNumber] IS NOT NULL AND [Type] = 'purchase'");
+
+		modelBuilder.Entity<AnalyticsEventItem>()
+			.Property(i => i.AnalyticsEventId)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<AnalyticsEventItem>()
+			.Property(i => i.ProductName)
+			.HasMaxLength(256);
+
+		modelBuilder.Entity<AnalyticsEventItem>()
+			.Property(i => i.CategoryName)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<AnalyticsEventItem>()
+			.Property(i => i.Price)
+			.HasPrecision(18, 2);
+
+		modelBuilder.Entity<AnalyticsEventItem>()
+			.HasOne(i => i.AnalyticsEvent)
+			.WithMany(e => e.Items)
+			.HasForeignKey(i => i.AnalyticsEventId)
+			.OnDelete(DeleteBehavior.Cascade);
 
 		modelBuilder.Entity<CartItem>()
 			.HasMany(i => i.Addons)

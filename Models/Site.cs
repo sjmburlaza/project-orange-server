@@ -19,4 +19,5 @@ public class Site
     public List<Cart> Carts { get; set; } = [];
     public List<Order> Orders { get; set; } = [];
     public List<AuthSession> AuthSessions { get; set; } = [];
+    public List<AnalyticsEvent> AnalyticsEvents { get; set; } = [];
 }

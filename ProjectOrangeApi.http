@@ -6,3 +6,22 @@ GET {{ProjectOrangeApi_HostAddress}}/api/geo/country
 CF-IPCountry: PH
 
 ###
+
+GET {{ProjectOrangeApi_HostAddress}}/api/admin/analytics/dashboard
+
+###
+
+POST {{ProjectOrangeApi_HostAddress}}/api/analytics/events
+Content-Type: application/json
+
+{
+  "type": "product_view",
+  "visitorId": "demo-visitor",
+  "sessionId": "demo-session",
+  "productId": 1,
+  "productName": "iPhone 15",
+  "categoryName": "Phones",
+  "value": 59999
+}
+
+###

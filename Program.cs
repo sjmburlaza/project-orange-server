@@ -52,6 +52,7 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<CheckoutFormService>();
 builder.Services.AddScoped<ShippingPricingService>();
+builder.Services.AddScoped<AnalyticsService>();
 builder.Services.AddScoped<SiteContext>();
 builder.Services.AddScoped<ISiteContext>(provider => provider.GetRequiredService<SiteContext>());
 builder.Services.AddScoped<ISiteContextAccessor>(provider => provider.GetRequiredService<SiteContext>());
