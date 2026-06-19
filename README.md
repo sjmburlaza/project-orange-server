@@ -545,7 +545,34 @@ The lookup response uses the order confirmation shape:
   "customerEmail": "juan@example.com",
   "paymentStatus": "paid",
   "orderStatus": "confirmed",
-  "items": [],
+  "items": [
+    {
+      "productId": 1,
+      "productName": "iPhone 15",
+      "price": 59999,
+      "quantity": 1,
+      "imageUrl": "",
+      "categoryName": "Phones",
+      "itemSpecs": [
+        { "name": "Storage", "value": "128GB" },
+        { "name": "Color", "value": "Black" }
+      ],
+      "addons": [
+        {
+          "id": "insurance",
+          "name": "Device insurance",
+          "title": "Device insurance",
+          "description": "Protect your device from accidental damage.",
+          "imageUrl": "",
+          "amount": 499,
+          "billingFrequency": "",
+          "selectedOptionCode": "basic",
+          "selectedOptionName": "Basic",
+          "isAdded": true
+        }
+      ]
+    }
+  ],
   "shippingAddress": {},
   "deliveryEstimate": "3-5 business days",
   "subtotalAmount": 59999,

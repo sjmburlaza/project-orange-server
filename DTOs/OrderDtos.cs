@@ -30,7 +30,7 @@ public class OrderConfirmationDto
     public string? CustomerEmail { get; set; }
     public string PaymentStatus { get; set; } = string.Empty;
     public string OrderStatus { get; set; } = string.Empty;
-    public List<OrderConfirmationItemDto> Items { get; set; } = [];
+    public List<OrderProductItemDto> Items { get; set; } = [];
     public OrderShippingAddressDto ShippingAddress { get; set; } = new();
     public string DeliveryEstimate { get; set; } = string.Empty;
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -52,7 +52,7 @@ public class OrderConfirmationDto
     public DateTime PlacedAt { get; set; }
 }
 
-public class OrderConfirmationItemDto
+public class OrderProductItemDto
 {
     public int ProductId { get; set; }
     public string ProductName { get; set; } = string.Empty;
@@ -60,7 +60,9 @@ public class OrderConfirmationItemDto
     public int Quantity { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
     public string CategoryName { get; set; } = string.Empty;
-    public List<string> ItemSpecs { get; set; } = [];
+    public List<ProductSpecDto> ItemSpecs { get; set; } = [];
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<AddonDto>? Addons { get; set; }
 }
 
 public class OrderShippingAddressDto
