@@ -13,4 +13,5 @@ public class OrderItem
     public string ImageUrl { get; set; } = string.Empty;
     public string CategoryName { get; set; } = string.Empty;
     public string ItemSpecsJson { get; set; } = "[]";
+    public string AddonsJson { get; set; } = "[]";
 }

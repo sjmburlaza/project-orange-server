@@ -178,6 +178,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
 			.Property(o => o.CategoryName)
 			.HasMaxLength(128);
 
+		modelBuilder.Entity<OrderItem>()
+			.Property(o => o.AddonsJson)
+			.HasColumnType("nvarchar(max)");
+
 		modelBuilder.Entity<Cart>()
 			.HasMany(c => c.Entries)
 			.WithOne(i => i.Cart)

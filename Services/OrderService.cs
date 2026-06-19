@@ -126,7 +126,8 @@ public class OrderService
                 Quantity = snapshot.Quantity,
                 ImageUrl = snapshot.ImageUrl,
                 CategoryName = snapshot.CategoryName,
-                ItemSpecsJson = SerializeList(snapshot.ItemSpecs)
+                ItemSpecsJson = SerializeItemSpecs(snapshot.ItemSpecs),
+                AddonsJson = SerializeAddons(snapshot.Addons)
             }).ToList()
         };
 
@@ -189,10 +190,8 @@ public class OrderService
                 item.Quantity,
                 string.IsNullOrWhiteSpace(item.ImageUrl) ? product.ImageUrl : item.ImageUrl,
                 string.IsNullOrWhiteSpace(item.CategoryName) ? product.Category?.Name ?? string.Empty : item.CategoryName,
-                (item.ItemSpecs ?? [])
-                    .Select(spec => spec.Value)
-                    .Where(value => !string.IsNullOrWhiteSpace(value))
-                    .ToList()));
+                GetOrderItemSpecs(item.ItemSpecs, product),
+                GetOrderItemAddons(item.Addons)));
         }
 
         return snapshots;
@@ -219,10 +218,8 @@ public class OrderService
                 item.Quantity,
                 product.ImageUrl,
                 product.Category?.Name ?? string.Empty,
-                product.ItemSpecs
-                    .Select(spec => spec.Value)
-                    .Where(value => !string.IsNullOrWhiteSpace(value))
-                    .ToList()));
+                GetProductSpecs(product),
+                []));
         }
 
         return snapshots;
@@ -258,6 +255,52 @@ public class OrderService
         {
             throw OrderValidationException.InsufficientStock(product.Name);
         }
+    }
+
+    private static List<ProductSpecDto> GetOrderItemSpecs(List<ProductSpecDto>? itemSpecs, Product product)
+    {
+        var specs = (itemSpecs ?? [])
+            .Where(spec => !string.IsNullOrWhiteSpace(spec.Name) || !string.IsNullOrWhiteSpace(spec.Value))
+            .Select(spec => new ProductSpecDto
+            {
+                Name = spec.Name,
+                Value = spec.Value
+            })
+            .ToList();
+
+        return specs.Count > 0 ? specs : GetProductSpecs(product);
+    }
+
+    private static List<ProductSpecDto> GetProductSpecs(Product product)
+    {
+        return product.ItemSpecs
+            .Select(spec => new ProductSpecDto
+            {
+                Name = spec.Name,
+                Value = spec.Value
+            })
+            .Where(spec => !string.IsNullOrWhiteSpace(spec.Name) || !string.IsNullOrWhiteSpace(spec.Value))
+            .ToList();
+    }
+
+    private static List<AddonDto> GetOrderItemAddons(List<AddonDto>? addons)
+    {
+        return (addons ?? [])
+            .Where(addon => addon.IsAdded)
+            .Select(addon => new AddonDto
+            {
+                Id = addon.Id,
+                Name = addon.Name,
+                Title = addon.Title,
+                Description = addon.Description,
+                ImageUrl = addon.ImageUrl,
+                Amount = addon.Amount,
+                BillingFrequency = addon.BillingFrequency,
+                SelectedOptionCode = addon.SelectedOptionCode,
+                SelectedOptionName = addon.SelectedOptionName,
+                IsAdded = addon.IsAdded
+            })
+            .ToList();
     }
 
     private async Task<string> CreateOrderNumberAsync()
@@ -444,20 +487,13 @@ public class OrderService
         };
     }
 
-    private static OrderConfirmationItemDto MapItemToConfirmation(OrderItem item)
+    private static OrderProductItemDto MapItemToConfirmation(OrderItem item)
     {
         var product = item.Product;
-        var specs = DeserializeList(item.ItemSpecsJson);
+        var specs = DeserializeItemSpecs(item.ItemSpecsJson, product);
+        var addons = DeserializeAddons(item.AddonsJson);
 
-        if (specs.Count == 0 && product?.ItemSpecs is not null)
-        {
-            specs = product.ItemSpecs
-                .Select(spec => spec.Value)
-                .Where(value => !string.IsNullOrWhiteSpace(value))
-                .ToList();
-        }
-
-        return new OrderConfirmationItemDto
+        return new OrderProductItemDto
         {
             ProductId = item.ProductId,
             ProductName = FirstNonEmpty(item.ProductName, product?.Name, "Unknown product"),
@@ -465,7 +501,8 @@ public class OrderService
             Quantity = item.Quantity,
             ImageUrl = FirstNonEmpty(item.ImageUrl, product?.ImageUrl, string.Empty),
             CategoryName = FirstNonEmpty(item.CategoryName, product?.Category?.Name, string.Empty),
-            ItemSpecs = specs
+            ItemSpecs = specs,
+            Addons = addons.Count == 0 ? null : addons
         };
     }
 
@@ -491,6 +528,16 @@ public class OrderService
         return JsonSerializer.Serialize(values);
     }
 
+    private static string SerializeItemSpecs(List<ProductSpecDto> values)
+    {
+        return JsonSerializer.Serialize(values);
+    }
+
+    private static string SerializeAddons(List<AddonDto> values)
+    {
+        return JsonSerializer.Serialize(values);
+    }
+
     private static List<string> DeserializeList(string? json)
     {
         if (string.IsNullOrWhiteSpace(json))
@@ -501,6 +548,134 @@ public class OrderService
         try
         {
             return JsonSerializer.Deserialize<List<string>>(json) ?? [];
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
+    }
+
+    private static List<ProductSpecDto> DeserializeItemSpecs(string? json, Product? product)
+    {
+        var specs = DeserializeItemSpecSnapshot(json);
+
+        if (specs.Count > 0 && product?.ItemSpecs is not null)
+        {
+            return AddProductSpecNames(specs, product);
+        }
+
+        if (specs.Count > 0 || product?.ItemSpecs is null)
+        {
+            return specs;
+        }
+
+        return product.ItemSpecs
+            .Select(spec => new ProductSpecDto
+            {
+                Name = spec.Name,
+                Value = spec.Value
+            })
+            .Where(spec => !string.IsNullOrWhiteSpace(spec.Name) || !string.IsNullOrWhiteSpace(spec.Value))
+            .ToList();
+    }
+
+    private static List<ProductSpecDto> AddProductSpecNames(List<ProductSpecDto> specs, Product product)
+    {
+        foreach (var spec in specs.Where(spec =>
+            string.IsNullOrWhiteSpace(spec.Name) &&
+            !string.IsNullOrWhiteSpace(spec.Value)))
+        {
+            var productSpec = product.ItemSpecs.FirstOrDefault(candidate =>
+                string.Equals(candidate.Value, spec.Value, StringComparison.OrdinalIgnoreCase));
+
+            if (productSpec is not null)
+            {
+                spec.Name = productSpec.Name;
+            }
+        }
+
+        return specs;
+    }
+
+    private static List<ProductSpecDto> DeserializeItemSpecSnapshot(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [];
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(json);
+
+            if (document.RootElement.ValueKind != JsonValueKind.Array)
+            {
+                return [];
+            }
+
+            var specs = new List<ProductSpecDto>();
+
+            foreach (var element in document.RootElement.EnumerateArray())
+            {
+                if (element.ValueKind == JsonValueKind.String)
+                {
+                    var value = element.GetString();
+
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        specs.Add(new ProductSpecDto { Value = value });
+                    }
+
+                    continue;
+                }
+
+                if (element.ValueKind != JsonValueKind.Object)
+                {
+                    continue;
+                }
+
+                var spec = element.Deserialize<ProductSpecDto>();
+
+                if (spec is not null &&
+                    (!string.IsNullOrWhiteSpace(spec.Name) || !string.IsNullOrWhiteSpace(spec.Value)))
+                {
+                    specs.Add(spec);
+                }
+            }
+
+            return specs;
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
+    }
+
+    private static List<AddonDto> DeserializeAddons(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [];
+        }
+
+        try
+        {
+            return (JsonSerializer.Deserialize<List<AddonDto>>(json) ?? [])
+                .Where(addon => addon.IsAdded)
+                .Select(addon => new AddonDto
+                {
+                    Id = addon.Id,
+                    Name = addon.Name,
+                    Title = addon.Title,
+                    Description = addon.Description,
+                    ImageUrl = addon.ImageUrl,
+                    Amount = addon.Amount,
+                    BillingFrequency = addon.BillingFrequency,
+                    SelectedOptionCode = addon.SelectedOptionCode,
+                    SelectedOptionName = addon.SelectedOptionName,
+                    IsAdded = addon.IsAdded
+                })
+                .ToList();
         }
         catch (JsonException)
         {
@@ -658,5 +833,6 @@ public class OrderService
         int Quantity,
         string ImageUrl,
         string CategoryName,
-        List<string> ItemSpecs);
+        List<ProductSpecDto> ItemSpecs,
+        List<AddonDto> Addons);
 }
