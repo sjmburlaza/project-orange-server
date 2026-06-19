@@ -23,10 +23,15 @@ public class AnalyticsController : ControllerBase
     public async Task<ActionResult<AnalyticsDashboardDto>> SaveEvents(
         [FromBody] JsonElement body,
         [FromRoute] string? siteCode,
-        [FromQuery(Name = "site")] string? querySite)
+        [FromQuery(Name = "site")] string? querySite,
+        [FromQuery] string? period)
     {
         var dashboardSiteCode = siteCode ?? querySite ?? _siteContext.SiteCode;
-        var dashboard = await _analyticsService.SaveEventsAsync(body, siteCode, dashboardSiteCode);
+        var dashboard = await _analyticsService.SaveEventsAsync(
+            body,
+            siteCode,
+            dashboardSiteCode,
+            period);
 
         return StatusCode(StatusCodes.Status201Created, dashboard);
     }

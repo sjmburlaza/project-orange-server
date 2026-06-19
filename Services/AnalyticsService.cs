@@ -20,17 +20,19 @@ public class AnalyticsService
         _siteContext = siteContext;
     }
 
-    public async Task<AnalyticsDashboardDto> GetDashboardAsync(string? siteCode)
+    public async Task<AnalyticsDashboardDto> GetDashboardAsync(string? siteCode, string? period)
     {
-        var events = await GetAnalyticsEventsAsync(siteCode);
+        var window = CreatePeriodWindow(period);
+        var events = await GetAnalyticsEventsAsync(siteCode, window);
 
-        return BuildDashboard(events);
+        return BuildDashboard(events, window);
     }
 
     public async Task<AnalyticsDashboardDto> SaveEventsAsync(
         JsonElement body,
         string? routeSiteCode,
-        string? dashboardSiteCode)
+        string? dashboardSiteCode,
+        string? dashboardPeriod)
     {
         var incomingEvents = await NormalizeAnalyticsPayloadAsync(body, routeSiteCode);
         var acceptedEvents = await RemoveDuplicateEventsAsync(incomingEvents);
@@ -41,10 +43,12 @@ public class AnalyticsService
             await _context.SaveChangesAsync();
         }
 
-        return await GetDashboardAsync(dashboardSiteCode);
+        return await GetDashboardAsync(dashboardSiteCode, dashboardPeriod);
     }
 
-    private async Task<List<AnalyticsEvent>> GetAnalyticsEventsAsync(string? siteCode)
+    private async Task<List<AnalyticsEvent>> GetAnalyticsEventsAsync(
+        string? siteCode,
+        AnalyticsPeriodWindow window)
     {
         var normalizedSiteCode = NormalizeSite(siteCode);
         var query = _context.AnalyticsEvents
@@ -54,6 +58,11 @@ public class AnalyticsService
         if (!string.IsNullOrWhiteSpace(normalizedSiteCode))
         {
             query = query.Where(e => e.Site.Code == normalizedSiteCode);
+        }
+
+        if (window.StartAtUtc is not null)
+        {
+            query = query.Where(e => e.OccurredAt >= window.StartAtUtc);
         }
 
         return await query.ToListAsync();
@@ -218,7 +227,9 @@ public class AnalyticsService
         return acceptedEvents;
     }
 
-    private static AnalyticsDashboardDto BuildDashboard(IReadOnlyCollection<AnalyticsEvent> events)
+    private static AnalyticsDashboardDto BuildDashboard(
+        IReadOnlyCollection<AnalyticsEvent> events,
+        AnalyticsPeriodWindow window)
     {
         var visitors = events
             .Where(e => e.Type == AnalyticsEventTypes.Visitor)
@@ -254,7 +265,7 @@ public class AnalyticsService
             PaymentFailures = paymentFailures,
             PaymentFailureRate = SafeDivide(paymentFailures, purchases + paymentFailures),
             UnitsSold = unitsSold,
-            Daily = BuildDailyPoints(events),
+            Daily = BuildTrendPoints(events, window),
             Funnel = BuildFunnel(visitors, productViews, addToCarts, checkoutStarts, purchases),
             TopProducts = topProducts,
             TopCategories = topCategories,
@@ -264,26 +275,56 @@ public class AnalyticsService
         };
     }
 
-    private static List<AnalyticsDailyPointDto> BuildDailyPoints(IReadOnlyCollection<AnalyticsEvent> events)
+    private static List<AnalyticsDailyPointDto> BuildTrendPoints(
+        IReadOnlyCollection<AnalyticsEvent> events,
+        AnalyticsPeriodWindow window)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var points = new Dictionary<string, AnalyticsDailyPointDto>(StringComparer.Ordinal);
 
-        for (var day = 6; day >= 0; day -= 1)
+        if (window.Granularity == AnalyticsPeriodGranularity.Month)
         {
-            var date = today.AddDays(-day);
-            var key = DateKey(date);
+            var startMonth = window.StartDate ??
+                events
+                    .Select(e => DateOnly.FromDateTime(e.OccurredAt.UtcDateTime))
+                    .DefaultIfEmpty(today)
+                    .Min();
 
-            points[key] = new AnalyticsDailyPointDto
+            startMonth = new DateOnly(startMonth.Year, startMonth.Month, 1);
+            var currentMonth = new DateOnly(today.Year, today.Month, 1);
+
+            for (var month = startMonth; month <= currentMonth; month = month.AddMonths(1))
             {
-                DateKey = key,
-                Label = date.ToDateTime(TimeOnly.MinValue).ToString("MMM d", CultureInfo.InvariantCulture)
-            };
+                var key = MonthKey(month);
+                points[key] = new AnalyticsDailyPointDto
+                {
+                    DateKey = key,
+                    Label = month.ToDateTime(TimeOnly.MinValue).ToString("MMM yyyy", CultureInfo.InvariantCulture)
+                };
+            }
+        }
+        else
+        {
+            var startDate = window.StartDate ?? today.AddDays(-6);
+
+            for (var date = startDate; date <= today; date = date.AddDays(1))
+            {
+                var key = DateKey(date);
+                points[key] = new AnalyticsDailyPointDto
+                {
+                    DateKey = key,
+                    Label = date.ToDateTime(TimeOnly.MinValue).ToString("MMM d", CultureInfo.InvariantCulture)
+                };
+            }
         }
 
         foreach (var analyticsEvent in events)
         {
-            var key = DateKey(DateOnly.FromDateTime(analyticsEvent.OccurredAt.UtcDateTime));
+            var eventDate = DateOnly.FromDateTime(analyticsEvent.OccurredAt.UtcDateTime);
+            var key = window.Granularity == AnalyticsPeriodGranularity.Month
+                ? MonthKey(eventDate)
+                : DateKey(eventDate);
+
             if (!points.TryGetValue(key, out var point))
             {
                 continue;
@@ -695,6 +736,32 @@ public class AnalyticsService
             : siteCode.Trim().ToLowerInvariant();
     }
 
+    private static AnalyticsPeriodWindow CreatePeriodWindow(string? period)
+    {
+        var normalizedPeriod = AnalyticsDashboardPeriods.Normalize(period);
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        return normalizedPeriod switch
+        {
+            AnalyticsDashboardPeriods.PastMonth => new AnalyticsPeriodWindow(
+                normalizedPeriod,
+                today.AddDays(-29),
+                AnalyticsPeriodGranularity.Day),
+            AnalyticsDashboardPeriods.PastYear => new AnalyticsPeriodWindow(
+                normalizedPeriod,
+                new DateOnly(today.Year, today.Month, 1).AddMonths(-11),
+                AnalyticsPeriodGranularity.Month),
+            AnalyticsDashboardPeriods.FromStart => new AnalyticsPeriodWindow(
+                normalizedPeriod,
+                null,
+                AnalyticsPeriodGranularity.Month),
+            _ => new AnalyticsPeriodWindow(
+                AnalyticsDashboardPeriods.Last7Days,
+                today.AddDays(-6),
+                AnalyticsPeriodGranularity.Day)
+        };
+    }
+
     private static string CreateId(string prefix)
     {
         return $"{prefix}-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}-{Guid.NewGuid():N}";
@@ -703,6 +770,11 @@ public class AnalyticsService
     private static string DateKey(DateOnly date)
     {
         return date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    }
+
+    private static string MonthKey(DateOnly date)
+    {
+        return date.ToString("yyyy-MM", CultureInfo.InvariantCulture);
     }
 
     private static string ToIsoString(DateTimeOffset date)
@@ -718,4 +790,20 @@ public class AnalyticsService
         string CategoryName);
 
     private sealed record PurchaseKey(int SiteId, string OrderNumber);
+
+    private sealed record AnalyticsPeriodWindow(
+        string Period,
+        DateOnly? StartDate,
+        AnalyticsPeriodGranularity Granularity)
+    {
+        public DateTimeOffset? StartAtUtc => StartDate is null
+            ? null
+            : new DateTimeOffset(StartDate.Value.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);
+    }
+
+    private enum AnalyticsPeriodGranularity
+    {
+        Day,
+        Month
+    }
 }

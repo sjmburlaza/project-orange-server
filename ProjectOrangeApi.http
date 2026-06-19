@@ -7,7 +7,7 @@ CF-IPCountry: PH
 
 ###
 
-GET {{ProjectOrangeApi_HostAddress}}/api/admin/analytics/dashboard
+GET {{ProjectOrangeApi_HostAddress}}/api/admin/analytics/dashboard?period=last-7-days
 
 ###
 

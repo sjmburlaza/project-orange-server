@@ -24,8 +24,11 @@ public class AdminAnalyticsController : ControllerBase
     [HttpGet("dashboard")]
     public async Task<ActionResult<AnalyticsDashboardDto>> GetDashboard(
         [FromRoute] string? siteCode,
-        [FromQuery(Name = "site")] string? querySite)
+        [FromQuery(Name = "site")] string? querySite,
+        [FromQuery] string? period)
     {
-        return Ok(await _analyticsService.GetDashboardAsync(siteCode ?? querySite ?? _siteContext.SiteCode));
+        return Ok(await _analyticsService.GetDashboardAsync(
+            siteCode ?? querySite ?? _siteContext.SiteCode,
+            period));
     }
 }
