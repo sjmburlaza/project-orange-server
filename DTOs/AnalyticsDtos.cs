@@ -20,6 +20,29 @@ public static class AnalyticsEventTypes
     };
 }
 
+public static class AnalyticsDashboardPeriods
+{
+    public const string Last7Days = "last-7-days";
+    public const string PastMonth = "past-month";
+    public const string PastYear = "past-year";
+    public const string FromStart = "from-start";
+
+    public static readonly ISet<string> All = new HashSet<string>(StringComparer.Ordinal)
+    {
+        Last7Days,
+        PastMonth,
+        PastYear,
+        FromStart
+    };
+
+    public static string Normalize(string? period)
+    {
+        return period is not null && All.Contains(period)
+            ? period
+            : Last7Days;
+    }
+}
+
 public class AnalyticsItemDto
 {
     public int ProductId { get; set; }
