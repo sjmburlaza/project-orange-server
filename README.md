@@ -448,11 +448,12 @@ Address options currently return Philippine region, city, and barangay data only
 
 ### Orders
 
-| Method | Endpoint                | Description                         |
-| ------ | ----------------------- | ----------------------------------- |
-| `GET`  | `/api/orders`           | Get all order confirmations         |
-| `GET`  | `/api/orders/{orderId}` | Get an order confirmation by number |
-| `POST` | `/api/orders`           | Place an order                      |
+| Method | Endpoint                                                           | Description                         |
+| ------ | ------------------------------------------------------------------ | ----------------------------------- |
+| `GET`  | `/api/orders`                                                      | Get all order confirmations         |
+| `GET`  | `/api/orders/lookup?orderNumber={orderNumber}&email={customerEmail}` | Look up an order confirmation by number and customer email |
+| `GET`  | `/api/orders/{orderNumber}`                                        | Get an order confirmation by number |
+| `POST` | `/api/orders`                                                      | Place an order                      |
 
 Place an order from the checkout/cart flow:
 
@@ -526,6 +527,35 @@ Content-Type: application/json
 ```
 
 Order listing and creation are scoped to the current site. Products from another site are rejected as missing.
+
+Customer order lookup uses a dedicated verification route:
+
+```http
+GET /api/orders/lookup?orderNumber=OR-20260619-1234&email=juan@example.com
+```
+
+The `orderNumber` and `email` query parameters are both required. The email address must match the order's customer email address case-insensitively. Missing orders and email mismatches both return `404 Not Found`.
+
+The lookup response uses the order confirmation shape:
+
+```json
+{
+  "id": "OR-20260619-1234",
+  "orderNumber": "OR-20260619-1234",
+  "customerEmail": "juan@example.com",
+  "paymentStatus": "paid",
+  "orderStatus": "confirmed",
+  "items": [],
+  "shippingAddress": {},
+  "deliveryEstimate": "3-5 business days",
+  "subtotalAmount": 59999,
+  "totalAmount": 59999,
+  "nextSteps": [],
+  "placedAt": "2026-06-19T00:00:00Z"
+}
+```
+
+Optional fields such as `deliveredAt`, `trackingNumber`, `courier`, `invoiceUrl`, `shippingAmount`, and `discountAmount` are omitted until the order has those values.
 
 ### Trade-ins
 

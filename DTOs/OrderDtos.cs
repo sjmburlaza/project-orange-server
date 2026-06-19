@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ProjectOrangeApi.DTOs;
 
@@ -25,11 +26,27 @@ public class OrderConfirmationDto
 {
     public string Id { get; set; } = string.Empty;
     public string OrderNumber { get; set; } = string.Empty;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? CustomerEmail { get; set; }
     public string PaymentStatus { get; set; } = string.Empty;
     public string OrderStatus { get; set; } = string.Empty;
     public List<OrderConfirmationItemDto> Items { get; set; } = [];
     public OrderShippingAddressDto ShippingAddress { get; set; } = new();
     public string DeliveryEstimate { get; set; } = string.Empty;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DateTime? DeliveredAt { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? TrackingNumber { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Courier { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? InvoiceUrl { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public decimal? SubtotalAmount { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public decimal? ShippingAmount { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public decimal? DiscountAmount { get; set; }
     public decimal TotalAmount { get; set; }
     public List<string> NextSteps { get; set; } = [];
     public DateTime PlacedAt { get; set; }

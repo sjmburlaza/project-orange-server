@@ -33,6 +33,30 @@ public class OrderService
 
     public async Task<OrderConfirmationDto?> GetOrderAsync(string orderNumber)
     {
+        var order = await FindOrderAsync(orderNumber);
+
+        return order is null ? null : MapToConfirmation(order);
+    }
+
+    public async Task<OrderConfirmationDto?> LookupOrderAsync(string orderNumber, string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return null;
+        }
+
+        var order = await FindOrderAsync(orderNumber);
+
+        if (order is null || !EmailMatches(order.CustomerEmail, email))
+        {
+            return null;
+        }
+
+        return MapToConfirmation(order);
+    }
+
+    private async Task<Order?> FindOrderAsync(string orderNumber)
+    {
         if (string.IsNullOrWhiteSpace(orderNumber))
         {
             return null;
@@ -52,7 +76,7 @@ public class OrderService
 
         var order = await query.FirstOrDefaultAsync();
 
-        return order is null ? null : MapToConfirmation(order);
+        return order;
     }
 
     public async Task<OrderConfirmationDto> PlaceOrderAsync(PlaceOrderRequestDto request)
@@ -396,6 +420,7 @@ public class OrderService
         {
             Id = orderNumber,
             OrderNumber = orderNumber,
+            CustomerEmail = EmptyToNull(order.CustomerEmail),
             PaymentStatus = paymentStatus,
             OrderStatus = orderStatus,
             Items = order.Items.Select(MapItemToConfirmation).ToList(),
@@ -412,6 +437,7 @@ public class OrderService
                 Country = FirstNonEmpty(order.Country, "Philippines")
             },
             DeliveryEstimate = FirstNonEmpty(order.DeliveryEstimate, "3-5 business days"),
+            SubtotalAmount = GetSubtotalAmount(order),
             TotalAmount = order.TotalAmount,
             NextSteps = nextSteps,
             PlacedAt = order.CreatedAt
@@ -447,6 +473,11 @@ public class OrderService
     {
         var createdAt = order.CreatedAt == default ? DateTime.UtcNow : order.CreatedAt;
         return $"OR-{createdAt:yyyyMMdd}-{order.Id:0000}";
+    }
+
+    private static decimal GetSubtotalAmount(Order order)
+    {
+        return order.Items.Sum(item => item.Price * item.Quantity);
     }
 
     private static string SerializeCheckoutData(
@@ -485,6 +516,15 @@ public class OrderService
     private static string? EmptyToNull(string? value)
     {
         return string.IsNullOrWhiteSpace(value) ? null : value;
+    }
+
+    private static bool EmailMatches(string orderEmail, string lookupEmail)
+    {
+        return !string.IsNullOrWhiteSpace(orderEmail) &&
+            string.Equals(
+                orderEmail.Trim(),
+                lookupEmail.Trim(),
+                StringComparison.OrdinalIgnoreCase);
     }
 
     private sealed class CheckoutDataResolver

@@ -22,6 +22,22 @@ public class OrdersController : ControllerBase
         return Ok(await _orderService.GetOrdersAsync());
     }
 
+    [HttpGet("lookup")]
+    public async Task<ActionResult<OrderConfirmationDto>> LookupOrder(
+        [FromQuery] string? orderNumber,
+        [FromQuery] string? email)
+    {
+        if (string.IsNullOrWhiteSpace(orderNumber) || string.IsNullOrWhiteSpace(email))
+        {
+            return CreateErrorResponse(OrderValidationException.InvalidRequest(
+                "Order number and email are required to look up an order."));
+        }
+
+        var order = await _orderService.LookupOrderAsync(orderNumber, email);
+
+        return order is null ? NotFound() : Ok(order);
+    }
+
     [HttpGet("{orderNumber}")]
     public async Task<ActionResult<OrderConfirmationDto>> GetOrder(string orderNumber)
     {
