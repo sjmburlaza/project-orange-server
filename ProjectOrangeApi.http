@@ -29,3 +29,23 @@ Content-Type: application/json
 GET {{ProjectOrangeApi_HostAddress}}/api/orders/lookup?orderNumber=OR-20260619-1234&email=juan@example.com
 
 ###
+
+POST {{ProjectOrangeApi_HostAddress}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "customer@example.com"
+}
+
+###
+
+POST {{ProjectOrangeApi_HostAddress}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "customer@example.com",
+  "token": "<reset-token>",
+  "newPassword": "NewCustomer123!"
+}
+
+###

@@ -97,6 +97,14 @@ Jwt__Audience
 Jwt__Key
 ```
 
+Optional password reset link configuration:
+
+```bash
+PasswordReset__ClientResetUrl
+```
+
+If omitted, development reset links default to `http://localhost:4200/reset-password`.
+
 ## Multi-Site Support
 
 The API seeds and serves four active sites:
@@ -209,6 +217,34 @@ Content-Type: application/json
 ```
 
 Registered users are assigned the `customer` role by default.
+
+Request a password reset:
+
+```http
+POST /api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "juan@example.com"
+}
+```
+
+The response is intentionally generic so callers cannot discover whether an email address is registered. In development, the response also includes a URL-safe `resetToken` and `resetUrl` for local testing.
+
+Complete a password reset:
+
+```http
+POST /api/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "juan@example.com",
+  "token": "<reset-token>",
+  "newPassword": "NewPassw0rd!"
+}
+```
+
+Password reset tokens expire after two hours. A successful reset revokes existing auth sessions for the user.
 
 The login endpoint validates the credentials, creates a server-side session for the current site, and sets a secure HttpOnly session cookie. The response returns the user access profile and a session summary:
 
