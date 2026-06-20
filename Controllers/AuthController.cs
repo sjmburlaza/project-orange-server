@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using ProjectOrangeApi.Authorization;
 using ProjectOrangeApi.Data;
 using ProjectOrangeApi.DTOs;
@@ -20,22 +21,27 @@ namespace ProjectOrangeApi.Controllers;
 public class AuthController : ControllerBase
 {
     private static readonly TimeSpan SessionLifetime = TimeSpan.FromHours(2);
+    private const string ForgotPasswordMessage =
+        "If an account matches that email, password reset instructions will be sent.";
 
     private readonly UserManager<AppUser> _userManager;
     private readonly AppDbContext _db;
     private readonly IConfiguration _config;
     private readonly ISiteContext _siteContext;
+    private readonly IWebHostEnvironment _environment;
 
     public AuthController(
         UserManager<AppUser> userManager,
         AppDbContext db,
         IConfiguration config,
-        ISiteContext siteContext)
+        ISiteContext siteContext,
+        IWebHostEnvironment environment)
     {
         _userManager = userManager;
         _db = db;
         _config = config;
         _siteContext = siteContext;
+        _environment = environment;
     }
 
     [HttpPost("register")]
@@ -99,6 +105,57 @@ public class AuthController : ControllerBase
         WriteSessionCookie(token, authSession.ExpiresAtUtc);
 
         return Ok(ToAuthResponse(user, accessProfile.Roles, accessProfile.Permissions, authSession));
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword(ForgotPasswordRequest request)
+    {
+        var user = await _userManager.FindByEmailAsync(request.Email);
+
+        if (user is null || string.IsNullOrWhiteSpace(user.Email))
+        {
+            return Ok(new ForgotPasswordResponse(ForgotPasswordMessage));
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var encodedToken = EncodePasswordResetToken(token);
+
+        if (_environment.IsDevelopment())
+        {
+            return Ok(new ForgotPasswordResponse(
+                ForgotPasswordMessage,
+                encodedToken,
+                BuildPasswordResetUrl(user.Email, encodedToken)));
+        }
+
+        return Ok(new ForgotPasswordResponse(ForgotPasswordMessage));
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
+    {
+        var user = await _userManager.FindByEmailAsync(request.Email);
+
+        if (user is null)
+        {
+            return BadRequest(CreateInvalidPasswordResetError());
+        }
+
+        if (!TryDecodePasswordResetToken(request.Token, out var token))
+        {
+            return BadRequest(CreateInvalidPasswordResetError());
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
+
+        await RevokeUserSessionsAsync(user.Id);
+
+        return Ok(new AuthMessageResponse("Password reset successful"));
     }
 
     [Authorize]
@@ -221,6 +278,91 @@ public class AuthController : ControllerBase
             ExpiresAtUtc = now.Add(SessionLifetime),
             CreatedByIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
         };
+    }
+
+    private async Task RevokeUserSessionsAsync(string userId)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var sessions = await _db.AuthSessions
+            .Where(session =>
+                session.UserId == userId &&
+                session.RevokedAtUtc == null &&
+                session.ExpiresAtUtc > now)
+            .ToListAsync();
+
+        foreach (var session in sessions)
+        {
+            session.RevokedAtUtc = now;
+            session.RevokedByIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        }
+
+        if (sessions.Count > 0)
+        {
+            await _db.SaveChangesAsync();
+        }
+    }
+
+    private string BuildPasswordResetUrl(string email, string token)
+    {
+        var resetUrl = _config["PasswordReset:ClientResetUrl"];
+
+        if (string.IsNullOrWhiteSpace(resetUrl))
+        {
+            resetUrl = "http://localhost:4200/reset-password";
+        }
+
+        resetUrl = resetUrl.Trim();
+
+        var separator = resetUrl.Contains('?') ? '&' : '?';
+
+        return string.Concat(
+            resetUrl,
+            separator,
+            "email=",
+            Uri.EscapeDataString(email),
+            "&token=",
+            Uri.EscapeDataString(token));
+    }
+
+    private static string EncodePasswordResetToken(string token)
+    {
+        return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+    }
+
+    private static bool TryDecodePasswordResetToken(string encodedToken, out string token)
+    {
+        token = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(encodedToken))
+        {
+            return false;
+        }
+
+        try
+        {
+            token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToken));
+            return true;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+    }
+
+    private static IEnumerable<IdentityError> CreateInvalidPasswordResetError()
+    {
+        return
+        [
+            new IdentityError
+            {
+                Code = "InvalidPasswordResetToken",
+                Description = "The password reset token is invalid or has expired."
+            }
+        ];
     }
 
     private async Task<AuthSession?> GetActiveSessionAsync()
