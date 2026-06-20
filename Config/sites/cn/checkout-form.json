@@ -194,10 +194,12 @@
           "name": "shippingMethod",
           "type": "radio-card",
           "label": "配送方式",
+          "optionsApi": "/api/fulfillment/options",
+          "dependsOn": "postalCode",
           "validators": [{ "name": "required" }],
           "options": [
-            { "label": "标准配送", "value": "standard", "price": 30 },
-            { "label": "快速配送", "value": "express", "price": 60 }
+            { "label": "标准配送", "value": "sf-standard", "price": 30 },
+            { "label": "快速配送", "value": "jd-express", "price": 45 }
           ]
         }
       ]

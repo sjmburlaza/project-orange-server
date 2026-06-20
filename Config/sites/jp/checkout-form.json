@@ -187,10 +187,12 @@
           "name": "shippingMethod",
           "type": "radio-card",
           "label": "配送方法",
+          "optionsApi": "/api/fulfillment/options",
+          "dependsOn": "postalCode",
           "validators": [{ "name": "required" }],
           "options": [
-            { "label": "通常配送", "value": "standard", "price": 700 },
-            { "label": "お急ぎ配送", "value": "express", "price": 1200 }
+            { "label": "通常配送", "value": "yamato-standard", "price": 700 },
+            { "label": "お急ぎ配送", "value": "sagawa-express", "price": 1200 }
           ]
         }
       ]

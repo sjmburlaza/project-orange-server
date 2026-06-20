@@ -432,7 +432,7 @@ Content-Type: application/json
 
 {
   "postalCode": "1000",
-  "shippingMethodCode": "standard"
+  "shippingMethodCode": "jnt-standard"
 }
 ```
 
@@ -446,11 +446,11 @@ Carts are scoped to the current site. A cart code can only be fetched or updated
 
 Checkout forms are loaded from `Config/sites/{siteCode}/checkout-form.json` when available, then fall back to `Config/checkout-form.json`.
 
-### Shipping and Postal Codes
+### Fulfillment and Postal Codes
 
 | Method | Endpoint                                             | Description                                   |
 | ------ | ---------------------------------------------------- | --------------------------------------------- |
-| `GET`  | `/api/shipping/options?postalCode={postalCode}`      | Get serviceable shipping options              |
+| `GET`  | `/api/fulfillment/options?postalCode={postalCode}`   | Get postal-code-priced delivery and pickup options |
 | `GET`  | `/api/postal-codes/validate?postalCode={postalCode}` | Validate whether a postal code is serviceable |
 
 Postal-code validation is site-specific:
@@ -462,7 +462,7 @@ Postal-code validation is site-specific:
 | `cn` | Must be 6 digits                                                     |
 | `jp` | Must be 7 digits, with an optional hyphen accepted before validation |
 
-Non-Philippine sites return default `standard` and `express` shipping options using site-local price values.
+Fulfillment options include delivery courier metadata and pickup location metadata. When a postal code is supplied, delivery prices and estimates come from the matched site/country area rule and pickup options are filtered to nearby stores. Unserviceable postal codes return no fulfillment options.
 
 ### Geo
 
