@@ -1,4 +1,4 @@
-
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using ProjectOrangeApi.Data;
 using ProjectOrangeApi.Data.Seeds;
@@ -42,23 +42,18 @@ public class CartService : ICartService
     {
         if (request.Quantity <= 0)
         {
-            throw new Exception("Quantity must be greater than zero.");
+            throw CartValidationException.InvalidRequest("Quantity must be greater than zero.");
         }
 
         var cart = await GetOrCreateCartAsync(cartCode, userId);
 
-        var product = await _context.Products
-            .Include(p => p.Category)
-            .Include(p => p.ItemSpecs)
-            .FirstOrDefaultAsync(p =>
-                p.Id == request.ProductId &&
-                p.SiteId == _siteContext.SiteId)
-            ?? throw new Exception("Product not found.");
+        var product = await GetProductForCartAsync(request);
+        var variant = GetSelectedVariant(product, request);
 
         var selectedAddons = GetSelectedAddonSnapshots(product, request);
 
         var existingItem = cart.Entries.FirstOrDefault(item =>
-            item.ProductId == request.ProductId);
+            item.ProductVariantId == variant.Id);
 
         if (existingItem is not null)
         {
@@ -75,18 +70,17 @@ public class CartService : ICartService
             var cartItem = new CartItem
             {
                 ProductId = product.Id,
+                ProductVariantId = variant.Id,
+                VariantSku = variant.Sku,
+                VariantOptionsJson = SerializeVariantOptions(variant),
                 ProductName = product.Name,
-                Price = product.Price,
+                Price = variant.Price,
                 Quantity = request.Quantity,
-                StockQuantity = product.StockQuantity,
-                ImageUrl = product.ImageUrl,
+                StockQuantity = variant.StockQuantity,
+                ImageUrl = string.IsNullOrWhiteSpace(variant.ImageUrl) ? product.ImageUrl : variant.ImageUrl,
                 CategoryName = product.Category?.Name ?? string.Empty,
 
-                ItemSpecs = product.ItemSpecs.Select(spec => new CartItemSpec
-                {
-                    Name = spec.Name,
-                    Value = spec.Value
-                }).ToList(),
+                ItemSpecs = GetCartItemSpecs(product, variant),
 
                 Addons = selectedAddons
             };
@@ -99,6 +93,29 @@ public class CartService : ICartService
         return MapToResponse(cart);
     }
 
+    private async Task<Product> GetProductForCartAsync(AddToCartRequest request)
+    {
+        var query = _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.ItemSpecs)
+            .Include(p => p.Variants)
+                .ThenInclude(variant => variant.VariantOptions)
+                    .ThenInclude(variantOption => variantOption.ProductOption)
+                        .ThenInclude(option => option.ProductOptionGroup)
+            .Where(product => product.SiteId == _siteContext.SiteId);
+
+        var product = await query.FirstOrDefaultAsync(candidate =>
+            candidate.Variants.Any(variant => variant.Id == request.VariantId));
+
+        return product ?? throw CartValidationException.VariantNotFound(request.VariantId);
+    }
+
+    private static ProductVariant GetSelectedVariant(Product product, AddToCartRequest request)
+    {
+        return product.Variants.FirstOrDefault(variant => variant.Id == request.VariantId)
+            ?? throw CartValidationException.VariantNotFound(request.VariantId);
+    }
+
     public async Task<CartResponseDto> UpdateQuantityAsync(
       string cartCode,
       int productId,
@@ -106,10 +123,7 @@ public class CartService : ICartService
       string? userId)
     {
         var cart = await GetCartEntityAsync(cartCode, userId);
-        var item = cart.Entries.FirstOrDefault(x => x.ProductId == productId);
-
-        if (item is null)
-            throw new CartItemNotFoundException();
+        var item = GetCartItemOrThrow(cart, productId);
 
         if (request.Quantity <= 0)
         {
@@ -127,10 +141,7 @@ public class CartService : ICartService
     public async Task<CartResponseDto> RemoveItemAsync(string cartCode, int productId, string? userId)
     {
         var cart = await GetCartEntityAsync(cartCode, userId);
-        var item = cart.Entries.FirstOrDefault(x => x.ProductId == productId);
-
-        if (item is null)
-            throw new CartItemNotFoundException();
+        var item = GetCartItemOrThrow(cart, productId);
 
         cart.Entries.Remove(item);
 
@@ -378,6 +389,9 @@ public class CartService : ICartService
             Entries = cart.Entries.Select(item => new CartItemDto
             {
                 ProductId = item.ProductId,
+                VariantId = item.ProductVariantId,
+                VariantSku = item.VariantSku,
+                Options = DeserializeVariantOptions(item.VariantOptionsJson),
                 ProductName = item.ProductName,
                 Price = item.Price,
                 Quantity = item.Quantity,
@@ -560,10 +574,87 @@ public class CartService : ICartService
         return addonId.Trim();
     }
 
-    private static CartItem GetCartItemOrThrow(Cart cart, int productId)
+    private static CartItem GetCartItemOrThrow(Cart cart, int itemId)
     {
-        return cart.Entries.FirstOrDefault(item => item.ProductId == productId)
-            ?? throw new CartItemNotFoundException();
+        var variantMatch = cart.Entries.FirstOrDefault(item =>
+            item.ProductVariantId == itemId);
+
+        if (variantMatch is not null)
+        {
+            return variantMatch;
+        }
+
+        var productMatches = cart.Entries
+            .Where(item => item.ProductId == itemId)
+            .ToList();
+
+        return productMatches.Count == 1
+            ? productMatches[0]
+            : throw new CartItemNotFoundException();
+    }
+
+    private static string SerializeVariantOptions(ProductVariant variant)
+    {
+        return JsonSerializer.Serialize(GetVariantOptions(variant));
+    }
+
+    private static List<CartItemSpec> GetCartItemSpecs(Product product, ProductVariant variant)
+    {
+        var optionSpecs = variant.VariantOptions
+            .Where(variantOption =>
+                variantOption.ProductOption.ProductOptionGroup != null &&
+                (!string.IsNullOrWhiteSpace(variantOption.ProductOption.ProductOptionGroup.Label) ||
+                    !string.IsNullOrWhiteSpace(variantOption.ProductOption.Label)))
+            .OrderBy(variantOption => variantOption.ProductOption.ProductOptionGroup.SortOrder)
+            .ThenBy(variantOption => variantOption.ProductOption.SortOrder)
+            .Select(variantOption => new CartItemSpec
+            {
+                Name = variantOption.ProductOption.ProductOptionGroup.Label,
+                Value = variantOption.ProductOption.Label
+            })
+            .ToList();
+
+        if (optionSpecs.Count > 0)
+        {
+            return optionSpecs;
+        }
+
+        return product.ItemSpecs.Select(spec => new CartItemSpec
+        {
+            Name = spec.Name,
+            Value = spec.Value
+        }).ToList();
+    }
+
+    private static Dictionary<string, string> DeserializeVariantOptions(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [];
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? [];
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
+    }
+
+    private static Dictionary<string, string> GetVariantOptions(ProductVariant variant)
+    {
+        return variant.VariantOptions
+            .Where(variantOption =>
+                variantOption.ProductOption.ProductOptionGroup != null &&
+                !string.IsNullOrWhiteSpace(variantOption.ProductOption.ProductOptionGroup.Code))
+            .OrderBy(variantOption => variantOption.ProductOption.ProductOptionGroup.SortOrder)
+            .ThenBy(variantOption => variantOption.ProductOption.SortOrder)
+            .ToDictionary(
+                variantOption => variantOption.ProductOption.ProductOptionGroup.Code,
+                variantOption => variantOption.ProductOption.Code,
+                StringComparer.OrdinalIgnoreCase);
     }
 
     private Addon GetEligibleAddonOrThrow(string categoryName, string addonId)

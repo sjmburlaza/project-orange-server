@@ -9,7 +9,7 @@ public class AddonSelectionRequest
 
 public class AddToCartRequest : AddonSelectionRequest
 {
-    public int ProductId { get; set; }
+    public int VariantId { get; set; }
     public int Quantity { get; set; }
     public List<AddonDto> Addons { get; set; } = [];
 }

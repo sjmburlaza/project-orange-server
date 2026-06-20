@@ -6,8 +6,10 @@ public static class ApiErrorCodes
 {
     public const string AddonLimitReached = "ADDON_LIMIT_REACHED";
     public const string AddonNotAvailable = "ADDON_NOT_AVAILABLE";
+    public const string CartInvalidRequest = "CART_INVALID_REQUEST";
     public const string CartItemNotFound = "CART_ITEM_NOT_FOUND";
     public const string CartNotFound = "CART_NOT_FOUND";
+    public const string CartVariantNotFound = "CART_VARIANT_NOT_FOUND";
     public const string OrderInsufficientStock = "ORDER_INSUFFICIENT_STOCK";
     public const string OrderInvalidRequest = "ORDER_INVALID_REQUEST";
     public const string OrderProductNotFound = "ORDER_PRODUCT_NOT_FOUND";
@@ -88,6 +90,36 @@ public class CartItemNotFoundException : ApiErrorException
         "Cart item not found.",
         "Cart item not found.")
     {
+    }
+}
+
+public class CartValidationException : ApiErrorException
+{
+    private CartValidationException(
+        string code,
+        int statusCode,
+        string message) : base(
+            code,
+            statusCode,
+            "Cart validation failed.",
+            message)
+    {
+    }
+
+    public static CartValidationException InvalidRequest(string message)
+    {
+        return new CartValidationException(
+            ApiErrorCodes.CartInvalidRequest,
+            StatusCodes.Status400BadRequest,
+            message);
+    }
+
+    public static CartValidationException VariantNotFound(int variantId)
+    {
+        return new CartValidationException(
+            ApiErrorCodes.CartVariantNotFound,
+            StatusCodes.Status400BadRequest,
+            $"Variant with ID {variantId} not found.");
     }
 }
 

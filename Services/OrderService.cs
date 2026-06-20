@@ -121,6 +121,9 @@ public class OrderService
             Items = itemSnapshots.Select(snapshot => new OrderItem
             {
                 ProductId = snapshot.ProductId,
+                ProductVariantId = snapshot.VariantId,
+                VariantSku = snapshot.VariantSku,
+                VariantOptionsJson = SerializeVariantOptions(snapshot.Options),
                 ProductName = snapshot.ProductName,
                 Price = snapshot.Price,
                 Quantity = snapshot.Quantity,
@@ -180,11 +183,15 @@ public class OrderService
             ValidateQuantity(item.Quantity);
 
             var product = GetProductOrThrow(products, item.ProductId);
-            ValidateStock(product, item.Quantity);
-            product.StockQuantity -= item.Quantity;
+            var variant = GetVariantForOrder(product, item.VariantId);
+            ValidateStock(product.Name, variant?.StockQuantity ?? product.StockQuantity, item.Quantity);
+            DecrementStock(product, variant, item.Quantity);
 
             snapshots.Add(new OrderItemSnapshot(
                 item.ProductId,
+                variant?.Id ?? item.VariantId,
+                FirstNonEmpty(item.VariantSku, variant?.Sku),
+                GetOrderVariantOptions(item.Options, variant),
                 string.IsNullOrWhiteSpace(item.ProductName) ? product.Name : item.ProductName,
                 item.Price,
                 item.Quantity,
@@ -208,15 +215,19 @@ public class OrderService
             ValidateQuantity(item.Quantity);
 
             var product = GetProductOrThrow(products, item.ProductId);
-            ValidateStock(product, item.Quantity);
-            product.StockQuantity -= item.Quantity;
+            var variant = GetVariantForOrder(product, item.VariantId);
+            ValidateStock(product.Name, variant?.StockQuantity ?? product.StockQuantity, item.Quantity);
+            DecrementStock(product, variant, item.Quantity);
 
             snapshots.Add(new OrderItemSnapshot(
                 product.Id,
+                variant?.Id ?? item.VariantId,
+                variant?.Sku,
+                variant is null ? [] : GetVariantOptions(variant),
                 product.Name,
-                product.Price,
+                variant?.Price ?? product.Price,
                 item.Quantity,
-                product.ImageUrl,
+                string.IsNullOrWhiteSpace(variant?.ImageUrl) ? product.ImageUrl : variant.ImageUrl,
                 product.Category?.Name ?? string.Empty,
                 GetProductSpecs(product),
                 []));
@@ -230,6 +241,10 @@ public class OrderService
         return _context.Products
             .Include(product => product.Category)
             .Include(product => product.ItemSpecs)
+            .Include(product => product.Variants)
+                .ThenInclude(variant => variant.VariantOptions)
+                    .ThenInclude(variantOption => variantOption.ProductOption)
+                        .ThenInclude(option => option.ProductOptionGroup)
             .Where(product =>
                 product.SiteId == _siteContext.SiteId &&
                 productIds.Contains(product.Id));
@@ -249,12 +264,35 @@ public class OrderService
         }
     }
 
-    private static void ValidateStock(Product product, int quantity)
+    private static ProductVariant? GetVariantForOrder(Product product, int? variantId)
     {
-        if (product.StockQuantity < quantity)
+        if (variantId.HasValue)
         {
-            throw OrderValidationException.InsufficientStock(product.Name);
+            return product.Variants.FirstOrDefault(variant => variant.Id == variantId.Value)
+                ?? throw OrderValidationException.InvalidRequest($"Variant with ID {variantId.Value} not found.");
         }
+
+        return product.Variants.Count == 1 ? product.Variants[0] : null;
+    }
+
+    private static void ValidateStock(string productName, int stockQuantity, int quantity)
+    {
+        if (stockQuantity < quantity)
+        {
+            throw OrderValidationException.InsufficientStock(productName);
+        }
+    }
+
+    private static void DecrementStock(Product product, ProductVariant? variant, int quantity)
+    {
+        if (variant is not null)
+        {
+            variant.StockQuantity -= quantity;
+            product.StockQuantity = Math.Max(0, product.StockQuantity - quantity);
+            return;
+        }
+
+        product.StockQuantity -= quantity;
     }
 
     private static List<ProductSpecDto> GetOrderItemSpecs(List<ProductSpecDto>? itemSpecs, Product product)
@@ -281,6 +319,33 @@ public class OrderService
             })
             .Where(spec => !string.IsNullOrWhiteSpace(spec.Name) || !string.IsNullOrWhiteSpace(spec.Value))
             .ToList();
+    }
+
+    private static Dictionary<string, string> GetOrderVariantOptions(
+        Dictionary<string, string>? itemOptions,
+        ProductVariant? variant)
+    {
+        var options = (itemOptions ?? [])
+            .Where(option => !string.IsNullOrWhiteSpace(option.Key) && !string.IsNullOrWhiteSpace(option.Value))
+            .ToDictionary(option => option.Key, option => option.Value, StringComparer.OrdinalIgnoreCase);
+
+        return options.Count > 0 || variant is null
+            ? options
+            : GetVariantOptions(variant);
+    }
+
+    private static Dictionary<string, string> GetVariantOptions(ProductVariant variant)
+    {
+        return variant.VariantOptions
+            .Where(variantOption =>
+                variantOption.ProductOption.ProductOptionGroup != null &&
+                !string.IsNullOrWhiteSpace(variantOption.ProductOption.ProductOptionGroup.Code))
+            .OrderBy(variantOption => variantOption.ProductOption.ProductOptionGroup.SortOrder)
+            .ThenBy(variantOption => variantOption.ProductOption.SortOrder)
+            .ToDictionary(
+                variantOption => variantOption.ProductOption.ProductOptionGroup.Code,
+                variantOption => variantOption.ProductOption.Code,
+                StringComparer.OrdinalIgnoreCase);
     }
 
     private static List<AddonDto> GetOrderItemAddons(List<AddonDto>? addons)
@@ -496,6 +561,9 @@ public class OrderService
         return new OrderProductItemDto
         {
             ProductId = item.ProductId,
+            VariantId = item.ProductVariantId,
+            VariantSku = item.VariantSku,
+            Options = DeserializeVariantOptions(item.VariantOptionsJson),
             ProductName = FirstNonEmpty(item.ProductName, product?.Name, "Unknown product"),
             Price = item.Price,
             Quantity = item.Quantity,
@@ -534,6 +602,11 @@ public class OrderService
     }
 
     private static string SerializeAddons(List<AddonDto> values)
+    {
+        return JsonSerializer.Serialize(values);
+    }
+
+    private static string SerializeVariantOptions(Dictionary<string, string> values)
     {
         return JsonSerializer.Serialize(values);
     }
@@ -577,6 +650,23 @@ public class OrderService
             })
             .Where(spec => !string.IsNullOrWhiteSpace(spec.Name) || !string.IsNullOrWhiteSpace(spec.Value))
             .ToList();
+    }
+
+    private static Dictionary<string, string> DeserializeVariantOptions(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [];
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? [];
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
     }
 
     private static List<ProductSpecDto> AddProductSpecNames(List<ProductSpecDto> specs, Product product)
@@ -828,6 +918,9 @@ public class OrderService
 
     private sealed record OrderItemSnapshot(
         int ProductId,
+        int? VariantId,
+        string? VariantSku,
+        Dictionary<string, string> Options,
         string ProductName,
         decimal Price,
         int Quantity,

@@ -8,6 +8,9 @@ public class CartItem
     public Cart Cart { get; set; } = null!;
 
     public int ProductId { get; set; }
+    public int? ProductVariantId { get; set; }
+    public string? VariantSku { get; set; }
+    public string VariantOptionsJson { get; set; } = "{}";
     public string ProductName { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public int Quantity { get; set; }
