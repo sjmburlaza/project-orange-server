@@ -15,11 +15,16 @@ public class OrderService
 
     private readonly AppDbContext _context;
     private readonly ISiteContext _siteContext;
+    private readonly ShippingPricingService _shippingPricingService;
 
-    public OrderService(AppDbContext context, ISiteContext siteContext)
+    public OrderService(
+        AppDbContext context,
+        ISiteContext siteContext,
+        ShippingPricingService shippingPricingService)
     {
         _context = context;
         _siteContext = siteContext;
+        _shippingPricingService = shippingPricingService;
     }
 
     public async Task<List<OrderConfirmationDto>> GetOrdersAsync()
@@ -113,7 +118,7 @@ public class OrderService
             Region = shippingAddress.Region,
             PostalCode = shippingAddress.PostalCode,
             Country = shippingAddress.Country,
-            DeliveryEstimate = GetDeliveryEstimate(shippingMethod),
+            DeliveryEstimate = GetDeliveryEstimate(shippingMethod, shippingAddress.PostalCode),
             TotalAmount = GetTotalAmount(request.Cart, itemSnapshots),
             CheckoutDataJson = SerializeCheckoutData(request.CheckoutData),
             NextStepsJson = SerializeList(nextSteps),
@@ -403,10 +408,26 @@ public class OrderService
             : OrderStatusPendingPayment;
     }
 
-    private static string GetDeliveryEstimate(string shippingMethod)
+    private string GetDeliveryEstimate(string shippingMethod, string postalCode)
     {
+        var selectedOption = _shippingPricingService.GetFulfillmentOptionByCode(
+            postalCode,
+            shippingMethod);
+
+        if (selectedOption is not null)
+        {
+            return selectedOption.EstimatedAvailability;
+        }
+
         return shippingMethod.ToLowerInvariant() switch
         {
+            "jnt-standard" => "2-4 business days",
+            "lbc-express" => "1-2 business days",
+            "pickup-sm-megamall" => "Ready in 1-2 days",
+            "grab-same-day" => "Same day, order before 2 PM",
+            "lalamove-same-day" => "Same day, order before 2 PM",
+            "ninja-van-economy" => "3-5 business days",
+            "ap-cargo-provincial" => "4-7 business days",
             "express" => "1-2 business days",
             "free" => "5-7 business days",
             _ => "3-5 business days"

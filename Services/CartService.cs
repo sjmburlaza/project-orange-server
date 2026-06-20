@@ -437,7 +437,7 @@ public class CartService : ICartService
     {
         var cart = await GetCartEntityAsync(cartCode, userId);
 
-        var options = _shippingPricingService.GetRatesByPostalCode(request.PostalCode);
+        var options = _shippingPricingService.GetFulfillmentOptionsByPostalCode(request.PostalCode);
 
         var selectedOption = options.FirstOrDefault(option =>
             option.Code == request.ShippingMethodCode);

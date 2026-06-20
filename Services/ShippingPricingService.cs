@@ -12,37 +12,42 @@ public class ShippingPricingService
         _siteContext = siteContext;
     }
 
-    public List<ShippingOptionDto> GetRatesByPostalCode(string postalCode)
+    public List<FulfillmentOptionDto> GetFulfillmentOptions(string? postalCode = null)
     {
-        if (!IsPostalCodeServiceable(postalCode))
+        var siteSeed = FulfillmentOptionSeed.ForSite(_siteContext.SiteCode);
+
+        if (string.IsNullOrWhiteSpace(postalCode))
+        {
+            return GetFulfillmentOptionsForRule(siteSeed.DefaultRule, siteSeed);
+        }
+
+        var normalized = NormalizePostalCode(postalCode);
+
+        if (!IsPostalCodeServiceable(normalized))
         {
             return [];
         }
 
-        var code = postalCode.Trim();
+        var rule = GetAreaRule(normalized, siteSeed);
 
-        if (_siteContext.SiteCode != "ph")
+        return GetFulfillmentOptionsForRule(rule, siteSeed);
+    }
+
+    public List<FulfillmentOptionDto> GetFulfillmentOptionsByPostalCode(string postalCode)
+    {
+        return GetFulfillmentOptions(postalCode);
+    }
+
+    public FulfillmentOptionDto? GetFulfillmentOptionByCode(string postalCode, string code)
+    {
+        if (string.IsNullOrWhiteSpace(code))
         {
-            return GetDefaultRatesForSite();
+            return null;
         }
 
-        var rule = ShippingRateSeed.Rules.FirstOrDefault(rule =>
-            rule.Prefixes.Any(prefix => code.StartsWith(prefix)));
-
-        if (rule is null)
-        {
-            return [];
-        }
-
-        return rule.Options
-            .Select(option => new ShippingOptionDto
-            {
-                Code = option.Code,
-                Label = option.Label,
-                Price = option.Price,
-                EstimatedDelivery = option.EstimatedDelivery
-            })
-            .ToList();
+        return GetFulfillmentOptionsByPostalCode(postalCode)
+            .FirstOrDefault(option =>
+                string.Equals(option.Code, code, StringComparison.OrdinalIgnoreCase));
     }
 
     public bool IsPostalCodeServiceable(string postalCode)
@@ -52,7 +57,7 @@ public class ShippingPricingService
             return false;
         }
 
-        var normalized = postalCode.Trim();
+        var normalized = NormalizePostalCode(postalCode);
 
         return _siteContext.SiteCode switch
         {
@@ -64,27 +69,56 @@ public class ShippingPricingService
         };
     }
 
-    private List<ShippingOptionDto> GetDefaultRatesForSite()
+    private static FulfillmentAreaRule GetAreaRule(
+        string postalCode,
+        FulfillmentSiteSeed siteSeed)
     {
-        return _siteContext.SiteCode switch
-        {
-            "fr" =>
-            [
-                new() { Code = "standard", Label = "Standard Delivery", Price = 6.90m, EstimatedDelivery = "3-5 days" },
-                new() { Code = "express", Label = "Express Delivery", Price = 14.90m, EstimatedDelivery = "1-2 days" }
-            ],
-            "cn" =>
-            [
-                new() { Code = "standard", Label = "Standard Delivery", Price = 30, EstimatedDelivery = "3-5 days" },
-                new() { Code = "express", Label = "Express Delivery", Price = 60, EstimatedDelivery = "1-2 days" }
-            ],
-            "jp" =>
-            [
-                new() { Code = "standard", Label = "Standard Delivery", Price = 700, EstimatedDelivery = "3-5 days" },
-                new() { Code = "express", Label = "Express Delivery", Price = 1200, EstimatedDelivery = "1-2 days" }
-            ],
-            _ => []
-        };
+        return siteSeed.AreaRules.FirstOrDefault(rule =>
+            rule.PostalCodePrefixes.Any(prefix =>
+                postalCode.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))) ??
+            siteSeed.DefaultRule;
+    }
+
+    private static List<FulfillmentOptionDto> GetFulfillmentOptionsForRule(
+        FulfillmentAreaRule rule,
+        FulfillmentSiteSeed siteSeed)
+    {
+        var deliveryOptions = rule.DeliveryOptions
+            .Select(option => new FulfillmentOptionDto
+            {
+                Code = option.Code,
+                Type = "delivery",
+                Label = option.Label,
+                Price = option.Price,
+                EstimatedAvailability = option.EstimatedAvailability,
+                CourierCode = option.CourierCode,
+                CourierName = option.CourierName
+            })
+            .ToList();
+
+        var pickupLocationIds = rule.PickupLocationIds.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var pickupOptions = siteSeed.PickupLocations
+            .Where(location => pickupLocationIds.Contains(location.Id))
+            .Select(location => new FulfillmentOptionDto
+            {
+                Code = $"pickup-{location.Id}",
+                Type = "pickup",
+                Label = $"{siteSeed.PickupLabelPrefix} {location.Name}",
+                Price = 0,
+                EstimatedAvailability = location.EstimatedAvailability,
+                PickupLocationId = location.Id,
+                PickupLocationName = location.Name,
+                PickupAddress = location.Address
+            });
+
+        deliveryOptions.AddRange(pickupOptions);
+
+        return deliveryOptions;
+    }
+
+    private static string NormalizePostalCode(string postalCode)
+    {
+        return postalCode.Trim();
     }
 
     private static bool IsDigits(string value, int length)

@@ -179,14 +179,16 @@
           "name": "shippingMethod",
           "type": "radio-card",
           "label": "Mode de livraison",
+          "optionsApi": "/api/fulfillment/options",
+          "dependsOn": "postalCode",
           "validators": [{ "name": "required" }],
           "options": [
             {
               "label": "Livraison standard",
-              "value": "standard",
+              "value": "colissimo-standard",
               "price": 6.9
             },
-            { "label": "Livraison express", "value": "express", "price": 14.9 }
+            { "label": "Livraison express", "value": "chronopost-express", "price": 14.9 }
           ]
         }
       ]

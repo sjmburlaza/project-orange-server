@@ -272,11 +272,12 @@
           "name": "shippingMethod",
           "type": "radio-card",
           "label": "Shipping Method",
+          "optionsApi": "/api/fulfillment/options",
+          "dependsOn": "postalCode",
           "validators": [{ "name": "required" }],
           "options": [
-            { "label": "Standard Delivery", "value": "standard", "price": 80 },
-            { "label": "Express Delivery", "value": "express", "price": 150 },
-            { "label": "Same Day Delivery", "value": "same-day", "price": 250 }
+            { "label": "Standard Delivery", "value": "jnt-standard", "price": 120 },
+            { "label": "Express Delivery", "value": "lbc-express", "price": 180 }
           ]
         }
       ]
