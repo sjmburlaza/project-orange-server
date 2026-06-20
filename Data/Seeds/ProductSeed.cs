@@ -140,6 +140,12 @@ public static class ProductSeed
                     Price = product.Price,
                     StockQuantity = product.StockQuantity,
                     ImageUrl = product.ImageUrl,
+                    FeaturesJson = ProductPresentationSeed.GetFeaturesJson(
+                        product.Name,
+                        product.CategoryId),
+                    WhatsInTheBoxJson = ProductPresentationSeed.GetWhatsInTheBoxJson(
+                        product.Name,
+                        product.CategoryId),
                     CategoryId = CategorySeed.GetCategoryId(site.Id, product.CategoryId)
                 }))
             .ToArray();

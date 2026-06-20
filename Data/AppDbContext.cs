@@ -13,6 +13,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
 	}
 
 	public DbSet<Product> Products => Set<Product>();
+	public DbSet<ProductOptionGroup> ProductOptionGroups => Set<ProductOptionGroup>();
+	public DbSet<ProductOption> ProductOptions => Set<ProductOption>();
+	public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
+	public DbSet<ProductVariantOption> ProductVariantOptions => Set<ProductVariantOption>();
 	public DbSet<Category> Categories => Set<Category>();
 	public DbSet<Site> Sites => Set<Site>();
 	public DbSet<Order> Orders => Set<Order>();
@@ -94,9 +98,109 @@ public class AppDbContext : IdentityDbContext<AppUser>
 			.Property(p => p.Price)
 			.HasPrecision(18, 2);
 
+		modelBuilder.Entity<Product>()
+			.Property(p => p.FeaturesJson)
+			.HasColumnType("nvarchar(max)")
+			.HasDefaultValue("[]");
+
+		modelBuilder.Entity<Product>()
+			.Property(p => p.WhatsInTheBoxJson)
+			.HasColumnType("nvarchar(max)")
+			.HasDefaultValue("[]");
+
+		modelBuilder.Entity<ProductOptionGroup>()
+			.Property(group => group.Code)
+			.HasMaxLength(64);
+
+		modelBuilder.Entity<ProductOptionGroup>()
+			.Property(group => group.Label)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<ProductOptionGroup>()
+			.HasOne(group => group.Product)
+			.WithMany(product => product.OptionGroups)
+			.HasForeignKey(group => group.ProductId)
+			.OnDelete(DeleteBehavior.Cascade);
+
+		modelBuilder.Entity<ProductOptionGroup>()
+			.HasIndex(group => new { group.ProductId, group.Code })
+			.IsUnique();
+
+		modelBuilder.Entity<ProductOption>()
+			.Property(option => option.Code)
+			.HasMaxLength(64);
+
+		modelBuilder.Entity<ProductOption>()
+			.Property(option => option.Label)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<ProductOption>()
+			.Property(option => option.Hex)
+			.HasMaxLength(16);
+
+		modelBuilder.Entity<ProductOption>()
+			.Property(option => option.ImageUrl)
+			.HasMaxLength(1024);
+
+		modelBuilder.Entity<ProductOption>()
+			.HasOne(option => option.ProductOptionGroup)
+			.WithMany(group => group.Options)
+			.HasForeignKey(option => option.ProductOptionGroupId)
+			.OnDelete(DeleteBehavior.Cascade);
+
+		modelBuilder.Entity<ProductOption>()
+			.HasIndex(option => new { option.ProductOptionGroupId, option.Code })
+			.IsUnique();
+
+		modelBuilder.Entity<ProductVariant>()
+			.Property(variant => variant.Sku)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<ProductVariant>()
+			.Property(variant => variant.Price)
+			.HasPrecision(18, 2);
+
+		modelBuilder.Entity<ProductVariant>()
+			.Property(variant => variant.ImageUrl)
+			.HasMaxLength(1024);
+
+		modelBuilder.Entity<ProductVariant>()
+			.HasOne(variant => variant.Product)
+			.WithMany(product => product.Variants)
+			.HasForeignKey(variant => variant.ProductId)
+			.OnDelete(DeleteBehavior.Cascade);
+
+		modelBuilder.Entity<ProductVariant>()
+			.HasIndex(variant => new { variant.ProductId, variant.Sku })
+			.IsUnique();
+
+		modelBuilder.Entity<ProductVariantOption>()
+			.HasOne(variantOption => variantOption.ProductVariant)
+			.WithMany(variant => variant.VariantOptions)
+			.HasForeignKey(variantOption => variantOption.ProductVariantId)
+			.OnDelete(DeleteBehavior.Cascade);
+
+		modelBuilder.Entity<ProductVariantOption>()
+			.HasOne(variantOption => variantOption.ProductOption)
+			.WithMany(option => option.VariantOptions)
+			.HasForeignKey(variantOption => variantOption.ProductOptionId)
+			.OnDelete(DeleteBehavior.Restrict);
+
+		modelBuilder.Entity<ProductVariantOption>()
+			.HasIndex(variantOption => new { variantOption.ProductVariantId, variantOption.ProductOptionId })
+			.IsUnique();
+
 		modelBuilder.Entity<CartItem>()
 			.Property(c => c.Price)
 			.HasPrecision(18, 2);
+
+		modelBuilder.Entity<CartItem>()
+			.Property(c => c.VariantSku)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<CartItem>()
+			.Property(c => c.VariantOptionsJson)
+			.HasColumnType("nvarchar(max)");
 
 		modelBuilder.Entity<CartItemAddon>()
 			.Property(a => a.Amount)
@@ -165,6 +269,14 @@ public class AppDbContext : IdentityDbContext<AppUser>
 		modelBuilder.Entity<OrderItem>()
 			.Property(o => o.Price)
 			.HasPrecision(18, 2);
+
+		modelBuilder.Entity<OrderItem>()
+			.Property(o => o.VariantSku)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<OrderItem>()
+			.Property(o => o.VariantOptionsJson)
+			.HasColumnType("nvarchar(max)");
 
 		modelBuilder.Entity<OrderItem>()
 			.Property(o => o.ProductName)
@@ -344,6 +456,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
 		modelBuilder.Entity<Category>().HasData(CategorySeed.Categories);
 
 		modelBuilder.Entity<Product>().HasData(ProductSeed.Products);
+		modelBuilder.Entity<ProductOptionGroup>().HasData(ProductOptionSeed.OptionGroups);
+		modelBuilder.Entity<ProductOption>().HasData(ProductOptionSeed.Options);
+		modelBuilder.Entity<ProductVariant>().HasData(ProductVariantSeed.Variants);
+		modelBuilder.Entity<ProductVariantOption>().HasData(ProductVariantSeed.VariantOptions);
 		modelBuilder.Entity<ProductSpec>().HasData(ProductSpecSeed.ProductSpecs);
 	}
 }

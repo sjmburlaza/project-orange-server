@@ -3,6 +3,9 @@ namespace ProjectOrangeApi.DTOs;
 public class CartItemDto
 {
     public int ProductId { get; set; }
+    public int? VariantId { get; set; }
+    public string? VariantSku { get; set; }
+    public Dictionary<string, string> Options { get; set; } = [];
     public string ProductName { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public int Quantity { get; set; }
