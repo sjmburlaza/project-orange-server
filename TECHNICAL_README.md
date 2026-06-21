@@ -593,6 +593,7 @@ Product responses include:
 - `categoryId`
 - `categoryName`
 - `itemSpecs`
+- `availableColors`
 
 ### Cart
 

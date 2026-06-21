@@ -102,20 +102,6 @@
               ],
               "asyncValidators": [{ "name": "serviceablePostalCode" }],
               "grid": { "mobile": 12, "desktop": 6 }
-            },
-            {
-              "name": "landmark",
-              "type": "text",
-              "label": "Landmark",
-              "validators": [],
-              "grid": { "mobile": 12, "desktop": 6 }
-            },
-            {
-              "name": "deliveryEmail",
-              "type": "email",
-              "label": "Delivery Email",
-              "validators": [{ "name": "required" }, { "name": "email" }],
-              "grid": { "mobile": 12, "desktop": 6 }
             }
           ],
           "grid": { "mobile": 12, "desktop": 12 }
@@ -276,8 +262,16 @@
           "dependsOn": "postalCode",
           "validators": [{ "name": "required" }],
           "options": [
-            { "label": "Standard Delivery", "value": "jnt-standard", "price": 120 },
-            { "label": "Express Delivery", "value": "lbc-express", "price": 180 }
+            {
+              "label": "Standard Delivery",
+              "value": "jnt-standard",
+              "price": 120
+            },
+            {
+              "label": "Express Delivery",
+              "value": "lbc-express",
+              "price": 180
+            }
           ]
         }
       ]

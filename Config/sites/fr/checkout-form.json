@@ -90,13 +90,6 @@
               "label": "Departement",
               "validators": [],
               "grid": { "mobile": 12, "desktop": 6 }
-            },
-            {
-              "name": "deliveryEmail",
-              "type": "email",
-              "label": "E-mail de livraison",
-              "validators": [{ "name": "required" }, { "name": "email" }],
-              "grid": { "mobile": 12, "desktop": 6 }
             }
           ],
           "grid": { "mobile": 12, "desktop": 12 }
@@ -188,7 +181,11 @@
               "value": "colissimo-standard",
               "price": 6.9
             },
-            { "label": "Livraison express", "value": "chronopost-express", "price": 14.9 }
+            {
+              "label": "Livraison express",
+              "value": "chronopost-express",
+              "price": 14.9
+            }
           ]
         }
       ]

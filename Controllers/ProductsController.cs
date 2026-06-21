@@ -34,8 +34,11 @@ public class ProductsController : ControllerBase
         var query = _context.Products
             .Include(p => p.Category)
             .Include(p => p.ItemSpecs)
+            .Include(p => p.OptionGroups)
+                .ThenInclude(group => group.Options)
             .Include(p => p.Variants)
             .Where(p => p.SiteId == _siteContext.SiteId)
+            .AsSplitQuery()
             .AsQueryable();
 
         if (categoryId.HasValue)
@@ -239,7 +242,8 @@ public class ProductsController : ControllerBase
             ImageUrl = product.ImageUrl,
             CategoryId = product.CategoryId,
             CategoryName = product.Category != null ? product.Category.Name : string.Empty,
-            ItemSpecs = MapProductSpecs(product)
+            ItemSpecs = MapProductSpecs(product),
+            AvailableColors = MapAvailableColors(product)
         };
     }
 
@@ -264,8 +268,9 @@ public class ProductsController : ControllerBase
                 {
                     Id = product.Category.Id,
                     Name = product.Category.Name
-            },
+                },
             ItemSpecs = MapProductSpecs(product),
+            AvailableColors = MapAvailableColors(product),
             Features = DeserializeStringList(product.FeaturesJson),
             WhatsInTheBox = DeserializeStringList(product.WhatsInTheBoxJson),
             OptionGroups = product.OptionGroups
@@ -317,6 +322,28 @@ public class ProductsController : ControllerBase
             Name = spec.Name,
             Value = spec.Value
         }).ToList();
+    }
+
+    private static List<ProductOptionDto> MapAvailableColors(Product product)
+    {
+        return product.OptionGroups
+            .Where(group => string.Equals(
+                group.Code,
+                ProductOptionSeed.ColorGroupCode,
+                StringComparison.OrdinalIgnoreCase))
+            .OrderBy(group => group.SortOrder)
+            .ThenBy(group => group.Id)
+            .SelectMany(group => group.Options
+                .OrderBy(option => option.SortOrder)
+                .ThenBy(option => option.Id)
+                .Select(option => new ProductOptionDto
+                {
+                    Code = option.Code,
+                    Label = option.Label,
+                    Hex = option.Hex,
+                    ImageUrl = option.ImageUrl
+                }))
+            .ToList();
     }
 
     private static decimal GetProductPrice(Product product)

@@ -19,6 +19,7 @@ public class ProductDto
     public string CategoryName { get; set; } = string.Empty;
 
     public List<ProductSpecDto> ItemSpecs { get; set; } = [];
+    public List<ProductOptionDto> AvailableColors { get; set; } = [];
 }
 
 public class ProductConfigureDto : ProductDto
