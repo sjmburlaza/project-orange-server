@@ -5,6 +5,7 @@ namespace ProjectOrangeApi.Contracts;
 public interface ICartService
 {
     Task<CartResponseDto> GetCartAsync(string cartCode, string? userId);
+    Task<IEnumerable<ProductDto>> GetRecommendedProductsAsync(string cartCode, string? userId);
     Task<CartResponseDto> GetCartByUserIdAsync(string userId);
     Task<CartResponseDto> AddToCartAsync(string? cartCode, AddToCartRequest request, string? userId);
     Task<CartResponseDto> UpdateQuantityAsync(string cartCode, int productId, UpdateQuantityRequest request, string? userId);

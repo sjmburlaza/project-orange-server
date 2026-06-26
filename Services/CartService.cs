@@ -13,6 +13,15 @@ public class CartService : ICartService
     private const string BillingTypeCredit = "credit";
     private const string BillingTypeMonthly = "monthly";
     private const string BillingTypeOneTime = "oneTime";
+    private const string AccessoriesCategoryName = "Accessories";
+
+    private static readonly Dictionary<string, string[]> RecommendedAccessorySubcategoriesByCategory =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Phones"] = ["Earbuds", "Headphones", "Headset"],
+            ["Laptops"] = ["Keyboard", "Mouse", "Earbuds", "Headphones", "Headset"],
+            ["Monitors"] = ["Keyboard", "Mouse", "Headset"]
+        };
 
     private readonly AppDbContext _context;
     private readonly ShippingPricingService _shippingPricingService;
@@ -36,6 +45,44 @@ public class CartService : ICartService
         var cart = await GetCartEntityAsync(cartCode, userId);
 
         return MapToResponse(cart);
+    }
+
+    public async Task<IEnumerable<ProductDto>> GetRecommendedProductsAsync(string cartCode, string? userId)
+    {
+        var cart = await GetCartEntityAsync(cartCode, userId);
+        var subcategoryRanks = GetRecommendedAccessorySubcategoryRanks(cart);
+
+        if (subcategoryRanks.Count == 0)
+        {
+            return [];
+        }
+
+        var recommendedSubcategories = subcategoryRanks.Keys.ToList();
+        var cartProductIds = cart.Entries
+            .Select(item => item.ProductId)
+            .ToList();
+
+        var products = await _context.Products
+            .Include(product => product.Category)
+            .Include(product => product.ItemSpecs)
+            .Include(product => product.OptionGroups)
+                .ThenInclude(group => group.Options)
+            .Include(product => product.Variants)
+            .Where(product =>
+                product.SiteId == _siteContext.SiteId &&
+                product.Category != null &&
+                product.Category.Name == AccessoriesCategoryName &&
+                recommendedSubcategories.Contains(product.SubcategoryName) &&
+                !cartProductIds.Contains(product.Id))
+            .AsSplitQuery()
+            .ToListAsync();
+
+        return products
+            .Where(product => GetProductStockQuantity(product) > 0)
+            .OrderBy(product => subcategoryRanks[product.SubcategoryName])
+            .ThenBy(product => product.Id)
+            .Select(MapRecommendedProduct)
+            .ToList();
     }
 
     public async Task<CartResponseDto> AddToCartAsync(string? cartCode, AddToCartRequest request, string? userId)
@@ -335,6 +382,103 @@ public class CartService : ICartService
         }
 
         return cart;
+    }
+
+    private static Dictionary<string, int> GetRecommendedAccessorySubcategoryRanks(Cart cart)
+    {
+        var ranks = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var categoryName in cart.Entries
+            .Select(item => item.CategoryName)
+            .Where(categoryName => !string.IsNullOrWhiteSpace(categoryName))
+            .Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            if (!RecommendedAccessorySubcategoriesByCategory.TryGetValue(categoryName, out var subcategories))
+            {
+                continue;
+            }
+
+            foreach (var subcategory in subcategories)
+            {
+                if (!ranks.ContainsKey(subcategory))
+                {
+                    ranks[subcategory] = ranks.Count;
+                }
+            }
+        }
+
+        return ranks;
+    }
+
+    private static ProductDto MapRecommendedProduct(Product product)
+    {
+        var stockQuantity = GetProductStockQuantity(product);
+
+        return new ProductDto
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = GetProductPrice(product),
+            StockQuantity = stockQuantity,
+            StockStatus = GetStockStatus(stockQuantity),
+            ImageUrl = product.ImageUrl,
+            CategoryId = product.CategoryId,
+            CategoryName = product.Category?.Name ?? string.Empty,
+            SubcategoryName = product.SubcategoryName,
+            ItemSpecs = product.ItemSpecs.Select(spec => new ProductSpecDto
+            {
+                Name = spec.Name,
+                Value = spec.Value
+            }).ToList(),
+            AvailableColors = MapAvailableColors(product)
+        };
+    }
+
+    private static List<ProductOptionDto> MapAvailableColors(Product product)
+    {
+        return product.OptionGroups
+            .Where(group => string.Equals(
+                group.Code,
+                ProductOptionSeed.ColorGroupCode,
+                StringComparison.OrdinalIgnoreCase))
+            .OrderBy(group => group.SortOrder)
+            .ThenBy(group => group.Id)
+            .SelectMany(group => group.Options
+                .OrderBy(option => option.SortOrder)
+                .ThenBy(option => option.Id)
+                .Select(option => new ProductOptionDto
+                {
+                    Code = option.Code,
+                    Label = option.Label,
+                    Hex = option.Hex,
+                    ImageUrl = option.ImageUrl
+                }))
+            .ToList();
+    }
+
+    private static decimal GetProductPrice(Product product)
+    {
+        return product.Variants.Count > 0
+            ? product.Variants.Min(variant => variant.Price)
+            : product.Price;
+    }
+
+    private static int GetProductStockQuantity(Product product)
+    {
+        return product.Variants.Count > 0
+            ? product.Variants.Sum(variant => variant.StockQuantity)
+            : product.StockQuantity;
+    }
+
+    private static string GetStockStatus(int stockQuantity)
+    {
+        if (stockQuantity <= 0)
+        {
+            return "outOfStock";
+        }
+
+        return stockQuantity <= 5 ? "lowStock" : "inStock";
     }
 
     private CartResponseDto MapToResponse(Cart cart)
