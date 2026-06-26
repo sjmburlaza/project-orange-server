@@ -12,6 +12,77 @@ namespace ProjectOrangeApi.Tests.Integration;
 
 public class ProductEndpointTests
 {
+    private static readonly HashSet<string> AllowedAccessorySubcategories =
+    [
+        "Keyboard",
+        "Mouse",
+        "Earbuds",
+        "Headphones",
+        "Headset"
+    ];
+
+    [Fact]
+    public void ProductSeed_Accessories_HaveAllowedSubcategoryNames()
+    {
+        var accessoryProducts = ProductSeed.Products
+            .Where(product => product.CategoryId == CategorySeed.GetCategoryId(product.SiteId, 3))
+            .ToList();
+
+        Assert.Equal(SiteSeed.Sites.Length * 9, accessoryProducts.Count);
+        Assert.All(accessoryProducts, product =>
+        {
+            Assert.Contains(product.SubcategoryName, AllowedAccessorySubcategories);
+        });
+    }
+
+    [Fact]
+    public async Task GetProducts_WhenProductHasSubcategory_IncludesSubcategoryName()
+    {
+        var site = CloneSite(TestSites.Get("ph"));
+        var siteContext = new TestSiteContext();
+        siteContext.SetSite(site);
+
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase($"product-subcategory-{Guid.NewGuid():N}")
+            .Options;
+
+        await using var db = new AppDbContext(options);
+        db.Sites.Add(site);
+        db.Categories.Add(new Category
+        {
+            Id = 100,
+            SiteId = site.Id,
+            Name = "Accessories"
+        });
+        db.Products.Add(new Product
+        {
+            Id = 1000,
+            SiteId = site.Id,
+            Name = "Mechanical Keyboard",
+            Description = "Compact RGB mechanical keyboard.",
+            Price = 3500m,
+            StockQuantity = 25,
+            ImageUrl = "/images/products/mechanical-keyboard.png",
+            CategoryId = 100,
+            SubcategoryName = "Keyboard"
+        });
+        await db.SaveChangesAsync();
+
+        var controller = new ProductsController(db, siteContext);
+
+        var response = await controller.GetProducts(
+            categoryId: null,
+            sortBy: null,
+            minPrice: null,
+            maxPrice: null);
+
+        var ok = Assert.IsType<OkObjectResult>(response.Result);
+        var products = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(ok.Value);
+        var product = Assert.Single(products);
+
+        Assert.Equal("Keyboard", product.SubcategoryName);
+    }
+
     [Fact]
     public async Task GetProducts_WhenProductHasColorOptions_IncludesAvailableColors()
     {

@@ -242,6 +242,7 @@ public class ProductsController : ControllerBase
             ImageUrl = product.ImageUrl,
             CategoryId = product.CategoryId,
             CategoryName = product.Category != null ? product.Category.Name : string.Empty,
+            SubcategoryName = product.SubcategoryName,
             ItemSpecs = MapProductSpecs(product),
             AvailableColors = MapAvailableColors(product)
         };
@@ -262,13 +263,8 @@ public class ProductsController : ControllerBase
             ImageUrl = product.ImageUrl,
             CategoryId = product.CategoryId,
             CategoryName = product.Category != null ? product.Category.Name : string.Empty,
-            Category = product.Category == null
-                ? null
-                : new CategoryDto
-                {
-                    Id = product.Category.Id,
-                    Name = product.Category.Name
-                },
+            SubcategoryName = product.SubcategoryName,
+            Category = product.Category == null ? null : MapCategory(product.Category),
             ItemSpecs = MapProductSpecs(product),
             AvailableColors = MapAvailableColors(product),
             Features = DeserializeStringList(product.FeaturesJson),
@@ -298,6 +294,16 @@ public class ProductsController : ControllerBase
                 .ThenBy(variant => variant.Id)
                 .Select(MapProductVariant)
                 .ToList()
+        };
+    }
+
+    private static CategoryDto MapCategory(Category category)
+    {
+        return new CategoryDto
+        {
+            Id = category.Id,
+            Name = category.Name,
+            Subcategories = category.Subcategories
         };
     }
 

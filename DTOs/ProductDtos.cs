@@ -4,6 +4,7 @@ public class CategoryDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public List<string> Subcategories { get; set; } = [];
 }
 
 public class ProductDto
@@ -17,6 +18,7 @@ public class ProductDto
     public string ImageUrl { get; set; } = string.Empty;
     public int CategoryId { get; set; }
     public string CategoryName { get; set; } = string.Empty;
+    public string SubcategoryName { get; set; } = string.Empty;
 
     public List<ProductSpecDto> ItemSpecs { get; set; } = [];
     public List<ProductOptionDto> AvailableColors { get; set; } = [];

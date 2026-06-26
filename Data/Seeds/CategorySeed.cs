@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ProjectOrangeApi.Models;
 
 namespace ProjectOrangeApi.Data.Seeds;
@@ -11,7 +12,7 @@ public static class CategorySeed
     [
         new(1, "Phones"),
         new(2, "Laptops"),
-        new(3, "Accessories"),
+        new(3, "Accessories", ["Keyboard", "Mouse", "Earbuds", "Headphones", "Headset"]),
         new(FirstAdditionalBaseCategoryId, "Monitors")
     ];
 
@@ -22,7 +23,8 @@ public static class CategorySeed
                 {
                     Id = GetCategoryId(site.Id, category.BaseCategoryId),
                     SiteId = site.Id,
-                    Name = category.Name
+                    Name = category.Name,
+                    SubcategoriesJson = SerializeSubcategories(category.Subcategories)
                 }))
             .ToArray();
 
@@ -49,5 +51,11 @@ public static class CategorySeed
         + ((baseCategoryId - FirstAdditionalBaseCategoryId) * SiteSeed.Sites.Length)
         + siteId;
 
-    private sealed record CategorySeedEntry(int BaseCategoryId, string Name);
+    private static string SerializeSubcategories(IReadOnlyList<string>? subcategories) =>
+        JsonSerializer.Serialize(subcategories ?? Array.Empty<string>());
+
+    private sealed record CategorySeedEntry(
+        int BaseCategoryId,
+        string Name,
+        IReadOnlyList<string>? Subcategories = null);
 }

@@ -10,6 +10,7 @@ public class Product
     public decimal Price { get; set; }
     public int StockQuantity { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
+    public string SubcategoryName { get; set; } = string.Empty;
     public string FeaturesJson { get; set; } = "[]";
     public string WhatsInTheBoxJson { get; set; } = "[]";
 

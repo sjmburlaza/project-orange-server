@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectOrangeApi.Data;
 
@@ -11,9 +12,11 @@ using ProjectOrangeApi.Data;
 namespace ProjectOrangeApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260626200031_AddProductSubcategoryName")]
+    partial class AddProductSubcategoryName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1164,29 +1167,29 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 13,
                             CategoryId = 3,
-                            Description = "Pocket-sized earbuds with clear calls and touch controls.",
-                            FeaturesJson = "[\"True Wireless Earbuds ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Multi-port USB-C adapter for laptops and tablets.",
+                            FeaturesJson = "[\"USB-C Hub ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "True Wireless Earbuds",
-                            Price = 2999m,
+                            Name = "USB-C Hub",
+                            Price = 1800m,
                             SiteId = 1,
                             StockQuantity = 30,
-                            SubcategoryName = "Earbuds",
-                            WhatsInTheBoxJson = "[\"True Wireless Earbuds\",\"Quick start guide\"]"
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"USB-C Hub\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 14,
                             CategoryId = 3,
-                            Description = "Wired gaming headset with a noise-reducing boom mic.",
-                            FeaturesJson = "[\"Gaming Headset ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Aluminum adjustable stand for better desk ergonomics.",
+                            FeaturesJson = "[\"Laptop Stand ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Gaming Headset",
-                            Price = 2499m,
+                            Name = "Laptop Stand",
+                            Price = 1500m,
                             SiteId = 1,
                             StockQuantity = 20,
-                            SubcategoryName = "Headset",
-                            WhatsInTheBoxJson = "[\"Gaming Headset\",\"Quick start guide\"]"
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Laptop Stand\",\"Quick start guide\"]"
                         },
                         new
                         {
@@ -1206,57 +1209,57 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 16,
                             CategoryId = 3,
-                            Description = "Slim wireless keyboard for tablets and desktop setups.",
-                            FeaturesJson = "[\"Bluetooth Keyboard ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Portable speaker with splash resistance.",
+                            FeaturesJson = "[\"Bluetooth Speaker ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Bluetooth Keyboard",
-                            Price = 2200m,
+                            Name = "Bluetooth Speaker",
+                            Price = 2500m,
                             SiteId = 1,
                             StockQuantity = 18,
-                            SubcategoryName = "Keyboard",
-                            WhatsInTheBoxJson = "[\"Bluetooth Keyboard\",\"Quick start guide\"]"
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Bluetooth Speaker\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 17,
                             CategoryId = 3,
-                            Description = "Low-latency mouse with adjustable DPI for work and gaming.",
-                            FeaturesJson = "[\"Precision Wireless Mouse ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Full HD webcam for video meetings.",
+                            FeaturesJson = "[\"Webcam 1080p ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Precision Wireless Mouse",
-                            Price = 1700m,
+                            Name = "Webcam 1080p",
+                            Price = 2200m,
                             SiteId = 1,
                             StockQuantity = 22,
-                            SubcategoryName = "Mouse",
-                            WhatsInTheBoxJson = "[\"Precision Wireless Mouse\",\"Quick start guide\"]"
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Webcam 1080p\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 18,
                             CategoryId = 3,
-                            Description = "Sweat-resistant earbuds with secure-fit tips.",
-                            FeaturesJson = "[\"Sport Earbuds ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Portable high-speed SSD for file backups.",
+                            FeaturesJson = "[\"External SSD 1TB ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Sport Earbuds",
-                            Price = 2499m,
+                            Name = "External SSD 1TB",
+                            Price = 6500m,
                             SiteId = 1,
-                            StockQuantity = 26,
-                            SubcategoryName = "Earbuds",
-                            WhatsInTheBoxJson = "[\"Sport Earbuds\",\"Quick start guide\"]"
+                            StockQuantity = 16,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"External SSD 1TB\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 19,
                             CategoryId = 3,
-                            Description = "Lightweight headset with inline controls for meetings.",
-                            FeaturesJson = "[\"USB-C Office Headset ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Fast-charging power bank for phones and tablets.",
+                            FeaturesJson = "[\"Power Bank 20000mAh ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "USB-C Office Headset",
-                            Price = 1999m,
+                            Name = "Power Bank 20000mAh",
+                            Price = 2000m,
                             SiteId = 1,
                             StockQuantity = 28,
-                            SubcategoryName = "Headset",
-                            WhatsInTheBoxJson = "[\"USB-C Office Headset\",\"Quick start guide\"]"
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Power Bank 20000mAh\",\"Quick start guide\"]"
                         },
                         new
                         {
@@ -1458,127 +1461,127 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 31,
                             CategoryId = 6,
-                            Description = "Clavier mécanique rétroéclairé pour bureau et jeu.",
-                            FeaturesJson = "[\"Clavier M\\u00E9canique AZERTY ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Chargeur magnétique compatible avec l’iPhone.",
+                            FeaturesJson = "[\"Chargeur MagSafe ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Clavier Mécanique AZERTY",
-                            Price = 109m,
+                            Name = "Chargeur MagSafe",
+                            Price = 49m,
                             SiteId = 2,
-                            StockQuantity = 22,
-                            SubcategoryName = "Keyboard",
-                            WhatsInTheBoxJson = "[\"Clavier M\\u00E9canique AZERTY\",\"Quick start guide\"]"
+                            StockQuantity = 35,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Chargeur MagSafe\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 32,
                             CategoryId = 6,
-                            Description = "Souris sans fil compacte pour ordinateur portable et tablette.",
-                            FeaturesJson = "[\"Souris Bluetooth Compacte ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Chargeur secteur USB-C compact pour prise européenne.",
+                            FeaturesJson = "[\"Adaptateur USB-C Europe ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Souris Bluetooth Compacte",
-                            Price = 39m,
+                            Name = "Adaptateur USB-C Europe",
+                            Price = 29m,
                             SiteId = 2,
-                            StockQuantity = 38,
-                            SubcategoryName = "Mouse",
-                            WhatsInTheBoxJson = "[\"Souris Bluetooth Compacte\",\"Quick start guide\"]"
+                            StockQuantity = 45,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Adaptateur USB-C Europe\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 33,
                             CategoryId = 6,
-                            Description = "Écouteurs Bluetooth avec réduction du bruit et boîtier de charge.",
-                            FeaturesJson = "[\"\\u00C9couteurs Sans Fil Pro ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Clavier sans fil AZERTY pour bureau et tablette.",
+                            FeaturesJson = "[\"Clavier AZERTY Bluetooth ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Écouteurs Sans Fil Pro",
-                            Price = 129m,
+                            Name = "Clavier AZERTY Bluetooth",
+                            Price = 79m,
                             SiteId = 2,
                             StockQuantity = 24,
-                            SubcategoryName = "Earbuds",
-                            WhatsInTheBoxJson = "[\"\\u00C9couteurs Sans Fil Pro\",\"Quick start guide\"]"
+                            SubcategoryName = "Keyboard",
+                            WhatsInTheBoxJson = "[\"Clavier AZERTY Bluetooth\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 34,
                             CategoryId = 6,
-                            Description = "Casque sans fil confortable avec réduction active du bruit.",
-                            FeaturesJson = "[\"Casque Audio Circum-Aural ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Souris sans fil conçue pour une utilisation prolongée.",
+                            FeaturesJson = "[\"Souris Ergonomique ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Casque Audio Circum-Aural",
-                            Price = 199m,
+                            Name = "Souris Ergonomique",
+                            Price = 59m,
                             SiteId = 2,
-                            StockQuantity = 16,
-                            SubcategoryName = "Headphones",
-                            WhatsInTheBoxJson = "[\"Casque Audio Circum-Aural\",\"Quick start guide\"]"
+                            StockQuantity = 30,
+                            SubcategoryName = "Mouse",
+                            WhatsInTheBoxJson = "[\"Souris Ergonomique\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 35,
                             CategoryId = 6,
-                            Description = "Micro-casque léger pour appels vidéo et travail hybride.",
-                            FeaturesJson = "[\"Micro-Casque USB-C ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Casque Bluetooth avec réduction active du bruit.",
+                            FeaturesJson = "[\"Casque Audio ANC ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Micro-Casque USB-C",
-                            Price = 79m,
+                            Name = "Casque Audio ANC",
+                            Price = 199m,
                             SiteId = 2,
-                            StockQuantity = 28,
-                            SubcategoryName = "Headset",
-                            WhatsInTheBoxJson = "[\"Micro-Casque USB-C\",\"Quick start guide\"]"
+                            StockQuantity = 13,
+                            SubcategoryName = "Headphones",
+                            WhatsInTheBoxJson = "[\"Casque Audio ANC\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 36,
                             CategoryId = 6,
-                            Description = "Clavier sans fil fin pour bureau et tablette.",
-                            FeaturesJson = "[\"Clavier Bluetooth Compact ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Station compacte avec HDMI, Ethernet et ports USB.",
+                            FeaturesJson = "[\"Station USB-C 8-en-1 ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Clavier Bluetooth Compact",
-                            Price = 69m,
+                            Name = "Station USB-C 8-en-1",
+                            Price = 89m,
                             SiteId = 2,
                             StockQuantity = 18,
-                            SubcategoryName = "Keyboard",
-                            WhatsInTheBoxJson = "[\"Clavier Bluetooth Compact\",\"Quick start guide\"]"
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Station USB-C 8-en-1\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 37,
                             CategoryId = 6,
-                            Description = "Souris basse latence avec DPI réglable.",
-                            FeaturesJson = "[\"Souris Gaming Sans Fil ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Housse rembourrée pour ordinateur portable.",
+                            FeaturesJson = "[\"Housse Laptop 14 pouces ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Souris Gaming Sans Fil",
-                            Price = 59m,
+                            Name = "Housse Laptop 14 pouces",
+                            Price = 39m,
                             SiteId = 2,
-                            StockQuantity = 30,
-                            SubcategoryName = "Mouse",
-                            WhatsInTheBoxJson = "[\"Souris Gaming Sans Fil\",\"Quick start guide\"]"
+                            StockQuantity = 28,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Housse Laptop 14 pouces\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 38,
                             CategoryId = 6,
-                            Description = "Écouteurs résistants à la transpiration avec maintien sécurisé.",
-                            FeaturesJson = "[\"\\u00C9couteurs Sport ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Stockage externe rapide pour photos et vidéos.",
+                            FeaturesJson = "[\"SSD Externe 2 To ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Écouteurs Sport",
-                            Price = 89m,
+                            Name = "SSD Externe 2 To",
+                            Price = 159m,
                             SiteId = 2,
-                            StockQuantity = 26,
-                            SubcategoryName = "Earbuds",
-                            WhatsInTheBoxJson = "[\"\\u00C9couteurs Sport\",\"Quick start guide\"]"
+                            StockQuantity = 12,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"SSD Externe 2 To\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 39,
                             CategoryId = 6,
-                            Description = "Micro-casque gaming avec micro perche et son immersif.",
-                            FeaturesJson = "[\"Micro-Casque Gaming RGB ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "Batterie compacte avec USB-C Power Delivery.",
+                            FeaturesJson = "[\"Batterie Externe 10000mAh ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Micro-Casque Gaming RGB",
-                            Price = 99m,
+                            Name = "Batterie Externe 10000mAh",
+                            Price = 39m,
                             SiteId = 2,
-                            StockQuantity = 20,
-                            SubcategoryName = "Headset",
-                            WhatsInTheBoxJson = "[\"Micro-Casque Gaming RGB\",\"Quick start guide\"]"
+                            StockQuantity = 32,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Batterie Externe 10000mAh\",\"Quick start guide\"]"
                         },
                         new
                         {
@@ -1780,29 +1783,29 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 51,
                             CategoryId = 9,
-                            Description = "紧凑型低轴机械键盘，适合办公和游戏。",
-                            FeaturesJson = "[\"Low-Profile Mechanical Keyboard ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "小巧高功率充电器，适用于手机和笔记本。",
+                            FeaturesJson = "[\"120W GaN Charger ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Low-Profile Mechanical Keyboard",
-                            Price = 329m,
+                            Name = "120W GaN Charger",
+                            Price = 249m,
                             SiteId = 3,
-                            StockQuantity = 30,
-                            SubcategoryName = "Keyboard",
-                            WhatsInTheBoxJson = "[\"Low-Profile Mechanical Keyboard\",\"Quick start guide\"]"
+                            StockQuantity = 40,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"120W GaN Charger\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 52,
                             CategoryId = 9,
-                            Description = "静音无线鼠标，适合办公和学习。",
-                            FeaturesJson = "[\"Silent Wireless Mouse ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "耐用编织快充线。",
+                            FeaturesJson = "[\"USB-C Braided Cable ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Silent Wireless Mouse",
-                            Price = 99m,
+                            Name = "USB-C Braided Cable",
+                            Price = 49m,
                             SiteId = 3,
-                            StockQuantity = 48,
-                            SubcategoryName = "Mouse",
-                            WhatsInTheBoxJson = "[\"Silent Wireless Mouse\",\"Quick start guide\"]"
+                            StockQuantity = 80,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"USB-C Braided Cable\",\"Quick start guide\"]"
                         },
                         new
                         {
@@ -1822,43 +1825,43 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 54,
                             CategoryId = 9,
-                            Description = "无线头戴式耳机，支持主动降噪。",
-                            FeaturesJson = "[\"ANC Headphones ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "可折叠磁吸手机支架。",
+                            FeaturesJson = "[\"Magnetic Phone Stand ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "ANC Headphones",
-                            Price = 899m,
+                            Name = "Magnetic Phone Stand",
+                            Price = 129m,
                             SiteId = 3,
-                            StockQuantity = 18,
-                            SubcategoryName = "Headphones",
-                            WhatsInTheBoxJson = "[\"ANC Headphones\",\"Quick start guide\"]"
+                            StockQuantity = 30,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Magnetic Phone Stand\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 55,
                             CategoryId = 9,
-                            Description = "带麦克风的游戏耳麦，适合语音通话和电竞。",
-                            FeaturesJson = "[\"USB-C Gaming Headset ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "双频路由器，适合家庭网络。",
+                            FeaturesJson = "[\"Wi-Fi 6 Router ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "USB-C Gaming Headset",
-                            Price = 299m,
+                            Name = "Wi-Fi 6 Router",
+                            Price = 399m,
                             SiteId = 3,
-                            StockQuantity = 28,
-                            SubcategoryName = "Headset",
-                            WhatsInTheBoxJson = "[\"USB-C Gaming Headset\",\"Quick start guide\"]"
+                            StockQuantity = 18,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Wi-Fi 6 Router\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 56,
                             CategoryId = 9,
-                            Description = "便携蓝牙键盘，适合平板和桌面使用。",
-                            FeaturesJson = "[\"Compact Bluetooth Keyboard ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "高速 USB-C 移动固态硬盘。",
+                            FeaturesJson = "[\"Portable SSD 1TB ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Compact Bluetooth Keyboard",
-                            Price = 199m,
+                            Name = "Portable SSD 1TB",
+                            Price = 599m,
                             SiteId = 3,
-                            StockQuantity = 32,
-                            SubcategoryName = "Keyboard",
-                            WhatsInTheBoxJson = "[\"Compact Bluetooth Keyboard\",\"Quick start guide\"]"
+                            StockQuantity = 20,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Portable SSD 1TB\",\"Quick start guide\"]"
                         },
                         new
                         {
@@ -1892,15 +1895,15 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 59,
                             CategoryId = 9,
-                            Description = "开放式蓝牙耳机，佩戴轻便舒适。",
-                            FeaturesJson = "[\"Open-Ear Earbuds ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "大容量移动电源，支持快速充电。",
+                            FeaturesJson = "[\"20000mAh Power Bank ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Open-Ear Earbuds",
-                            Price = 499m,
+                            Name = "20000mAh Power Bank",
+                            Price = 199m,
                             SiteId = 3,
-                            StockQuantity = 26,
-                            SubcategoryName = "Earbuds",
-                            WhatsInTheBoxJson = "[\"Open-Ear Earbuds\",\"Quick start guide\"]"
+                            StockQuantity = 38,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"20000mAh Power Bank\",\"Quick start guide\"]"
                         },
                         new
                         {
@@ -2102,15 +2105,15 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 71,
                             CategoryId = 12,
-                            Description = "省スペースで使える薄型 Bluetooth キーボード。",
-                            FeaturesJson = "[\"Compact Bluetooth Keyboard ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "毎日の持ち歩きに便利な小型 USB-C 充電器。",
+                            FeaturesJson = "[\"Anker Nano Charger ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Compact Bluetooth Keyboard",
-                            Price = 8980m,
+                            Name = "Anker Nano Charger",
+                            Price = 3990m,
                             SiteId = 4,
-                            StockQuantity = 24,
-                            SubcategoryName = "Keyboard",
-                            WhatsInTheBoxJson = "[\"Compact Bluetooth Keyboard\",\"Quick start guide\"]"
+                            StockQuantity = 45,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Anker Nano Charger\",\"Quick start guide\"]"
                         },
                         new
                         {
@@ -2130,29 +2133,29 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 73,
                             CategoryId = 12,
-                            Description = "通話と音楽に使いやすい完全ワイヤレスイヤホン。",
-                            FeaturesJson = "[\"Wireless Earbuds ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "ノート PC 向けの HDMI・USB 対応マルチポートアダプター。",
+                            FeaturesJson = "[\"USB-C Multiport Adapter ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Wireless Earbuds",
-                            Price = 12800m,
+                            Name = "USB-C Multiport Adapter",
+                            Price = 6980m,
                             SiteId = 4,
                             StockQuantity = 26,
-                            SubcategoryName = "Earbuds",
-                            WhatsInTheBoxJson = "[\"Wireless Earbuds\",\"Quick start guide\"]"
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"USB-C Multiport Adapter\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 74,
                             CategoryId = 12,
-                            Description = "着脱式マイク付きの USB-C ゲーミングヘッドセット。",
-                            FeaturesJson = "[\"USB-C Gaming Headset ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "外出時に使いやすい薄型ノート PC スリーブ。",
+                            FeaturesJson = "[\"Laptop Sleeve 13-inch ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "USB-C Gaming Headset",
-                            Price = 9980m,
+                            Name = "Laptop Sleeve 13-inch",
+                            Price = 3480m,
                             SiteId = 4,
-                            StockQuantity = 18,
-                            SubcategoryName = "Headset",
-                            WhatsInTheBoxJson = "[\"USB-C Gaming Headset\",\"Quick start guide\"]"
+                            StockQuantity = 32,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Laptop Sleeve 13-inch\",\"Quick start guide\"]"
                         },
                         new
                         {
@@ -2172,29 +2175,29 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 76,
                             CategoryId = 12,
-                            Description = "持ち運びしやすいコンパクトなメカニカルキーボード。",
-                            FeaturesJson = "[\"Portable Mechanical Keyboard ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "写真や書類の保存に便利な高速外付け SSD。",
+                            FeaturesJson = "[\"Portable SSD 1TB ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Portable Mechanical Keyboard",
-                            Price = 14800m,
+                            Name = "Portable SSD 1TB",
+                            Price = 16800m,
                             SiteId = 4,
-                            StockQuantity = 16,
-                            SubcategoryName = "Keyboard",
-                            WhatsInTheBoxJson = "[\"Portable Mechanical Keyboard\",\"Quick start guide\"]"
+                            StockQuantity = 14,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Portable SSD 1TB\",\"Quick start guide\"]"
                         },
                         new
                         {
                             Id = 77,
                             CategoryId = 12,
-                            Description = "クリック音を抑えた薄型ワイヤレスマウス。",
-                            FeaturesJson = "[\"Silent Wireless Mouse ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "モニター周りを照らす USB 給電式ライトバー。",
+                            FeaturesJson = "[\"Desk Monitor Light ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Silent Wireless Mouse",
-                            Price = 4980m,
+                            Name = "Desk Monitor Light",
+                            Price = 5980m,
                             SiteId = 4,
-                            StockQuantity = 28,
-                            SubcategoryName = "Mouse",
-                            WhatsInTheBoxJson = "[\"Silent Wireless Mouse\",\"Quick start guide\"]"
+                            StockQuantity = 20,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Desk Monitor Light\",\"Quick start guide\"]"
                         },
                         new
                         {
@@ -2214,15 +2217,15 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 79,
                             CategoryId = 12,
-                            Description = "オンライン会議向けの軽量ワイヤレスヘッドセット。",
-                            FeaturesJson = "[\"Work Headset ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
+                            Description = "USB-C 充電対応の薄型モバイルバッテリー。",
+                            FeaturesJson = "[\"Power Bank 10000mAh ready for everyday use\",\"Simple setup\",\"Covered by standard manufacturer warranty\"]",
                             ImageUrl = "",
-                            Name = "Work Headset",
-                            Price = 11800m,
+                            Name = "Power Bank 10000mAh",
+                            Price = 4980m,
                             SiteId = 4,
-                            StockQuantity = 22,
-                            SubcategoryName = "Headset",
-                            WhatsInTheBoxJson = "[\"Work Headset\",\"Quick start guide\"]"
+                            StockQuantity = 36,
+                            SubcategoryName = "",
+                            WhatsInTheBoxJson = "[\"Power Bank 10000mAh\",\"Quick start guide\"]"
                         },
                         new
                         {
@@ -8423,7 +8426,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 1300,
                             ImageUrl = "",
-                            Price = 2999m,
+                            Price = 1800m,
                             ProductId = 13,
                             Sku = "PROD-13-BASE",
                             StockQuantity = 30
@@ -8432,7 +8435,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 1400,
                             ImageUrl = "",
-                            Price = 2499m,
+                            Price = 1500m,
                             ProductId = 14,
                             Sku = "PROD-14-BASE",
                             StockQuantity = 20
@@ -8450,7 +8453,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 1600,
                             ImageUrl = "",
-                            Price = 2200m,
+                            Price = 2500m,
                             ProductId = 16,
                             Sku = "PROD-16-BASE",
                             StockQuantity = 18
@@ -8459,7 +8462,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 1700,
                             ImageUrl = "",
-                            Price = 1700m,
+                            Price = 2200m,
                             ProductId = 17,
                             Sku = "PROD-17-BASE",
                             StockQuantity = 22
@@ -8468,16 +8471,16 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 1800,
                             ImageUrl = "",
-                            Price = 2499m,
+                            Price = 6500m,
                             ProductId = 18,
                             Sku = "PROD-18-BASE",
-                            StockQuantity = 26
+                            StockQuantity = 16
                         },
                         new
                         {
                             Id = 1900,
                             ImageUrl = "",
-                            Price = 1999m,
+                            Price = 2000m,
                             ProductId = 19,
                             Sku = "PROD-19-BASE",
                             StockQuantity = 28
@@ -9170,25 +9173,25 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 3100,
                             ImageUrl = "",
-                            Price = 109m,
+                            Price = 49m,
                             ProductId = 31,
                             Sku = "PROD-31-BASE",
-                            StockQuantity = 22
+                            StockQuantity = 35
                         },
                         new
                         {
                             Id = 3200,
                             ImageUrl = "",
-                            Price = 39m,
+                            Price = 29m,
                             ProductId = 32,
                             Sku = "PROD-32-BASE",
-                            StockQuantity = 38
+                            StockQuantity = 45
                         },
                         new
                         {
                             Id = 3300,
                             ImageUrl = "",
-                            Price = 129m,
+                            Price = 79m,
                             ProductId = 33,
                             Sku = "PROD-33-BASE",
                             StockQuantity = 24
@@ -9197,25 +9200,25 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 3400,
                             ImageUrl = "",
-                            Price = 199m,
+                            Price = 59m,
                             ProductId = 34,
                             Sku = "PROD-34-BASE",
-                            StockQuantity = 16
+                            StockQuantity = 30
                         },
                         new
                         {
                             Id = 3500,
                             ImageUrl = "",
-                            Price = 79m,
+                            Price = 199m,
                             ProductId = 35,
                             Sku = "PROD-35-BASE",
-                            StockQuantity = 28
+                            StockQuantity = 13
                         },
                         new
                         {
                             Id = 3600,
                             ImageUrl = "",
-                            Price = 69m,
+                            Price = 89m,
                             ProductId = 36,
                             Sku = "PROD-36-BASE",
                             StockQuantity = 18
@@ -9224,28 +9227,28 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 3700,
                             ImageUrl = "",
-                            Price = 59m,
+                            Price = 39m,
                             ProductId = 37,
                             Sku = "PROD-37-BASE",
-                            StockQuantity = 30
+                            StockQuantity = 28
                         },
                         new
                         {
                             Id = 3800,
                             ImageUrl = "",
-                            Price = 89m,
+                            Price = 159m,
                             ProductId = 38,
                             Sku = "PROD-38-BASE",
-                            StockQuantity = 26
+                            StockQuantity = 12
                         },
                         new
                         {
                             Id = 3900,
                             ImageUrl = "",
-                            Price = 99m,
+                            Price = 39m,
                             ProductId = 39,
                             Sku = "PROD-39-BASE",
-                            StockQuantity = 20
+                            StockQuantity = 32
                         },
                         new
                         {
@@ -9935,19 +9938,19 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 5100,
                             ImageUrl = "",
-                            Price = 329m,
+                            Price = 249m,
                             ProductId = 51,
                             Sku = "PROD-51-BASE",
-                            StockQuantity = 30
+                            StockQuantity = 40
                         },
                         new
                         {
                             Id = 5200,
                             ImageUrl = "",
-                            Price = 99m,
+                            Price = 49m,
                             ProductId = 52,
                             Sku = "PROD-52-BASE",
-                            StockQuantity = 48
+                            StockQuantity = 80
                         },
                         new
                         {
@@ -9962,28 +9965,28 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 5400,
                             ImageUrl = "",
-                            Price = 899m,
+                            Price = 129m,
                             ProductId = 54,
                             Sku = "PROD-54-BASE",
-                            StockQuantity = 18
+                            StockQuantity = 30
                         },
                         new
                         {
                             Id = 5500,
                             ImageUrl = "",
-                            Price = 299m,
+                            Price = 399m,
                             ProductId = 55,
                             Sku = "PROD-55-BASE",
-                            StockQuantity = 28
+                            StockQuantity = 18
                         },
                         new
                         {
                             Id = 5600,
                             ImageUrl = "",
-                            Price = 199m,
+                            Price = 599m,
                             ProductId = 56,
                             Sku = "PROD-56-BASE",
-                            StockQuantity = 32
+                            StockQuantity = 20
                         },
                         new
                         {
@@ -10007,10 +10010,10 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 5900,
                             ImageUrl = "",
-                            Price = 499m,
+                            Price = 199m,
                             ProductId = 59,
                             Sku = "PROD-59-BASE",
-                            StockQuantity = 26
+                            StockQuantity = 38
                         },
                         new
                         {
@@ -10700,10 +10703,10 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 7100,
                             ImageUrl = "",
-                            Price = 8980m,
+                            Price = 3990m,
                             ProductId = 71,
                             Sku = "PROD-71-BASE",
-                            StockQuantity = 24
+                            StockQuantity = 45
                         },
                         new
                         {
@@ -10718,7 +10721,7 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 7300,
                             ImageUrl = "",
-                            Price = 12800m,
+                            Price = 6980m,
                             ProductId = 73,
                             Sku = "PROD-73-BASE",
                             StockQuantity = 26
@@ -10727,10 +10730,10 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 7400,
                             ImageUrl = "",
-                            Price = 9980m,
+                            Price = 3480m,
                             ProductId = 74,
                             Sku = "PROD-74-BASE",
-                            StockQuantity = 18
+                            StockQuantity = 32
                         },
                         new
                         {
@@ -10745,19 +10748,19 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 7600,
                             ImageUrl = "",
-                            Price = 14800m,
+                            Price = 16800m,
                             ProductId = 76,
                             Sku = "PROD-76-BASE",
-                            StockQuantity = 16
+                            StockQuantity = 14
                         },
                         new
                         {
                             Id = 7700,
                             ImageUrl = "",
-                            Price = 4980m,
+                            Price = 5980m,
                             ProductId = 77,
                             Sku = "PROD-77-BASE",
-                            StockQuantity = 28
+                            StockQuantity = 20
                         },
                         new
                         {
@@ -10772,10 +10775,10 @@ namespace ProjectOrangeApi.Migrations
                         {
                             Id = 7900,
                             ImageUrl = "",
-                            Price = 11800m,
+                            Price = 4980m,
                             ProductId = 79,
                             Sku = "PROD-79-BASE",
-                            StockQuantity = 22
+                            StockQuantity = 36
                         },
                         new
                         {
