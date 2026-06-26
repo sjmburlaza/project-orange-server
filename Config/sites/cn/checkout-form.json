@@ -97,13 +97,6 @@
               ],
               "asyncValidators": [{ "name": "serviceablePostalCode" }],
               "grid": { "mobile": 12, "desktop": 6 }
-            },
-            {
-              "name": "deliveryEmail",
-              "type": "email",
-              "label": "收货通知邮箱",
-              "validators": [{ "name": "required" }, { "name": "email" }],
-              "grid": { "mobile": 12, "desktop": 6 }
             }
           ],
           "grid": { "mobile": 12, "desktop": 12 }

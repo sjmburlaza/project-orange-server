@@ -90,13 +90,6 @@
               "label": "建物名・部屋番号",
               "validators": [],
               "grid": { "mobile": 12, "desktop": 6 }
-            },
-            {
-              "name": "deliveryEmail",
-              "type": "email",
-              "label": "配送連絡用メール",
-              "validators": [{ "name": "required" }, { "name": "email" }],
-              "grid": { "mobile": 12, "desktop": 6 }
             }
           ],
           "grid": { "mobile": 12, "desktop": 12 }

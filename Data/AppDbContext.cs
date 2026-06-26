@@ -72,6 +72,11 @@ public class AppDbContext : IdentityDbContext<AppUser>
 			.HasDefaultValue(SiteSeed.DefaultId);
 
 		modelBuilder.Entity<Category>()
+			.Property(c => c.SubcategoriesJson)
+			.HasColumnType("nvarchar(max)")
+			.HasDefaultValue("[]");
+
+		modelBuilder.Entity<Category>()
 			.HasOne(c => c.Site)
 			.WithMany(s => s.Categories)
 			.HasForeignKey(c => c.SiteId)
@@ -97,6 +102,11 @@ public class AppDbContext : IdentityDbContext<AppUser>
 		modelBuilder.Entity<Product>()
 			.Property(p => p.Price)
 			.HasPrecision(18, 2);
+
+		modelBuilder.Entity<Product>()
+			.Property(p => p.SubcategoryName)
+			.HasMaxLength(128)
+			.HasDefaultValue(string.Empty);
 
 		modelBuilder.Entity<Product>()
 			.Property(p => p.FeaturesJson)
