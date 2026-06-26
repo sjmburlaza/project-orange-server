@@ -28,6 +28,13 @@ public class CartsController : ControllerBase
             _cartService.GetCartAsync(cartCode, UserId));
     }
 
+    [HttpGet("{cartCode}/recommended-products")]
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetRecommendedProducts(string cartCode)
+    {
+        return await ExecuteCartAction(() =>
+            _cartService.GetRecommendedProductsAsync(cartCode, UserId));
+    }
+
     [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<CartResponseDto>> GetMyCart()
@@ -152,14 +159,14 @@ public class CartsController : ControllerBase
             ));
     }
 
-    private async Task<ActionResult<CartResponseDto>> ExecuteCartAction(
-        Func<Task<CartResponseDto>> action)
+    private async Task<ActionResult<T>> ExecuteCartAction<T>(
+        Func<Task<T>> action)
     {
         try
         {
-            var cart = await action();
+            var result = await action();
 
-            return Ok(cart);
+            return Ok(result);
         }
         catch (ApiErrorException ex)
         {

@@ -375,6 +375,7 @@ Created categories are assigned to the current site.
 | Method   | Endpoint                                                   | Description                       |
 | -------- | ---------------------------------------------------------- | --------------------------------- |
 | `GET`    | `/api/carts/{cartCode}`                                    | Get a cart by code                |
+| `GET`    | `/api/carts/{cartCode}/recommended-products`               | Get accessory recommendations     |
 | `GET`    | `/api/carts/me`                                            | Get the authenticated user's cart |
 | `POST`   | `/api/carts/items`                                         | Add an item to a new cart         |
 | `POST`   | `/api/carts/{cartCode}/items`                              | Add an item to an existing cart   |

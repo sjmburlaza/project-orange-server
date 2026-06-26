@@ -600,6 +600,7 @@ Product responses include:
 | Method | Route | Auth | Description |
 | --- | --- | --- | --- |
 | `GET` | `/api/carts/{cartCode}` | Public or cookie-aware | Gets a cart if it is anonymous or belongs to the current user. |
+| `GET` | `/api/carts/{cartCode}/recommended-products` | Public or cookie-aware | Gets relevant in-stock accessory recommendations for the cart. |
 | `GET` | `/api/carts/me` | Required | Gets the current user's cart. |
 | `POST` | `/api/carts/items` | Public or cookie-aware | Creates or reuses a cart and adds an item. |
 | `POST` | `/api/carts/{cartCode}/items` | Public or cookie-aware | Adds an item to an existing cart. |
