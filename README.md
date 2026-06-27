@@ -37,17 +37,33 @@ Project Orange Server is an ASP.NET Core Web API for a multi-site ecommerce chec
 
 ```text
 .
-├── Config/                  # Default and site-specific checkout form configuration
-├── Contracts/               # Service interfaces
-├── Controllers/             # API controllers and routes
-├── DTOs/                    # Request and response DTOs
-├── Data/                    # EF Core DbContext, design-time factory, and seed data
-├── Migrations/              # EF Core database migrations
-├── Models/                  # Entity models
-├── Services/                # Business logic for carts, checkout, shipping, trade-ins
-├── Program.cs               # Application startup and dependency registration
-├── ProjectOrangeApi.csproj  # Project dependencies and target framework
-└── ProjectOrangeApi.sln     # Visual Studio solution
+├── src/
+│   └── ProjectOrange.Api/
+│       ├── Controllers/                 # API controllers and routes
+│       ├── Application/
+│       │   ├── Common/                  # Authorization, interfaces, tenancy, and API errors
+│       │   └── Features/                # Feature-owned DTOs and use-case logic
+│       │       ├── Products/
+│       │       ├── Cart/
+│       │       ├── Checkout/
+│       │       ├── Orders/
+│       │       ├── Fulfillment/
+│       │       ├── Analytics/
+│       │       ├── Authentication/
+│       │       ├── TradeIns/
+│       │       ├── Sites/
+│       │       ├── Geo/
+│       │       └── Options/
+│       ├── Domain/Entities/             # EF Core entity models
+│       ├── Infrastructure/
+│       │   ├── Persistence/             # DbContext, design-time factory, and migrations
+│       │   ├── SeedData/                # Static seed sources
+│       │   └── Middleware/              # Request pipeline middleware
+│       ├── Config/                      # Default and site-specific checkout forms
+│       ├── Program.cs                   # Startup and dependency registration
+│       └── ProjectOrange.Api.csproj     # API project file
+├── tests/
+└── ProjectOrangeApi.sln                 # Visual Studio solution
 ```
 
 ## Prerequisites
@@ -82,10 +98,10 @@ Required configuration:
 For local development, prefer user secrets or environment variables for real credentials:
 
 ```bash
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost,1433;Database=ProjectOrangeDb;User Id=sa;Password=<password>;TrustServerCertificate=True"
-dotnet user-secrets set "Jwt:Issuer" "ProjectOrangeApi"
-dotnet user-secrets set "Jwt:Audience" "ProjectOrangeClient"
-dotnet user-secrets set "Jwt:Key" "<at-least-32-character-secret-key>"
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost,1433;Database=ProjectOrangeDb;User Id=sa;Password=<password>;TrustServerCertificate=True" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
+dotnet user-secrets set "Jwt:Issuer" "ProjectOrangeApi" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
+dotnet user-secrets set "Jwt:Audience" "ProjectOrangeClient" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
+dotnet user-secrets set "Jwt:Key" "<at-least-32-character-secret-key>" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 ```
 
 Equivalent environment variable names:
@@ -158,19 +174,19 @@ Site selection affects:
 Restore dependencies:
 
 ```bash
-dotnet restore
+dotnet restore ProjectOrangeApi.sln
 ```
 
 Apply database migrations:
 
 ```bash
-dotnet ef database update
+dotnet ef database update --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 ```
 
 Run the API:
 
 ```bash
-dotnet run
+dotnet run --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 ```
 
 The development launch profiles expose:
@@ -702,8 +718,8 @@ Categories, products, carts, orders, and auth sessions are site-scoped. The curr
 Run migrations after changing entities or seed data:
 
 ```bash
-dotnet ef migrations add <MigrationName>
-dotnet ef database update
+dotnet ef migrations add <MigrationName> --project src/ProjectOrange.Api/ProjectOrange.Api.csproj --output-dir Infrastructure/Persistence/Migrations
+dotnet ef database update --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 ```
 
 ## Useful Commands
@@ -711,25 +727,25 @@ dotnet ef database update
 Build the project:
 
 ```bash
-dotnet build
+dotnet build ProjectOrangeApi.sln
 ```
 
 Run the project:
 
 ```bash
-dotnet run
+dotnet run --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 ```
 
 Run with the HTTP launch profile:
 
 ```bash
-dotnet run --launch-profile http
+dotnet run --project src/ProjectOrange.Api/ProjectOrange.Api.csproj --launch-profile http
 ```
 
 Run with the HTTPS launch profile:
 
 ```bash
-dotnet run --launch-profile https
+dotnet run --project src/ProjectOrange.Api/ProjectOrange.Api.csproj --launch-profile https
 ```
 
 ## Security Notes

@@ -16,7 +16,7 @@ The current application is a single ASP.NET Core project:
 - Documentation/runtime inspection: Swagger/OpenAPI in development
 - CI: GitHub Actions restore and release build
 
-The API is organized as a conventional layered ASP.NET Core application:
+The API is organized as a single ASP.NET Core project with feature-sliced application folders:
 
 ```text
 HTTP request
@@ -25,7 +25,7 @@ HTTP request
   -> Authentication
   -> Authorization
   -> Controller
-  -> Service
+  -> Feature-owned use-case logic
   -> EF Core DbContext / seed-backed rule tables
   -> SQL Server or in-memory process state
 ```
@@ -36,45 +36,40 @@ Most user-facing ecommerce state is scoped to a resolved site. A request for `ph
 
 ```text
 .
-+-- Authorization/
-|   +-- AppClaimTypes.cs
-|   +-- AppPermissions.cs
-|   +-- AppRoles.cs
-|   +-- AuthCookies.cs
-|   +-- RolePermissionMap.cs
-+-- Config/
-|   +-- checkout-form.json
-|   +-- sites/{cn,fr,jp,ph}/checkout-form.json
-+-- Contracts/
-|   +-- ICartService.cs
-+-- Controllers/
-|   +-- AdminAnalyticsController.cs
-|   +-- AnalyticsController.cs
-|   +-- AuthController.cs
-|   +-- CartsController.cs
-|   +-- CategoriesController.cs
-|   +-- CheckoutController.cs
-|   +-- GeoController.cs
-|   +-- OptionsController.cs
-|   +-- OrdersController.cs
-|   +-- PostalCodesController.cs
-|   +-- ProductsController.cs
-|   +-- FulfillmentController.cs
-|   +-- SitesController.cs
-|   +-- TradeInController.cs
-+-- Data/
-|   +-- AppDbContext.cs
-|   +-- AppDbContextFactory.cs
-|   +-- Seeds/
-+-- DTOs/
-+-- Migrations/
-+-- Models/
-+-- Services/
-+-- Program.cs
-+-- ProjectOrangeApi.csproj
-+-- ProjectOrangeApi.http
++-- src/
+|   +-- ProjectOrange.Api/
+|       +-- Controllers/
+|       +-- Application/
+|       |   +-- Common/
+|       |   |   +-- Authorization/
+|       |   |   +-- Exceptions/
+|       |   |   +-- Interfaces/
+|       |   |   +-- Tenancy/
+|       |   +-- Features/
+|       |       +-- Analytics/
+|       |       +-- Authentication/
+|       |       +-- Cart/
+|       |       +-- Checkout/
+|       |       +-- Fulfillment/
+|       |       +-- Geo/
+|       |       +-- Options/
+|       |       +-- Orders/
+|       |       +-- Products/
+|       |       +-- Sites/
+|       |       +-- TradeIns/
+|       +-- Config/
+|       +-- Domain/Entities/
+|       +-- Infrastructure/
+|       |   +-- Middleware/
+|       |   +-- Persistence/
+|       |   |   +-- Migrations/
+|       |   +-- SeedData/
+|       +-- Program.cs
+|       +-- ProjectOrange.Api.csproj
+|       +-- ProjectOrange.Api.http
+|       +-- appsettings.json
+|       +-- appsettings.Development.json
 +-- ProjectOrangeApi.sln
-+-- appsettings.json
 +-- README.md
 ```
 
@@ -82,14 +77,14 @@ Most user-facing ecommerce state is scoped to a resolved site. A request for `ph
 
 | Directory | Responsibility |
 | --- | --- |
-| `Authorization/` | Role names, permission constants, custom claim names, session cookie name, and role-to-permission mapping. |
-| `Config/` | Default and site-specific checkout form definitions. These are loaded at runtime by `CheckoutFormService`. |
-| `Controllers/` | HTTP route definitions, model binding, auth attributes, response status selection, and service orchestration. |
-| `Data/` | EF Core `AppDbContext`, design-time context factory, and static seed sources. |
-| `DTOs/` | Request and response contracts used by controllers and services. |
-| `Migrations/` | EF Core migration history for SQL Server schema evolution and seed data changes. |
-| `Models/` | EF Core entity types persisted in SQL Server. |
-| `Services/` | Business rules for carts, orders, site context, checkout forms, shipping, analytics, trade-in sessions, geolocation, currency conversion, and structured API errors. |
+| `src/ProjectOrange.Api/Controllers/` | HTTP route definitions, model binding, auth attributes, response status selection, and feature orchestration. |
+| `src/ProjectOrange.Api/Application/Common/` | Shared authorization constants, service interfaces, tenancy context, and structured API errors. |
+| `src/ProjectOrange.Api/Application/Features/` | Feature-owned DTOs and use-case logic for products, cart, checkout, orders, fulfillment, analytics, auth, trade-ins, sites, geo, and options. |
+| `src/ProjectOrange.Api/Domain/Entities/` | EF Core entity types persisted in SQL Server. |
+| `src/ProjectOrange.Api/Infrastructure/Persistence/` | EF Core `AppDbContext`, design-time context factory, and migration history. |
+| `src/ProjectOrange.Api/Infrastructure/SeedData/` | Static seed sources for product catalog, sites, options, shipping rules, roles, and test/dev data. |
+| `src/ProjectOrange.Api/Infrastructure/Middleware/` | Request pipeline middleware such as site resolution. |
+| `src/ProjectOrange.Api/Config/` | Default and site-specific checkout form definitions loaded at runtime by `CheckoutFormService`. |
 
 ## 3. Runtime Startup
 
@@ -211,10 +206,10 @@ PasswordReset__ClientResetUrl="http://localhost:4200/reset-password"
 Prefer .NET user secrets or environment variables for local credentials:
 
 ```bash
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost,1433;Database=ProjectOrangeDb;User Id=sa;Password=<password>;TrustServerCertificate=True"
-dotnet user-secrets set "Jwt:Issuer" "ProjectOrangeApi"
-dotnet user-secrets set "Jwt:Audience" "ProjectOrangeClient"
-dotnet user-secrets set "Jwt:Key" "<long-secret>"
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost,1433;Database=ProjectOrangeDb;User Id=sa;Password=<password>;TrustServerCertificate=True" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
+dotnet user-secrets set "Jwt:Issuer" "ProjectOrangeApi" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
+dotnet user-secrets set "Jwt:Audience" "ProjectOrangeClient" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
+dotnet user-secrets set "Jwt:Key" "<long-secret>" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 ```
 
 `appsettings.Development.json`, local `.env` variants, and local database files should stay out of source control.
@@ -238,13 +233,13 @@ dotnet tool install --global dotnet-ef
 ```bash
 dotnet restore ProjectOrangeApi.sln
 dotnet build ProjectOrangeApi.sln
-dotnet ef database update
-dotnet run --project ProjectOrangeApi.csproj
+dotnet ef database update --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
+dotnet run --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 ```
 
 ### HTTP Scratch File
 
-`ProjectOrangeApi.http` contains sample requests for:
+`src/ProjectOrange.Api/ProjectOrange.Api.http` contains sample requests for:
 
 - Geo country lookup
 - Admin analytics dashboard
@@ -421,7 +416,7 @@ Important delete behavior configured in EF:
 
 ## 8. Seed Data
 
-Seed sources live in `Data/Seeds`.
+Seed sources live in `src/ProjectOrange.Api/Infrastructure/SeedData`.
 
 ### EF-Seeded Data
 
@@ -1192,7 +1187,7 @@ dotnet restore ProjectOrangeApi.sln
 dotnet build ProjectOrangeApi.sln --configuration Release --no-restore
 ```
 
-There are currently no test projects in the repository. For future coverage, recommended first tests are:
+The repository includes `tests/ProjectOrangeApi.Tests` for unit and endpoint-level coverage. Recommended next coverage areas are:
 
 - Unit tests for `CartService` voucher/add-on/shipping summary rules.
 - Unit tests for `OrderService` stock validation and total calculation.
@@ -1266,13 +1261,13 @@ There are currently no test projects in the repository. For future coverage, rec
 Create a migration:
 
 ```bash
-dotnet ef migrations add <MigrationName>
+dotnet ef migrations add <MigrationName> --project src/ProjectOrange.Api/ProjectOrange.Api.csproj --output-dir Infrastructure/Persistence/Migrations
 ```
 
 Apply migrations:
 
 ```bash
-dotnet ef database update
+dotnet ef database update --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 ```
 
 The design-time factory reads:

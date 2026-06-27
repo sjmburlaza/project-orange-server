@@ -9,8 +9,10 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
+        var basePath = ResolveConfigurationBasePath();
+
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
+            .SetBasePath(basePath)
             .AddJsonFile("appsettings.json", optional: true)
             .AddJsonFile($"appsettings.{environment}.json", optional: true)
             .AddEnvironmentVariables()
@@ -27,5 +29,21 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
         optionsBuilder.UseSqlServer(connectionString);
 
         return new AppDbContext(optionsBuilder.Options);
+    }
+
+    private static string ResolveConfigurationBasePath()
+    {
+        var currentDirectory = Directory.GetCurrentDirectory();
+
+        if (File.Exists(Path.Combine(currentDirectory, "appsettings.json")))
+        {
+            return currentDirectory;
+        }
+
+        var projectDirectory = Path.Combine(currentDirectory, "src", "ProjectOrange.Api");
+
+        return File.Exists(Path.Combine(projectDirectory, "appsettings.json"))
+            ? projectDirectory
+            : currentDirectory;
     }
 }
