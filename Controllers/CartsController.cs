@@ -29,7 +29,7 @@ public class CartsController : ControllerBase
     }
 
     [HttpGet("{cartCode}/recommended-products")]
-    public async Task<ActionResult<IEnumerable<ProductDto>>> GetRecommendedProducts(string cartCode)
+    public async Task<ActionResult<IEnumerable<ProductConfigureDto>>> GetRecommendedProducts(string cartCode)
     {
         return await ExecuteCartAction(() =>
             _cartService.GetRecommendedProductsAsync(cartCode, UserId));

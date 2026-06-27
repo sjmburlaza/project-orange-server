@@ -33,7 +33,7 @@ public class CartRecommendedProductsEndpointTests
         var response = await controller.GetRecommendedProducts("CART-TEST");
 
         var ok = Assert.IsType<OkObjectResult>(response.Result);
-        var products = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(ok.Value).ToList();
+        var products = Assert.IsAssignableFrom<IEnumerable<ProductConfigureDto>>(ok.Value).ToList();
 
         Assert.Collection(
             products,
@@ -42,6 +42,17 @@ public class CartRecommendedProductsEndpointTests
             product => AssertRecommendedProduct(product, "Travel Earbuds", "Earbuds"),
             product => AssertRecommendedProduct(product, "Focus Headphones", "Headphones"),
             product => AssertRecommendedProduct(product, "Meeting Headset", "Headset"));
+
+        var keyboard = products[0];
+        var keyboardCategory = Assert.IsType<CategoryDto>(keyboard.Category);
+        Assert.Equal("Accessories", keyboardCategory.Name);
+        Assert.Contains("Keyboard", keyboardCategory.Subcategories);
+        Assert.Equal(["Low-profile switches", "Bluetooth connectivity"], keyboard.Features);
+        Assert.Equal(["Desk Keyboard", "USB-C cable"], keyboard.WhatsInTheBox);
+        var variant = Assert.Single(keyboard.Variants);
+        Assert.Equal(100100, variant.Id);
+        Assert.Equal("KEYBOARD-BLACK", variant.Sku);
+        Assert.Equal("inStock", variant.StockStatus);
     }
 
     [Fact]
@@ -77,7 +88,7 @@ public class CartRecommendedProductsEndpointTests
         var response = await controller.GetRecommendedProducts("CART-TEST");
 
         var ok = Assert.IsType<OkObjectResult>(response.Result);
-        var products = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(ok.Value).ToList();
+        var products = Assert.IsAssignableFrom<IEnumerable<ProductConfigureDto>>(ok.Value).ToList();
 
         Assert.DoesNotContain(products, product => product.Id == seeded.Keyboard.Id);
         Assert.Contains(products, product => product.Name == "Desk Mouse");
@@ -116,7 +127,7 @@ public class CartRecommendedProductsEndpointTests
         var response = await controller.GetRecommendedProducts("CART-TEST");
 
         var ok = Assert.IsType<OkObjectResult>(response.Result);
-        var products = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(ok.Value);
+        var products = Assert.IsAssignableFrom<IEnumerable<ProductConfigureDto>>(ok.Value);
 
         Assert.Empty(products);
     }
@@ -134,7 +145,8 @@ public class CartRecommendedProductsEndpointTests
         {
             Id = 101,
             SiteId = site.Id,
-            Name = "Accessories"
+            Name = "Accessories",
+            Subcategories = ["Keyboard", "Mouse", "Earbuds", "Headphones", "Headset"]
         };
 
         var laptop = CreateProduct(1000, site, laptopCategory, "Work Laptop", "A laptop for work.", 50000m, 5);
@@ -170,6 +182,16 @@ public class CartRecommendedProductsEndpointTests
         db.Sites.Add(site);
         db.Categories.AddRange(laptopCategory, accessoriesCategory);
         db.Products.AddRange(laptop, keyboard, mouse, earbuds, headphones, headset, webcam, outOfStockMouse);
+        db.ProductVariants.Add(new ProductVariant
+        {
+            Id = 100100,
+            ProductId = keyboard.Id,
+            Product = keyboard,
+            Sku = "KEYBOARD-BLACK",
+            Price = keyboard.Price,
+            StockQuantity = keyboard.StockQuantity,
+            ImageUrl = keyboard.ImageUrl
+        });
         db.Carts.Add(cart);
 
         return new SeededRecommendationCatalog(cart, keyboard);
@@ -196,7 +218,13 @@ public class CartRecommendedProductsEndpointTests
             ImageUrl = $"/images/products/{id}.png",
             CategoryId = category.Id,
             Category = category,
-            SubcategoryName = subcategoryName
+            SubcategoryName = subcategoryName,
+            FeaturesJson = subcategoryName == "Keyboard"
+                ? """["Low-profile switches","Bluetooth connectivity"]"""
+                : "[]",
+            WhatsInTheBoxJson = subcategoryName == "Keyboard"
+                ? """["Desk Keyboard","USB-C cable"]"""
+                : "[]"
         };
     }
 
@@ -218,7 +246,7 @@ public class CartRecommendedProductsEndpointTests
     }
 
     private static void AssertRecommendedProduct(
-        ProductDto product,
+        ProductConfigureDto product,
         string name,
         string subcategoryName)
     {

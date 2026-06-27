@@ -47,7 +47,7 @@ public class CartService : ICartService
         return MapToResponse(cart);
     }
 
-    public async Task<IEnumerable<ProductDto>> GetRecommendedProductsAsync(string cartCode, string? userId)
+    public async Task<IEnumerable<ProductConfigureDto>> GetRecommendedProductsAsync(string cartCode, string? userId)
     {
         var cart = await GetCartEntityAsync(cartCode, userId);
         var subcategoryRanks = GetRecommendedAccessorySubcategoryRanks(cart);
@@ -68,6 +68,9 @@ public class CartService : ICartService
             .Include(product => product.OptionGroups)
                 .ThenInclude(group => group.Options)
             .Include(product => product.Variants)
+                .ThenInclude(variant => variant.VariantOptions)
+                    .ThenInclude(variantOption => variantOption.ProductOption)
+                        .ThenInclude(option => option.ProductOptionGroup)
             .Where(product =>
                 product.SiteId == _siteContext.SiteId &&
                 product.Category != null &&
@@ -410,11 +413,11 @@ public class CartService : ICartService
         return ranks;
     }
 
-    private static ProductDto MapRecommendedProduct(Product product)
+    private static ProductConfigureDto MapRecommendedProduct(Product product)
     {
         var stockQuantity = GetProductStockQuantity(product);
 
-        return new ProductDto
+        return new ProductConfigureDto
         {
             Id = product.Id,
             Name = product.Name,
@@ -426,12 +429,64 @@ public class CartService : ICartService
             CategoryId = product.CategoryId,
             CategoryName = product.Category?.Name ?? string.Empty,
             SubcategoryName = product.SubcategoryName,
+            Category = product.Category == null ? null : MapCategory(product.Category),
             ItemSpecs = product.ItemSpecs.Select(spec => new ProductSpecDto
             {
                 Name = spec.Name,
                 Value = spec.Value
             }).ToList(),
-            AvailableColors = MapAvailableColors(product)
+            AvailableColors = MapAvailableColors(product),
+            Features = DeserializeStringList(product.FeaturesJson),
+            WhatsInTheBox = DeserializeStringList(product.WhatsInTheBoxJson),
+            OptionGroups = product.OptionGroups
+                .OrderBy(group => group.SortOrder)
+                .ThenBy(group => group.Id)
+                .Select(group => new ProductOptionGroupDto
+                {
+                    Code = group.Code,
+                    Label = group.Label,
+                    Options = group.Options
+                        .OrderBy(option => option.SortOrder)
+                        .ThenBy(option => option.Id)
+                        .Select(option => new ProductOptionDto
+                        {
+                            Code = option.Code,
+                            Label = option.Label,
+                            Hex = option.Hex,
+                            ImageUrl = option.ImageUrl
+                        })
+                        .ToList()
+                })
+                .ToList(),
+            Variants = product.Variants
+                .OrderBy(variant => variant.Price)
+                .ThenBy(variant => variant.Id)
+                .Select(MapProductVariant)
+                .ToList()
+        };
+    }
+
+    private static CategoryDto MapCategory(Category category)
+    {
+        return new CategoryDto
+        {
+            Id = category.Id,
+            Name = category.Name,
+            Subcategories = category.Subcategories
+        };
+    }
+
+    private static ProductVariantDto MapProductVariant(ProductVariant variant)
+    {
+        return new ProductVariantDto
+        {
+            Id = variant.Id,
+            Sku = variant.Sku,
+            Price = variant.Price,
+            StockQuantity = variant.StockQuantity,
+            StockStatus = GetStockStatus(variant.StockQuantity),
+            ImageUrl = variant.ImageUrl,
+            Options = GetVariantOptions(variant)
         };
     }
 
@@ -479,6 +534,23 @@ public class CartService : ICartService
         }
 
         return stockQuantity <= 5 ? "lowStock" : "inStock";
+    }
+
+    private static List<string> DeserializeStringList(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [];
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<string>>(json) ?? [];
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
     }
 
     private CartResponseDto MapToResponse(Cart cart)
