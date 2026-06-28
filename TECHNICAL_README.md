@@ -527,7 +527,7 @@ inventory.read
 inventory.update
 ```
 
-Policies are registered for every permission in `AppPermissions.All`, although most current controllers use either public access, `[Authorize]`, or `[Authorize(Roles = AppRoles.Admin)]`.
+Policies are registered for every permission in `AppPermissions.All`; admin product management uses the product permission policies, while other controllers use public access, `[Authorize]`, or admin role checks as appropriate.
 
 ### Role Permission Mapping
 
@@ -565,6 +565,11 @@ Unless otherwise noted, endpoints support both:
 | `GET` | `/api/products/{id}/addons` | Public | Lists eligible add-ons for a product category and current site feature flags. |
 | `GET` | `/api/products/{id}/insurance-plans` | Public | Lists insurance plans if insurance is enabled for the site. |
 | `GET` | `/api/products/{id}/mobile-plans` | Public | Lists mobile plans eligible for the product category. |
+| `GET` | `/api/admin/products` | `products.read` | Lists products for admin management. Supports filters and sorting. |
+| `GET` | `/api/admin/products/{id}` | `products.read` | Gets one product with specs, options, and variants. |
+| `POST` | `/api/admin/products` | `products.create` | Creates a site-scoped product. |
+| `PUT` | `/api/admin/products/{id}` | `products.update` | Updates a product and replaces specs, options, and variants. |
+| `DELETE` | `/api/admin/products/{id}` | `products.delete` | Deletes a product if it is not referenced by carts or orders. |
 | `GET` | `/api/categories` | Public | Lists categories for the resolved site. |
 | `POST` | `/api/categories` | Public | Creates a category scoped to the resolved site. |
 

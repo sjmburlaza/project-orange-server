@@ -360,6 +360,18 @@ Unless noted otherwise, endpoint tables show the non-prefixed route. Site-scoped
 | `GET`  | `/api/products/{id}/insurance-plans` | Get available insurance plans       |
 | `GET`  | `/api/products/{id}/mobile-plans`    | Get available mobile plans          |
 
+### Admin Products
+
+Admin product routes also support the site-prefixed form, for example `/api/ph/admin/products`.
+
+| Method   | Endpoint                   | Permission        | Description                                      |
+| -------- | -------------------------- | ----------------- | ------------------------------------------------ |
+| `GET`    | `/api/admin/products`      | `products.read`   | Get products for admin management                |
+| `GET`    | `/api/admin/products/{id}` | `products.read`   | Get one product with specs, options, and variants |
+| `POST`   | `/api/admin/products`      | `products.create` | Create a product                                 |
+| `PUT`    | `/api/admin/products/{id}` | `products.update` | Update a product and replace its child catalog data |
+| `DELETE` | `/api/admin/products/{id}` | `products.delete` | Delete a product if it is not referenced by carts or orders |
+
 Product list query parameters:
 
 | Parameter    | Type      | Description                                           |
