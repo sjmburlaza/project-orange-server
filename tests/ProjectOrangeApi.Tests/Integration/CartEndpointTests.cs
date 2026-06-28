@@ -43,7 +43,8 @@ public class CartEndpointTests
                     Quantity = 3,
                     StockQuantity = 10,
                     ImageUrl = "/images/products/orange-phone.png",
-                    CategoryName = "Phones"
+                    CategoryName = "Phones",
+                    SubcategoryName = "Smartphones"
                 }
             ]
         });
@@ -58,10 +59,12 @@ public class CartEndpointTests
         var entry = Assert.Single(cart.Entries);
 
         Assert.Equal(37.50m, entry.TotalPrice);
+        Assert.Equal("Smartphones", entry.SubcategoryName);
 
         var json = JsonSerializer.Serialize(entry, new JsonSerializerOptions(JsonSerializerDefaults.Web));
         using var document = JsonDocument.Parse(json);
         Assert.Equal(37.50m, document.RootElement.GetProperty("totalPrice").GetDecimal());
+        Assert.Equal("Smartphones", document.RootElement.GetProperty("subcategoryName").GetString());
     }
 
     private static CartsController CreateController(AppDbContext db, TestSiteContext siteContext)

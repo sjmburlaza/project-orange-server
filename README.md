@@ -538,6 +538,7 @@ Content-Type: application/json
         "totalPrice": 59999,
         "imageUrl": "",
         "categoryName": "Phones",
+        "subcategoryName": "Flagship",
         "itemSpecs": [
           { "name": "Storage", "value": "128GB" },
           { "name": "Color", "value": "Black" }
@@ -620,6 +621,7 @@ The lookup response uses the order confirmation shape:
       "totalPrice": 59999,
       "imageUrl": "",
       "categoryName": "Phones",
+      "subcategoryName": "Flagship",
       "itemSpecs": [
         { "name": "Storage", "value": "128GB" },
         { "name": "Color", "value": "Black" }

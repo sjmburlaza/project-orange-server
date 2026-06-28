@@ -17,6 +17,7 @@ public class CartItem
     public int StockQuantity { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
     public string CategoryName { get; set; } = string.Empty;
+    public string SubcategoryName { get; set; } = string.Empty;
 
     public List<CartItemAddon> Addons { get; set; } = [];
     public List<CartItemSpec> ItemSpecs { get; set; } = [];

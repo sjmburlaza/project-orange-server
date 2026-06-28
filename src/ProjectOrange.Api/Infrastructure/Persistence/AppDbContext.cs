@@ -301,6 +301,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
 			.HasMaxLength(128);
 
 		modelBuilder.Entity<OrderItem>()
+			.Property(o => o.SubcategoryName)
+			.HasMaxLength(128);
+
+		modelBuilder.Entity<OrderItem>()
 			.Property(o => o.AddonsJson)
 			.HasColumnType("nvarchar(max)");
 

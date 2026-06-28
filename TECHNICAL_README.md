@@ -397,9 +397,9 @@ erDiagram
 
 The cart and order flows intentionally snapshot product metadata:
 
-- `CartItem` stores product name, price, stock quantity, image URL, category name, and copied item specs.
+- `CartItem` stores product name, price, stock quantity, image URL, category name, subcategory name, and copied item specs.
 - `CartItemAddon` stores the selected add-on display metadata and price/credit details.
-- `OrderItem` stores product and add-on snapshots as JSON so order history remains stable even when catalog data changes.
+- `OrderItem` stores product name, price, image URL, category name, subcategory name, item specs, and add-on snapshots so order history remains stable even when catalog data changes.
 - `Order.CheckoutDataJson` stores the submitted checkout form data for later review or support flows.
 
 This design favors historical integrity over fully normalized live catalog lookups for completed orders.
@@ -666,7 +666,9 @@ Cart response shape:
       "productName": "iPhone 15",
       "price": 59999,
       "quantity": 1,
-      "totalPrice": 59999
+      "totalPrice": 59999,
+      "categoryName": "Phones",
+      "subcategoryName": "Flagship"
     }
   ],
   "appliedVouchers": [],
