@@ -102,6 +102,154 @@ public static class ProductVariantSeed
         ])
     ];
 
+    private static readonly VariantDefinition[] KeyboardVariants =
+    [
+        new(0, 4, 1m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.BlackOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.WiredUsbCOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.CompactOptionCode),
+            new(ProductOptionSeed.SwitchGroupCode, ProductOptionSeed.TactileOptionCode)
+        ]),
+        new(1, 3, 1.08m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.BlackOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.BluetoothOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.CompactOptionCode),
+            new(ProductOptionSeed.SwitchGroupCode, ProductOptionSeed.TactileOptionCode)
+        ]),
+        new(2, 2, 1.12m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.SilverOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.BluetoothOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.CompactOptionCode),
+            new(ProductOptionSeed.SwitchGroupCode, ProductOptionSeed.LinearOptionCode)
+        ]),
+        new(3, 1, 1.15m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.SilverOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.WiredUsbCOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.FullSizeOptionCode),
+            new(ProductOptionSeed.SwitchGroupCode, ProductOptionSeed.TactileOptionCode)
+        ])
+    ];
+
+    private static readonly VariantDefinition[] MouseVariants =
+    [
+        new(0, 4, 1m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.BlackOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.BluetoothOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.ErgonomicOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.Dpi4000OptionCode)
+        ]),
+        new(1, 3, 1.12m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.BlackOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.Wireless24GhzOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.ErgonomicOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.Dpi8000OptionCode)
+        ]),
+        new(2, 2, 1.05m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.SilverOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.BluetoothOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.AmbidextrousOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.Dpi4000OptionCode)
+        ]),
+        new(3, 1, 1.16m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.SilverOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.Wireless24GhzOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.AmbidextrousOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.Dpi8000OptionCode)
+        ])
+    ];
+
+    private static readonly VariantDefinition[] EarbudsVariants =
+    [
+        new(0, 4, 1m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.BlackOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.InEarOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.StandardNoiseControlOptionCode)
+        ]),
+        new(1, 3, 1.18m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.BlackOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.InEarOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.ActiveNoiseCancellingOptionCode)
+        ]),
+        new(2, 2, 1.2m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.WhiteOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.InEarOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.ActiveNoiseCancellingOptionCode)
+        ]),
+        new(3, 1, 1.08m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.WhiteOptionCode),
+            new(ProductOptionSeed.FormFactorGroupCode, ProductOptionSeed.OpenEarOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.StandardNoiseControlOptionCode)
+        ])
+    ];
+
+    private static readonly VariantDefinition[] HeadphonesVariants =
+    [
+        new(0, 4, 1m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.BlackOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.BluetoothOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.StandardNoiseControlOptionCode)
+        ]),
+        new(1, 3, 1.15m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.BlackOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.BluetoothOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.ActiveNoiseCancellingOptionCode)
+        ]),
+        new(2, 2, 1.18m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.SilverOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.BluetoothOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.ActiveNoiseCancellingOptionCode)
+        ]),
+        new(3, 1, 1.05m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.SilverOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.WiredUsbCOptionCode),
+            new(ProductOptionSeed.FeatureGroupCode, ProductOptionSeed.StandardNoiseControlOptionCode)
+        ])
+    ];
+
+    private static readonly VariantDefinition[] HeadsetVariants =
+    [
+        new(0, 4, 1m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.BlackOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.WiredUsbCOptionCode),
+            new(ProductOptionSeed.MicrophoneGroupCode, ProductOptionSeed.BoomMicOptionCode)
+        ]),
+        new(1, 3, 1.08m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.BlackOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.WiredUsbCOptionCode),
+            new(ProductOptionSeed.MicrophoneGroupCode, ProductOptionSeed.DetachableMicOptionCode)
+        ]),
+        new(2, 2, 1.12m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.BlackOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.Wireless24GhzOptionCode),
+            new(ProductOptionSeed.MicrophoneGroupCode, ProductOptionSeed.BoomMicOptionCode)
+        ]),
+        new(3, 1, 1.18m,
+        [
+            new(ProductOptionSeed.ColorGroupCode, ProductOptionSeed.WhiteOptionCode),
+            new(ProductOptionSeed.ConnectionGroupCode, ProductOptionSeed.Wireless24GhzOptionCode),
+            new(ProductOptionSeed.MicrophoneGroupCode, ProductOptionSeed.DetachableMicOptionCode)
+        ])
+    ];
+
     public static ProductVariant[] Variants =>
         ProductSeed.Products
             .SelectMany(CreateVariants)
@@ -191,6 +339,11 @@ public static class ProductVariantSeed
             ProductOptionSeed.ProductOptionProfile.Phone => PhoneVariants,
             ProductOptionSeed.ProductOptionProfile.Laptop => LaptopVariants,
             ProductOptionSeed.ProductOptionProfile.Monitor => MonitorVariants,
+            ProductOptionSeed.ProductOptionProfile.Keyboard => KeyboardVariants,
+            ProductOptionSeed.ProductOptionProfile.Mouse => MouseVariants,
+            ProductOptionSeed.ProductOptionProfile.Earbuds => EarbudsVariants,
+            ProductOptionSeed.ProductOptionProfile.Headphones => HeadphonesVariants,
+            ProductOptionSeed.ProductOptionProfile.Headset => HeadsetVariants,
             _ => []
         };
     }

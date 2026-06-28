@@ -21,6 +21,16 @@ public class ProductEndpointTests
         "Headset"
     ];
 
+    private static readonly Dictionary<string, string[]> ExpectedAccessoryOptionGroupLabels =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Keyboard"] = ["Color", "Connection", "Layout", "Switch"],
+            ["Mouse"] = ["Color", "Connection", "Shape", "Sensitivity"],
+            ["Earbuds"] = ["Color", "Fit", "Noise Control"],
+            ["Headphones"] = ["Color", "Connection", "Noise Control"],
+            ["Headset"] = ["Color", "Connection", "Microphone"]
+        };
+
     [Fact]
     public void ProductSeed_Accessories_HaveAllowedSubcategoryNames()
     {
@@ -33,6 +43,102 @@ public class ProductEndpointTests
         {
             Assert.Contains(product.SubcategoryName, AllowedAccessorySubcategories);
         });
+    }
+
+    [Fact]
+    public void ProductOptionSeed_Accessories_HaveConfigurableOptionGroups()
+    {
+        var accessoryProducts = ProductSeed.Products
+            .Where(product => product.CategoryId == CategorySeed.GetCategoryId(product.SiteId, 3))
+            .ToList();
+        var optionGroupsByProductId = ProductOptionSeed.OptionGroups
+            .GroupBy(group => group.ProductId)
+            .ToDictionary(group => group.Key, group => group.ToList());
+        var optionsByGroupId = ProductOptionSeed.Options
+            .GroupBy(option => option.ProductOptionGroupId)
+            .ToDictionary(group => group.Key, group => group.ToList());
+        var variantsByProductId = ProductVariantSeed.Variants
+            .GroupBy(variant => variant.ProductId)
+            .ToDictionary(group => group.Key, group => group.ToList());
+        var variantOptionsByVariantId = ProductVariantSeed.VariantOptions
+            .GroupBy(variantOption => variantOption.ProductVariantId)
+            .ToDictionary(group => group.Key, group => group.ToList());
+
+        Assert.All(accessoryProducts, product =>
+        {
+            var groups = optionGroupsByProductId[product.Id]
+                .OrderBy(group => group.SortOrder)
+                .ThenBy(group => group.Id)
+                .ToList();
+
+            Assert.Equal(
+                ExpectedAccessoryOptionGroupLabels[product.SubcategoryName],
+                groups.Select(group => group.Label));
+            Assert.All(groups, group =>
+            {
+                Assert.True(optionsByGroupId.ContainsKey(group.Id));
+                Assert.NotEmpty(optionsByGroupId[group.Id]);
+            });
+
+            var variants = variantsByProductId[product.Id];
+            Assert.Equal(4, variants.Count);
+            Assert.Contains(variants, variant => variant.Id == ProductVariantSeed.GetDefaultVariantId(product.Id));
+            Assert.All(variants, variant =>
+            {
+                Assert.True(variantOptionsByVariantId.ContainsKey(variant.Id));
+                Assert.Equal(groups.Count, variantOptionsByVariantId[variant.Id].Count);
+            });
+        });
+    }
+
+    [Fact]
+    public async Task GetProduct_WhenAccessorySeeded_IncludesOptionGroups()
+    {
+        var site = CloneSite(TestSites.Get("ph"));
+        var siteContext = new TestSiteContext();
+        siteContext.SetSite(site);
+        var product = ProductSeed.Products.Single(candidate => candidate.Id == ProductSeed.GetProductId(site.Id, 11));
+        var category = CategorySeed.Categories.Single(candidate => candidate.Id == product.CategoryId);
+        var optionGroups = ProductOptionSeed.OptionGroups
+            .Where(group => group.ProductId == product.Id)
+            .ToList();
+        var groupIds = optionGroups.Select(group => group.Id).ToHashSet();
+        var options = ProductOptionSeed.Options
+            .Where(option => groupIds.Contains(option.ProductOptionGroupId))
+            .ToList();
+        var variants = ProductVariantSeed.Variants
+            .Where(variant => variant.ProductId == product.Id)
+            .ToList();
+        var variantIds = variants.Select(variant => variant.Id).ToHashSet();
+        var variantOptions = ProductVariantSeed.VariantOptions
+            .Where(variantOption => variantIds.Contains(variantOption.ProductVariantId))
+            .ToList();
+
+        var dbOptions = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase($"accessory-product-options-{Guid.NewGuid():N}")
+            .Options;
+
+        await using var db = new AppDbContext(dbOptions);
+        db.Sites.Add(site);
+        db.Categories.Add(category);
+        db.Products.Add(product);
+        db.ProductOptionGroups.AddRange(optionGroups);
+        db.ProductOptions.AddRange(options);
+        db.ProductVariants.AddRange(variants);
+        db.ProductVariantOptions.AddRange(variantOptions);
+        await db.SaveChangesAsync();
+
+        var controller = new ProductsController(db, siteContext);
+
+        var response = await controller.GetProduct(product.Id);
+
+        var ok = Assert.IsType<OkObjectResult>(response.Result);
+        var result = Assert.IsType<ProductConfigureDto>(ok.Value);
+
+        Assert.Equal(["Color", "Connection", "Layout", "Switch"], result.OptionGroups.Select(group => group.Label));
+        Assert.All(result.OptionGroups, group => Assert.NotEmpty(group.Options));
+        Assert.Equal(4, result.Variants.Count);
+        Assert.All(result.Variants, variant => Assert.Equal(result.OptionGroups.Count, variant.Options.Count));
     }
 
     [Fact]

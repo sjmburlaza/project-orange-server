@@ -8,10 +8,16 @@ public static class ProductOptionSeed
     public const string StorageGroupCode = "storage";
     public const string MemoryGroupCode = "memory";
     public const string StandGroupCode = "stand";
+    public const string ConnectionGroupCode = "connection";
+    public const string FormFactorGroupCode = "form-factor";
+    public const string SwitchGroupCode = "switch";
+    public const string FeatureGroupCode = "feature";
+    public const string MicrophoneGroupCode = "microphone";
     public const string BlackOptionCode = "black";
     public const string BlueOptionCode = "blue";
     public const string MidnightOptionCode = "midnight";
     public const string SilverOptionCode = "silver";
+    public const string WhiteOptionCode = "white";
     public const string Storage128OptionCode = "128gb";
     public const string Storage256OptionCode = "256gb";
     public const string Storage512OptionCode = "512gb";
@@ -21,6 +27,23 @@ public static class ProductOptionSeed
     public const string Memory32OptionCode = "32gb";
     public const string StandardStandOptionCode = "standard";
     public const string HeightAdjustableStandOptionCode = "height-adjustable";
+    public const string WiredUsbCOptionCode = "wired-usb-c";
+    public const string BluetoothOptionCode = "bluetooth";
+    public const string Wireless24GhzOptionCode = "wireless-2-4ghz";
+    public const string CompactOptionCode = "compact";
+    public const string FullSizeOptionCode = "full-size";
+    public const string ErgonomicOptionCode = "ergonomic";
+    public const string AmbidextrousOptionCode = "ambidextrous";
+    public const string InEarOptionCode = "in-ear";
+    public const string OpenEarOptionCode = "open-ear";
+    public const string TactileOptionCode = "tactile";
+    public const string LinearOptionCode = "linear";
+    public const string Dpi4000OptionCode = "4000-dpi";
+    public const string Dpi8000OptionCode = "8000-dpi";
+    public const string StandardNoiseControlOptionCode = "standard";
+    public const string ActiveNoiseCancellingOptionCode = "anc";
+    public const string BoomMicOptionCode = "boom";
+    public const string DetachableMicOptionCode = "detachable";
 
     private static readonly Dictionary<int, ProductOptionProfile> ProfilesByBaseProductId = new()
     {
@@ -40,20 +63,24 @@ public static class ProductOptionSeed
         [23] = ProductOptionProfile.Monitor
     };
 
+    private static readonly Dictionary<string, ProductOptionProfile> AccessoryProfilesBySubcategory =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Keyboard"] = ProductOptionProfile.Keyboard,
+            ["Mouse"] = ProductOptionProfile.Mouse,
+            ["Earbuds"] = ProductOptionProfile.Earbuds,
+            ["Headphones"] = ProductOptionProfile.Headphones,
+            ["Headset"] = ProductOptionProfile.Headset
+        };
+
     public static ProductOptionGroup[] OptionGroups =>
-        SiteSeed.Sites
-            .SelectMany(site => ProfilesByBaseProductId
-                .SelectMany(profile => CreateOptionGroups(
-                    ProductSeed.GetProductId(site.Id, profile.Key),
-                    profile.Value)))
+        ProductSeed.Products
+            .SelectMany(product => CreateOptionGroups(product.Id, GetOptionProfile(product)))
             .ToArray();
 
     public static ProductOption[] Options =>
-        SiteSeed.Sites
-            .SelectMany(site => ProfilesByBaseProductId
-                .SelectMany(profile => CreateOptions(
-                    ProductSeed.GetProductId(site.Id, profile.Key),
-                    profile.Value)))
+        ProductSeed.Products
+            .SelectMany(product => CreateOptions(product.Id, GetOptionProfile(product)))
             .ToArray();
 
     public static bool IsConfigurableProductId(int productId)
@@ -63,6 +90,12 @@ public static class ProductOptionSeed
 
     public static ProductOptionProfile GetOptionProfile(int productId)
     {
+        var product = ProductSeed.Products.FirstOrDefault(candidate => candidate.Id == productId);
+        if (product is not null)
+        {
+            return GetOptionProfile(product);
+        }
+
         foreach (var site in SiteSeed.Sites)
         {
             foreach (var profile in ProfilesByBaseProductId)
@@ -72,6 +105,29 @@ public static class ProductOptionSeed
                     return profile.Value;
                 }
             }
+        }
+
+        return ProductOptionProfile.None;
+    }
+
+    private static ProductOptionProfile GetOptionProfile(Product product)
+    {
+        foreach (var site in SiteSeed.Sites)
+        {
+            foreach (var profile in ProfilesByBaseProductId)
+            {
+                if (ProductSeed.GetProductId(site.Id, profile.Key) == product.Id)
+                {
+                    return profile.Value;
+                }
+            }
+        }
+
+        var accessoryCategoryId = CategorySeed.GetCategoryId(product.SiteId, 3);
+        if (product.CategoryId == accessoryCategoryId &&
+            AccessoryProfilesBySubcategory.TryGetValue(product.SubcategoryName, out var accessoryProfile))
+        {
+            return accessoryProfile;
         }
 
         return ProductOptionProfile.None;
@@ -169,6 +225,106 @@ public static class ProductOptionSeed
                     new(HeightAdjustableStandOptionCode, "Height Adjustable Stand")
                 ])
             ],
+            ProductOptionProfile.Keyboard =>
+            [
+                new(ColorGroupCode, "Color",
+                [
+                    new(BlackOptionCode, "Black", "#111827"),
+                    new(SilverOptionCode, "Silver", "#d1d5db")
+                ]),
+                new(ConnectionGroupCode, "Connection",
+                [
+                    new(WiredUsbCOptionCode, "Wired USB-C"),
+                    new(BluetoothOptionCode, "Bluetooth")
+                ]),
+                new(FormFactorGroupCode, "Layout",
+                [
+                    new(CompactOptionCode, "Compact"),
+                    new(FullSizeOptionCode, "Full-size")
+                ]),
+                new(SwitchGroupCode, "Switch",
+                [
+                    new(TactileOptionCode, "Tactile"),
+                    new(LinearOptionCode, "Linear")
+                ])
+            ],
+            ProductOptionProfile.Mouse =>
+            [
+                new(ColorGroupCode, "Color",
+                [
+                    new(BlackOptionCode, "Black", "#111827"),
+                    new(SilverOptionCode, "Silver", "#d1d5db")
+                ]),
+                new(ConnectionGroupCode, "Connection",
+                [
+                    new(BluetoothOptionCode, "Bluetooth"),
+                    new(Wireless24GhzOptionCode, "2.4GHz Wireless")
+                ]),
+                new(FormFactorGroupCode, "Shape",
+                [
+                    new(ErgonomicOptionCode, "Ergonomic"),
+                    new(AmbidextrousOptionCode, "Ambidextrous")
+                ]),
+                new(FeatureGroupCode, "Sensitivity",
+                [
+                    new(Dpi4000OptionCode, "4,000 DPI"),
+                    new(Dpi8000OptionCode, "8,000 DPI")
+                ])
+            ],
+            ProductOptionProfile.Earbuds =>
+            [
+                new(ColorGroupCode, "Color",
+                [
+                    new(BlackOptionCode, "Black", "#111827"),
+                    new(WhiteOptionCode, "White", "#f9fafb")
+                ]),
+                new(FormFactorGroupCode, "Fit",
+                [
+                    new(InEarOptionCode, "In-ear"),
+                    new(OpenEarOptionCode, "Open-ear")
+                ]),
+                new(FeatureGroupCode, "Noise Control",
+                [
+                    new(StandardNoiseControlOptionCode, "Standard"),
+                    new(ActiveNoiseCancellingOptionCode, "Active Noise Cancelling")
+                ])
+            ],
+            ProductOptionProfile.Headphones =>
+            [
+                new(ColorGroupCode, "Color",
+                [
+                    new(BlackOptionCode, "Black", "#111827"),
+                    new(SilverOptionCode, "Silver", "#d1d5db")
+                ]),
+                new(ConnectionGroupCode, "Connection",
+                [
+                    new(BluetoothOptionCode, "Bluetooth"),
+                    new(WiredUsbCOptionCode, "Wired USB-C")
+                ]),
+                new(FeatureGroupCode, "Noise Control",
+                [
+                    new(StandardNoiseControlOptionCode, "Standard"),
+                    new(ActiveNoiseCancellingOptionCode, "Active Noise Cancelling")
+                ])
+            ],
+            ProductOptionProfile.Headset =>
+            [
+                new(ColorGroupCode, "Color",
+                [
+                    new(BlackOptionCode, "Black", "#111827"),
+                    new(WhiteOptionCode, "White", "#f9fafb")
+                ]),
+                new(ConnectionGroupCode, "Connection",
+                [
+                    new(WiredUsbCOptionCode, "Wired USB-C"),
+                    new(Wireless24GhzOptionCode, "2.4GHz Wireless")
+                ]),
+                new(MicrophoneGroupCode, "Microphone",
+                [
+                    new(BoomMicOptionCode, "Boom Mic"),
+                    new(DetachableMicOptionCode, "Detachable Mic")
+                ])
+            ],
             _ => []
         };
     }
@@ -181,6 +337,11 @@ public static class ProductOptionSeed
             StorageGroupCode => 2,
             MemoryGroupCode => 3,
             StandGroupCode => 4,
+            ConnectionGroupCode => 5,
+            FormFactorGroupCode => 6,
+            SwitchGroupCode => 7,
+            FeatureGroupCode => 8,
+            MicrophoneGroupCode => 9,
             _ => throw new ArgumentOutOfRangeException(nameof(groupCode), groupCode, "Unknown option group code.")
         };
     }
@@ -193,6 +354,7 @@ public static class ProductOptionSeed
             (ColorGroupCode, BlueOptionCode) => 2,
             (ColorGroupCode, MidnightOptionCode) => 3,
             (ColorGroupCode, SilverOptionCode) => 4,
+            (ColorGroupCode, WhiteOptionCode) => 5,
             (StorageGroupCode, Storage128OptionCode) => 1,
             (StorageGroupCode, Storage256OptionCode) => 2,
             (StorageGroupCode, Storage512OptionCode) => 3,
@@ -202,6 +364,23 @@ public static class ProductOptionSeed
             (MemoryGroupCode, Memory32OptionCode) => 3,
             (StandGroupCode, StandardStandOptionCode) => 1,
             (StandGroupCode, HeightAdjustableStandOptionCode) => 2,
+            (ConnectionGroupCode, WiredUsbCOptionCode) => 1,
+            (ConnectionGroupCode, BluetoothOptionCode) => 2,
+            (ConnectionGroupCode, Wireless24GhzOptionCode) => 3,
+            (FormFactorGroupCode, CompactOptionCode) => 1,
+            (FormFactorGroupCode, FullSizeOptionCode) => 2,
+            (FormFactorGroupCode, ErgonomicOptionCode) => 3,
+            (FormFactorGroupCode, AmbidextrousOptionCode) => 4,
+            (FormFactorGroupCode, InEarOptionCode) => 5,
+            (FormFactorGroupCode, OpenEarOptionCode) => 6,
+            (SwitchGroupCode, TactileOptionCode) => 1,
+            (SwitchGroupCode, LinearOptionCode) => 2,
+            (FeatureGroupCode, Dpi4000OptionCode) => 1,
+            (FeatureGroupCode, Dpi8000OptionCode) => 2,
+            (FeatureGroupCode, StandardNoiseControlOptionCode) => 3,
+            (FeatureGroupCode, ActiveNoiseCancellingOptionCode) => 4,
+            (MicrophoneGroupCode, BoomMicOptionCode) => 1,
+            (MicrophoneGroupCode, DetachableMicOptionCode) => 2,
             _ => throw new ArgumentOutOfRangeException(nameof(optionCode), optionCode, "Unknown option code.")
         };
     }
@@ -219,6 +398,11 @@ public static class ProductOptionSeed
         None,
         Phone,
         Laptop,
-        Monitor
+        Monitor,
+        Keyboard,
+        Mouse,
+        Earbuds,
+        Headphones,
+        Headset
     }
 }
