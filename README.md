@@ -535,6 +535,7 @@ Content-Type: application/json
         "productName": "iPhone 15",
         "price": 59999,
         "quantity": 1,
+        "totalPrice": 59999,
         "imageUrl": "",
         "categoryName": "Phones",
         "itemSpecs": [
@@ -616,6 +617,7 @@ The lookup response uses the order confirmation shape:
       "productName": "iPhone 15",
       "price": 59999,
       "quantity": 1,
+      "totalPrice": 59999,
       "imageUrl": "",
       "categoryName": "Phones",
       "itemSpecs": [
