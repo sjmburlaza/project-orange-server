@@ -1,5 +1,5 @@
 {
-  "version": "fr-1.0",
+  "version": "fr-1.1",
   "steps": [
     {
       "id": "customer",
@@ -53,16 +53,30 @@
           "label": "Adresse de livraison",
           "fields": [
             {
+              "name": "companyName",
+              "type": "text",
+              "label": "Societe",
+              "validators": [],
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
               "name": "addressLine1",
               "type": "text",
-              "label": "Adresse",
+              "label": "Numero et nom de voie",
               "validators": [{ "name": "required" }],
               "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "addressLine2",
               "type": "text",
-              "label": "Complement d'adresse",
+              "label": "Batiment, escalier, etage, appartement",
+              "validators": [],
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "addressLine3",
+              "type": "text",
+              "label": "Lieu-dit, boite postale ou complement",
               "validators": [],
               "grid": { "mobile": 12, "desktop": 6 }
             },
@@ -82,13 +96,6 @@
               "type": "text",
               "label": "Ville",
               "validators": [{ "name": "required" }],
-              "grid": { "mobile": 12, "desktop": 6 }
-            },
-            {
-              "name": "region",
-              "type": "text",
-              "label": "Departement",
-              "validators": [],
               "grid": { "mobile": 12, "desktop": 6 }
             }
           ],
@@ -126,8 +133,24 @@
             {
               "name": "addressLine1",
               "type": "text",
-              "label": "Adresse",
+              "label": "Numero et nom de voie",
               "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "addressLine2",
+              "type": "text",
+              "label": "Batiment, escalier, etage, appartement",
+              "validators": [],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "addressLine3",
+              "type": "text",
+              "label": "Lieu-dit, boite postale ou complement",
+              "validators": [],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
               "grid": { "mobile": 12, "desktop": 6 }
             },
@@ -147,6 +170,14 @@
               "type": "text",
               "label": "Ville",
               "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "companyName",
+              "type": "text",
+              "label": "Societe",
+              "validators": [],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
               "grid": { "mobile": 12, "desktop": 6 }
             },

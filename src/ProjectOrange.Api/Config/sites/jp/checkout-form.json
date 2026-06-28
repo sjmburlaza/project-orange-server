@@ -1,5 +1,5 @@
 {
-  "version": "jp-1.0",
+  "version": "jp-1.1",
   "steps": [
     {
       "id": "customer",
@@ -23,6 +23,20 @@
           "name": "firstName",
           "type": "text",
           "label": "名",
+          "validators": [{ "name": "required" }],
+          "grid": { "mobile": 12, "desktop": 6 }
+        },
+        {
+          "name": "lastNameKana",
+          "type": "text",
+          "label": "セイ",
+          "validators": [{ "name": "required" }],
+          "grid": { "mobile": 12, "desktop": 6 }
+        },
+        {
+          "name": "firstNameKana",
+          "type": "text",
+          "label": "メイ",
           "validators": [{ "name": "required" }],
           "grid": { "mobile": 12, "desktop": 6 }
         },
@@ -80,7 +94,7 @@
             {
               "name": "addressLine1",
               "type": "text",
-              "label": "町名・番地",
+              "label": "町域・丁目・番地",
               "validators": [{ "name": "required" }],
               "grid": { "mobile": 12, "desktop": 6 }
             },
@@ -90,6 +104,13 @@
               "label": "建物名・部屋番号",
               "validators": [],
               "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "deliveryInstructions",
+              "type": "text",
+              "label": "配送メモ",
+              "validators": [],
+              "grid": { "mobile": 12, "desktop": 12 }
             }
           ],
           "grid": { "mobile": 12, "desktop": 12 }
@@ -124,6 +145,22 @@
               "grid": { "mobile": 12, "desktop": 6 }
             },
             {
+              "name": "lastNameKana",
+              "type": "text",
+              "label": "セイ",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "firstNameKana",
+              "type": "text",
+              "label": "メイ",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
               "name": "postalCode",
               "type": "text",
               "label": "郵便番号",
@@ -153,15 +190,31 @@
             {
               "name": "addressLine1",
               "type": "text",
-              "label": "町名・番地",
+              "label": "町域・丁目・番地",
               "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "addressLine2",
+              "type": "text",
+              "label": "建物名・部屋番号",
+              "validators": [],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "companyName",
+              "type": "text",
+              "label": "会社名",
+              "validators": [],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
               "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "taxId",
               "type": "text",
-              "label": "登録番号",
+              "label": "法人番号 / 登録番号",
               "validators": [],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
               "grid": { "mobile": 12, "desktop": 6 }

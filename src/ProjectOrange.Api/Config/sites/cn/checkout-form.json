@@ -1,5 +1,5 @@
 {
-  "version": "cn-1.0",
+  "version": "cn-1.1",
   "steps": [
     {
       "id": "customer",
@@ -13,16 +13,9 @@
           "grid": { "mobile": 12, "desktop": 12 }
         },
         {
-          "name": "firstName",
+          "name": "fullName",
           "type": "text",
-          "label": "名",
-          "validators": [{ "name": "required" }],
-          "grid": { "mobile": 12, "desktop": 6 }
-        },
-        {
-          "name": "lastName",
-          "type": "text",
-          "label": "姓",
+          "label": "姓名",
           "validators": [{ "name": "required" }],
           "grid": { "mobile": 12, "desktop": 6 }
         },
@@ -53,9 +46,16 @@
           "label": "收货地址",
           "fields": [
             {
+              "name": "recipientName",
+              "type": "text",
+              "label": "收货人姓名",
+              "validators": [{ "name": "required" }],
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
               "name": "region",
               "type": "text",
-              "label": "省 / 直辖市",
+              "label": "省 / 自治区 / 直辖市",
               "validators": [{ "name": "required" }],
               "grid": { "mobile": 12, "desktop": 6 }
             },
@@ -74,16 +74,23 @@
               "grid": { "mobile": 12, "desktop": 6 }
             },
             {
+              "name": "street",
+              "type": "text",
+              "label": "街道 / 乡镇",
+              "validators": [{ "name": "required" }],
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
               "name": "addressLine1",
               "type": "text",
-              "label": "详细地址",
+              "label": "小区、楼栋、单元及门牌号",
               "validators": [{ "name": "required" }],
               "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "addressLine2",
               "type": "text",
-              "label": "楼栋、单元、房号",
+              "label": "公司名称或收货备注",
               "validators": [],
               "grid": { "mobile": 12, "desktop": 6 }
             },
@@ -115,25 +122,25 @@
               "grid": { "mobile": 12, "desktop": 12 }
             },
             {
-              "name": "firstName",
+              "name": "fullName",
               "type": "text",
-              "label": "名",
+              "label": "姓名",
               "validators": [{ "name": "required" }],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
               "grid": { "mobile": 12, "desktop": 6 }
             },
             {
-              "name": "lastName",
+              "name": "companyName",
               "type": "text",
-              "label": "姓",
-              "validators": [{ "name": "required" }],
+              "label": "公司名称",
+              "validators": [],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
               "grid": { "mobile": 12, "desktop": 6 }
             },
             {
               "name": "region",
               "type": "text",
-              "label": "省 / 直辖市",
+              "label": "省 / 自治区 / 直辖市",
               "validators": [{ "name": "required" }],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
               "grid": { "mobile": 12, "desktop": 6 }
@@ -147,10 +154,34 @@
               "grid": { "mobile": 12, "desktop": 6 }
             },
             {
+              "name": "district",
+              "type": "text",
+              "label": "区 / 县",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "street",
+              "type": "text",
+              "label": "街道 / 乡镇",
+              "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
               "name": "addressLine1",
               "type": "text",
-              "label": "详细地址",
+              "label": "小区、楼栋、单元及门牌号",
               "validators": [{ "name": "required" }],
+              "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
+              "grid": { "mobile": 12, "desktop": 6 }
+            },
+            {
+              "name": "addressLine2",
+              "type": "text",
+              "label": "补充地址",
+              "validators": [],
               "visibleIf": { "field": "sameAsDeliveryAddress", "value": false },
               "grid": { "mobile": 12, "desktop": 6 }
             },
