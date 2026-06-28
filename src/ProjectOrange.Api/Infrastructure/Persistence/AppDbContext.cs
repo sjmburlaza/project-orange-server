@@ -26,6 +26,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
 	public DbSet<CartItem> CartItems => Set<CartItem>();
 	public DbSet<CartItemAddon> CartItemAddons => Set<CartItemAddon>();
 	public DbSet<CartVoucher> CartVouchers => Set<CartVoucher>();
+	public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
 	public DbSet<ProductSpec> ProductSpecs => Set<ProductSpec>();
 	public DbSet<AuthSession> AuthSessions => Set<AuthSession>();
 	public DbSet<AnalyticsEvent> AnalyticsEvents => Set<AnalyticsEvent>();
@@ -340,6 +341,39 @@ public class AppDbContext : IdentityDbContext<AppUser>
 
 		modelBuilder.Entity<Cart>()
 			.HasIndex(c => new { c.SiteId, c.UserId });
+
+		modelBuilder.Entity<WishlistItem>()
+			.Property(item => item.UserId)
+			.HasMaxLength(450);
+
+		modelBuilder.Entity<WishlistItem>()
+			.Property(item => item.CreatedAtUtc)
+			.HasDefaultValueSql("SYSDATETIMEOFFSET()");
+
+		modelBuilder.Entity<WishlistItem>()
+			.HasOne(item => item.Site)
+			.WithMany(site => site.WishlistItems)
+			.HasForeignKey(item => item.SiteId)
+			.OnDelete(DeleteBehavior.Restrict);
+
+		modelBuilder.Entity<WishlistItem>()
+			.HasOne(item => item.User)
+			.WithMany(user => user.WishlistItems)
+			.HasForeignKey(item => item.UserId)
+			.OnDelete(DeleteBehavior.Cascade);
+
+		modelBuilder.Entity<WishlistItem>()
+			.HasOne(item => item.Product)
+			.WithMany(product => product.WishlistItems)
+			.HasForeignKey(item => item.ProductId)
+			.OnDelete(DeleteBehavior.Cascade);
+
+		modelBuilder.Entity<WishlistItem>()
+			.HasIndex(item => new { item.SiteId, item.UserId, item.ProductId })
+			.IsUnique();
+
+		modelBuilder.Entity<WishlistItem>()
+			.HasIndex(item => new { item.SiteId, item.UserId });
 
 		modelBuilder.Entity<Order>()
 			.Property(o => o.SiteId)

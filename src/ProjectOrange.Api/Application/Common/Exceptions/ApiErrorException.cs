@@ -18,6 +18,7 @@ public static class ApiErrorCodes
     public const string VoucherLimitReached = "VOUCHER_LIMIT_REACHED";
     public const string VoucherMinimumSubtotalNotMet = "VOUCHER_MINIMUM_SUBTOTAL_NOT_MET";
     public const string VoucherNotApplicable = "VOUCHER_NOT_APPLICABLE";
+    public const string WishlistProductNotFound = "WISHLIST_PRODUCT_NOT_FOUND";
 }
 
 public class AddonValidationException : ApiErrorException
@@ -218,5 +219,27 @@ public class VoucherValidationException : ApiErrorException
             ApiErrorCodes.VoucherLimitReached,
             StatusCodes.Status409Conflict,
             "Only one voucher can be applied to a cart.");
+    }
+}
+
+public class WishlistValidationException : ApiErrorException
+{
+    private WishlistValidationException(
+        string code,
+        int statusCode,
+        string message) : base(
+            code,
+            statusCode,
+            "Wishlist validation failed.",
+            message)
+    {
+    }
+
+    public static WishlistValidationException ProductNotFound(int productId)
+    {
+        return new WishlistValidationException(
+            ApiErrorCodes.WishlistProductNotFound,
+            StatusCodes.Status404NotFound,
+            $"Product with ID {productId} was not found.");
     }
 }

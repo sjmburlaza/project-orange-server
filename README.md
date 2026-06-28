@@ -1,6 +1,6 @@
 # Project Orange Server
 
-Project Orange Server is an ASP.NET Core Web API for a multi-site ecommerce checkout flow. It provides site-aware product browsing, categories, cart management, vouchers, shipping options, checkout form configuration, orders, authentication, and trade-in session endpoints for a frontend client.
+Project Orange Server is an ASP.NET Core Web API for a multi-site ecommerce checkout flow. It provides site-aware product browsing, categories, cart management, wishlists, vouchers, shipping options, checkout form configuration, orders, authentication, and trade-in session endpoints for a frontend client.
 
 ## Tech Stack
 
@@ -23,6 +23,7 @@ Project Orange Server is an ASP.NET Core Web API for a multi-site ecommerce chec
 - Cart creation and cart lookup by cart code
 - Authenticated user cart lookup
 - Cart item quantity updates and removal
+- Authenticated user wishlist management
 - Product add-ons, insurance plans, mobile plans, and trade-in selections with site feature flags
 - Voucher application and voucher removal with site feature flags
 - Site-specific shipping-price lookup by postal code
@@ -45,6 +46,7 @@ Project Orange Server is an ASP.NET Core Web API for a multi-site ecommerce chec
 │       │   └── Features/                # Feature-owned DTOs and use-case logic
 │       │       ├── Products/
 │       │       ├── Cart/
+│       │       ├── Wishlist/
 │       │       ├── Checkout/
 │       │       ├── Orders/
 │       │       ├── Fulfillment/
@@ -162,6 +164,7 @@ Site selection affects:
 
 - Products and categories returned by catalog endpoints
 - Cart lookup and cart creation
+- Authenticated user wishlist entries
 - Order lookup and order creation
 - Auth session creation, validation, and logout
 - Checkout form JSON, loaded from `Config/sites/{siteCode}/checkout-form.json` with fallback to `Config/checkout-form.json`
@@ -331,7 +334,7 @@ inventory.update
 
 ## API Overview
 
-Unless noted otherwise, endpoint tables show the non-prefixed route. Site-scoped controllers also support `/api/{siteCode}/...` routes, for example `/api/fr/products`, `/api/cn/carts/items`, and `/api/jp/checkout/form`.
+Unless noted otherwise, endpoint tables show the non-prefixed route. Site-scoped controllers also support `/api/{siteCode}/...` routes, for example `/api/fr/products`, `/api/cn/carts/items`, `/api/ph/wishlist`, and `/api/jp/checkout/form`.
 
 ### Sites
 
@@ -466,6 +469,68 @@ Content-Type: application/json
 ```
 
 Carts are scoped to the current site. A cart code can only be fetched or updated from the same site where it was created. Voucher, insurance, and trade-in add-ons follow the current site's feature flags.
+
+### Wishlist
+
+Wishlist routes require an authenticated user session.
+
+| Method   | Endpoint                         | Description                                      |
+| -------- | -------------------------------- | ------------------------------------------------ |
+| `GET`    | `/api/wishlist`                  | Get the authenticated user's wishlist            |
+| `POST`   | `/api/wishlist/items`            | Add a product to the wishlist                    |
+| `GET`    | `/api/wishlist/items/{productId}` | Check whether a product is in the wishlist       |
+| `DELETE` | `/api/wishlist/items/{productId}` | Remove a product from the wishlist               |
+
+Add a product:
+
+```http
+POST /api/wishlist/items
+Content-Type: application/json
+
+{
+  "productId": 1
+}
+```
+
+Wishlist responses include the item count, wishlist item metadata, and a product summary:
+
+```json
+{
+  "count": 1,
+  "items": [
+    {
+      "id": 10,
+      "productId": 1,
+      "addedAtUtc": "2026-06-28T23:01:03+00:00",
+      "product": {
+        "id": 1,
+        "name": "Orange Phone",
+        "description": "A site-localized product description.",
+        "price": 59999,
+        "stockStatus": "inStock",
+        "stockQuantity": 12,
+        "imageUrl": "/images/products/orange-phone.png",
+        "categoryId": 1,
+        "categoryName": "Phones",
+        "subcategoryName": "Flagship",
+        "itemSpecs": [],
+        "availableColors": []
+      }
+    }
+  ]
+}
+```
+
+Wishlist status responses are shaped for product-card toggles:
+
+```json
+{
+  "productId": 1,
+  "isWishlisted": true
+}
+```
+
+Wishlists are scoped to both the authenticated user and current site. Adding the same product more than once is idempotent, and removing a product that is not currently wishlisted returns the current wishlist.
 
 ### Checkout
 
@@ -685,7 +750,7 @@ Trade-in endpoints return `404` when trade-ins are disabled for the current site
 
 ## Error Responses
 
-Cart and voucher validation errors are returned as `ProblemDetails` responses. These responses include a machine-readable `code` field.
+Cart, voucher, and wishlist validation errors are returned as `ProblemDetails` responses. These responses include a machine-readable `code` field.
 
 Example:
 
@@ -730,6 +795,7 @@ Seed data is configured for:
 - Trade-in options
 
 Categories, products, carts, orders, and auth sessions are site-scoped. The current migrations seed distinct category and product rows per site.
+Wishlist items are also site-scoped and user-scoped, with a unique database constraint on site, user, and product.
 
 Run migrations after changing entities or seed data:
 

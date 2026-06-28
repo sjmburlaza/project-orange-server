@@ -49,6 +49,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<CheckoutFormService>();
 builder.Services.AddScoped<ShippingPricingService>();

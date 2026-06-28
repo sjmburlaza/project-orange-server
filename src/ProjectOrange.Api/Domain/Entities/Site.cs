@@ -17,6 +17,7 @@ public class Site
     public List<Category> Categories { get; set; } = [];
     public List<Product> Products { get; set; } = [];
     public List<Cart> Carts { get; set; } = [];
+    public List<WishlistItem> WishlistItems { get; set; } = [];
     public List<Order> Orders { get; set; } = [];
     public List<AuthSession> AuthSessions { get; set; } = [];
     public List<AnalyticsEvent> AnalyticsEvents { get; set; } = [];
