@@ -13,6 +13,7 @@ public class CartItemDto
     public int StockQuantity { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
     public string CategoryName { get; set; } = string.Empty;
+    public string SubcategoryName { get; set; } = string.Empty;
     public List<AddonDto> Addons { get; set; } = [];
     public List<ProductSpecDto> ItemSpecs { get; set; } = [];
 }

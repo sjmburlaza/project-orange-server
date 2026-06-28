@@ -134,6 +134,7 @@ public class OrderService
                 Quantity = snapshot.Quantity,
                 ImageUrl = snapshot.ImageUrl,
                 CategoryName = snapshot.CategoryName,
+                SubcategoryName = snapshot.SubcategoryName,
                 ItemSpecsJson = SerializeItemSpecs(snapshot.ItemSpecs),
                 AddonsJson = SerializeAddons(snapshot.Addons)
             }).ToList()
@@ -202,6 +203,7 @@ public class OrderService
                 item.Quantity,
                 string.IsNullOrWhiteSpace(item.ImageUrl) ? product.ImageUrl : item.ImageUrl,
                 string.IsNullOrWhiteSpace(item.CategoryName) ? product.Category?.Name ?? string.Empty : item.CategoryName,
+                string.IsNullOrWhiteSpace(item.SubcategoryName) ? product.SubcategoryName : item.SubcategoryName,
                 GetOrderItemSpecs(item.ItemSpecs, product),
                 GetOrderItemAddons(item.Addons)));
         }
@@ -234,6 +236,7 @@ public class OrderService
                 item.Quantity,
                 string.IsNullOrWhiteSpace(variant?.ImageUrl) ? product.ImageUrl : variant.ImageUrl,
                 product.Category?.Name ?? string.Empty,
+                product.SubcategoryName,
                 GetProductSpecs(product),
                 []));
         }
@@ -590,6 +593,7 @@ public class OrderService
             Quantity = item.Quantity,
             ImageUrl = FirstNonEmpty(item.ImageUrl, product?.ImageUrl, string.Empty),
             CategoryName = FirstNonEmpty(item.CategoryName, product?.Category?.Name, string.Empty),
+            SubcategoryName = FirstNonEmpty(item.SubcategoryName, product?.SubcategoryName, string.Empty),
             ItemSpecs = specs,
             Addons = addons.Count == 0 ? null : addons
         };
@@ -947,6 +951,7 @@ public class OrderService
         int Quantity,
         string ImageUrl,
         string CategoryName,
+        string SubcategoryName,
         List<ProductSpecDto> ItemSpecs,
         List<AddonDto> Addons);
 }

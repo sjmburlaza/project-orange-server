@@ -129,6 +129,7 @@ public class CartService : ICartService
                 StockQuantity = variant.StockQuantity,
                 ImageUrl = string.IsNullOrWhiteSpace(variant.ImageUrl) ? product.ImageUrl : variant.ImageUrl,
                 CategoryName = product.Category?.Name ?? string.Empty,
+                SubcategoryName = product.SubcategoryName,
 
                 ItemSpecs = GetCartItemSpecs(product, variant),
 
@@ -614,6 +615,7 @@ public class CartService : ICartService
                 StockQuantity = item.StockQuantity,
                 ImageUrl = item.ImageUrl,
                 CategoryName = item.CategoryName,
+                SubcategoryName = item.SubcategoryName,
 
                 ItemSpecs = item.ItemSpecs.Select(spec => new ProductSpecDto
                 {
