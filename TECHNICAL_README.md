@@ -660,7 +660,15 @@ Cart response shape:
 ```json
 {
   "code": "CART-XXXXXXXX",
-  "entries": [],
+  "entries": [
+    {
+      "productId": 1,
+      "productName": "iPhone 15",
+      "price": 59999,
+      "quantity": 1,
+      "totalPrice": 59999
+    }
+  ],
   "appliedVouchers": [],
   "cartSummary": [
     {
