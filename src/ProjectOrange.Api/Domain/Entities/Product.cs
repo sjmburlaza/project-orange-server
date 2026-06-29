@@ -19,4 +19,5 @@ public class Product
     public List<ProductSpec> ItemSpecs { get; set; } = [];
     public List<ProductOptionGroup> OptionGroups { get; set; } = [];
     public List<ProductVariant> Variants { get; set; } = [];
+    public List<WishlistItem> WishlistItems { get; set; } = [];
 }
