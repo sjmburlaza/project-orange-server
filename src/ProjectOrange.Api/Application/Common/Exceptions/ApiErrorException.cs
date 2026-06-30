@@ -2,55 +2,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace ProjectOrangeApi.Services;
 
-public static class ApiErrorCodes
-{
-    public const string AddonLimitReached = "ADDON_LIMIT_REACHED";
-    public const string AddonNotAvailable = "ADDON_NOT_AVAILABLE";
-    public const string CartInvalidRequest = "CART_INVALID_REQUEST";
-    public const string CartItemNotFound = "CART_ITEM_NOT_FOUND";
-    public const string CartNotFound = "CART_NOT_FOUND";
-    public const string CartVariantNotFound = "CART_VARIANT_NOT_FOUND";
-    public const string OrderInsufficientStock = "ORDER_INSUFFICIENT_STOCK";
-    public const string OrderInvalidRequest = "ORDER_INVALID_REQUEST";
-    public const string OrderProductNotFound = "ORDER_PRODUCT_NOT_FOUND";
-    public const string VoucherAlreadyApplied = "VOUCHER_ALREADY_APPLIED";
-    public const string VoucherCodeInvalidFormat = "VOUCHER_CODE_INVALID_FORMAT";
-    public const string VoucherLimitReached = "VOUCHER_LIMIT_REACHED";
-    public const string VoucherMinimumSubtotalNotMet = "VOUCHER_MINIMUM_SUBTOTAL_NOT_MET";
-    public const string VoucherNotApplicable = "VOUCHER_NOT_APPLICABLE";
-    public const string WishlistProductNotFound = "WISHLIST_PRODUCT_NOT_FOUND";
-}
-
-public class AddonValidationException : ApiErrorException
-{
-    private AddonValidationException(
-        string code,
-        int statusCode,
-        string message) : base(
-            code,
-            statusCode,
-            "Add-on validation failed.",
-            message)
-    {
-    }
-
-    public static AddonValidationException NotAvailable(string message = "Selected add-on is not available for this product.")
-    {
-        return new AddonValidationException(
-            ApiErrorCodes.AddonNotAvailable,
-            StatusCodes.Status422UnprocessableEntity,
-            message);
-    }
-
-    public static AddonValidationException LimitReached(string message)
-    {
-        return new AddonValidationException(
-            ApiErrorCodes.AddonLimitReached,
-            StatusCodes.Status409Conflict,
-            message);
-    }
-}
-
 public class ApiErrorException : Exception
 {
     public ApiErrorException(
@@ -72,10 +23,40 @@ public class ApiErrorException : Exception
     public IReadOnlyDictionary<string, object?> ErrorDetails { get; }
 }
 
+public class AddonValidationException : ApiErrorException
+{
+    private AddonValidationException(
+        string code,
+        int statusCode,
+        string message) : base(
+            code,
+            statusCode,
+            "Add-on validation failed.",
+            message)
+    {
+    }
+
+    public static AddonValidationException NotAvailable(string message = "Selected add-on is not available for this product.")
+    {
+        return new AddonValidationException(
+            ApiErrorCodes.Addon.NotAvailable,
+            StatusCodes.Status422UnprocessableEntity,
+            message);
+    }
+
+    public static AddonValidationException LimitReached(string message)
+    {
+        return new AddonValidationException(
+            ApiErrorCodes.Addon.LimitReached,
+            StatusCodes.Status409Conflict,
+            message);
+    }
+}
+
 public class CartNotFoundException : ApiErrorException
 {
     public CartNotFoundException() : base(
-        ApiErrorCodes.CartNotFound,
+        ApiErrorCodes.Cart.NotFound,
         StatusCodes.Status404NotFound,
         "Cart not found.",
         "Cart not found.")
@@ -86,7 +67,7 @@ public class CartNotFoundException : ApiErrorException
 public class CartItemNotFoundException : ApiErrorException
 {
     public CartItemNotFoundException() : base(
-        ApiErrorCodes.CartItemNotFound,
+        ApiErrorCodes.Cart.ItemNotFound,
         StatusCodes.Status404NotFound,
         "Cart item not found.",
         "Cart item not found.")
@@ -110,7 +91,7 @@ public class CartValidationException : ApiErrorException
     public static CartValidationException InvalidRequest(string message)
     {
         return new CartValidationException(
-            ApiErrorCodes.CartInvalidRequest,
+            ApiErrorCodes.Cart.InvalidRequest,
             StatusCodes.Status400BadRequest,
             message);
     }
@@ -118,7 +99,7 @@ public class CartValidationException : ApiErrorException
     public static CartValidationException VariantNotFound(int variantId)
     {
         return new CartValidationException(
-            ApiErrorCodes.CartVariantNotFound,
+            ApiErrorCodes.Cart.VariantNotFound,
             StatusCodes.Status400BadRequest,
             $"Variant with ID {variantId} not found.");
     }
@@ -140,7 +121,7 @@ public class OrderValidationException : ApiErrorException
     public static OrderValidationException InvalidRequest(string message)
     {
         return new OrderValidationException(
-            ApiErrorCodes.OrderInvalidRequest,
+            ApiErrorCodes.Order.InvalidRequest,
             StatusCodes.Status400BadRequest,
             message);
     }
@@ -148,7 +129,7 @@ public class OrderValidationException : ApiErrorException
     public static OrderValidationException ProductNotFound(int productId)
     {
         return new OrderValidationException(
-            ApiErrorCodes.OrderProductNotFound,
+            ApiErrorCodes.Order.ProductNotFound,
             StatusCodes.Status400BadRequest,
             $"Product with ID {productId} not found.");
     }
@@ -156,7 +137,7 @@ public class OrderValidationException : ApiErrorException
     public static OrderValidationException InsufficientStock(string productName)
     {
         return new OrderValidationException(
-            ApiErrorCodes.OrderInsufficientStock,
+            ApiErrorCodes.Order.InsufficientStock,
             StatusCodes.Status409Conflict,
             $"Not enough stock for product: {productName}");
     }
@@ -180,7 +161,7 @@ public class VoucherValidationException : ApiErrorException
     public static VoucherValidationException InvalidFormat(string message)
     {
         return new VoucherValidationException(
-            ApiErrorCodes.VoucherCodeInvalidFormat,
+            ApiErrorCodes.Voucher.CodeInvalidFormat,
             StatusCodes.Status400BadRequest,
             message);
     }
@@ -188,7 +169,7 @@ public class VoucherValidationException : ApiErrorException
     public static VoucherValidationException NotApplicable(string message = "This voucher cannot be applied.")
     {
         return new VoucherValidationException(
-            ApiErrorCodes.VoucherNotApplicable,
+            ApiErrorCodes.Voucher.NotApplicable,
             StatusCodes.Status422UnprocessableEntity,
             message);
     }
@@ -196,7 +177,7 @@ public class VoucherValidationException : ApiErrorException
     public static VoucherValidationException MinimumSubtotalNotMet(decimal minimumSubtotal)
     {
         return new VoucherValidationException(
-            ApiErrorCodes.VoucherMinimumSubtotalNotMet,
+            ApiErrorCodes.Voucher.MinimumSubtotalNotMet,
             StatusCodes.Status422UnprocessableEntity,
             $"Voucher requires a subtotal of at least {minimumSubtotal:0.00}.",
             new Dictionary<string, object?>
@@ -208,7 +189,7 @@ public class VoucherValidationException : ApiErrorException
     public static VoucherValidationException AlreadyApplied()
     {
         return new VoucherValidationException(
-            ApiErrorCodes.VoucherAlreadyApplied,
+            ApiErrorCodes.Voucher.AlreadyApplied,
             StatusCodes.Status409Conflict,
             "Voucher is already applied.");
     }
@@ -216,7 +197,7 @@ public class VoucherValidationException : ApiErrorException
     public static VoucherValidationException LimitReached()
     {
         return new VoucherValidationException(
-            ApiErrorCodes.VoucherLimitReached,
+            ApiErrorCodes.Voucher.LimitReached,
             StatusCodes.Status409Conflict,
             "Only one voucher can be applied to a cart.");
     }
@@ -238,7 +219,7 @@ public class WishlistValidationException : ApiErrorException
     public static WishlistValidationException ProductNotFound(int productId)
     {
         return new WishlistValidationException(
-            ApiErrorCodes.WishlistProductNotFound,
+            ApiErrorCodes.Wishlist.ProductNotFound,
             StatusCodes.Status404NotFound,
             $"Product with ID {productId} was not found.");
     }

@@ -38,7 +38,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
         };
 
         problem.Extensions["code"] = isVoucherEndpoint
-            ? ApiErrorCodes.VoucherCodeInvalidFormat
+            ? ApiErrorCodes.Voucher.CodeInvalidFormat
             : "REQUEST_VALIDATION_FAILED";
 
         return new BadRequestObjectResult(problem);
