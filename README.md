@@ -4,21 +4,37 @@ Project Orange API is an ASP.NET Core backend for a multi-site ecommerce checkou
 
 For architecture details, endpoint references, business rules, and extension guides, see [TECHNICAL_README.md](TECHNICAL_README.md).
 
-## At a Glance
+## Tech Stack
 
-- ASP.NET Core Web API targeting .NET 10
-- Entity Framework Core with SQL Server
-- ASP.NET Core Identity with secure cookie-backed JWT sessions
-- Swagger/OpenAPI enabled in development
-- Multi-site support for `ph`, `fr`, `cn`, and `jp`
+- ASP.NET Core Web API
+- .NET 10
+- Entity Framework Core
+- SQL Server
+- ASP.NET Core Identity
+- Secure cookie-backed JWT sessions
+- Swagger/OpenAPI via Swashbuckle
 
-## Core Capabilities
+## Features
 
-- Resolves site context from route prefix, `X-Site-Code` header, `siteCode` query parameter, or the default `ph` site.
-- Serves site-scoped products, categories, prices, currencies, feature flags, checkout forms, carts, wishlists, orders, and auth sessions.
-- Supports customer registration, login, logout, password reset, and authenticated user flows.
-- Provides checkout support for vouchers, shipping prices, postal-code validation, trade-ins, add-ons, insurance, and mobile plans.
-- Includes development seed data and Swagger UI for local exploration.
+- Multi-site storefront support for the Philippines, France, China, and Japan
+- Site resolution by `/api/{siteCode}/...` route prefix, `X-Site-Code` header, `siteCode` query parameter, or default site fallback
+- Site-scoped product catalog, categories, carts, orders, auth sessions, and checkout forms
+- Localized seeded product data with site currencies
+- Product catalog with category, price filtering, sorting, and product specs
+- Category management
+- Cart creation and cart lookup by cart code
+- Authenticated user cart lookup
+- Cart item quantity updates and removal
+- Authenticated user wishlist management
+- Product add-ons, insurance plans, mobile plans, and trade-in selections with site feature flags
+- Voucher application and voucher removal with site feature flags
+- Site-specific shipping-price lookup by postal code
+- Country detection from edge provider headers or client IP lookup
+- Checkout form configuration loaded from site-specific JSON files
+- Site-specific postal-code serviceability validation
+- Basic site-scoped order creation with stock validation
+- Trade-in configuration and in-memory site-scoped trade-in session flow
+- User registration and login with secure cookie-backed, site-scoped sessions
 
 ## Repository Layout
 
