@@ -1,6 +1,6 @@
-# Project Orange API
+# Project Orange Server
 
-Project Orange API is an ASP.NET Core backend for a multi-site ecommerce checkout experience. It serves site-aware catalog, cart, wishlist, checkout, shipping, order, authentication, voucher, trade-in, and analytics workflows for frontend clients.
+Project Orange Server is an ASP.NET Core backend for a multi-site ecommerce checkout experience. It serves site-aware catalog, cart, wishlist, checkout, shipping, order, authentication, voucher, trade-in, and analytics workflows for frontend clients.
 
 For architecture details, endpoint references, business rules, and extension guides, see [TECHNICAL_README.md](TECHNICAL_README.md).
 
