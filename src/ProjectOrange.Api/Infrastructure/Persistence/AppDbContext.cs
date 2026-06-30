@@ -222,6 +222,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
 			.HasPrecision(18, 2);
 
 		modelBuilder.Entity<Order>()
+			.Property(o => o.ShippingAmount)
+			.HasPrecision(18, 2);
+
+		modelBuilder.Entity<Order>()
 			.Property(o => o.OrderNumber)
 			.HasMaxLength(32);
 
