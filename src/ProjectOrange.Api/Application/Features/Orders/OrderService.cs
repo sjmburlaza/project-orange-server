@@ -92,6 +92,7 @@ public class OrderService
         var paymentStatus = GetPaymentStatus(paymentMethod);
         var orderStatus = GetOrderStatus(paymentStatus);
         var shippingAddress = GetShippingAddress(request, checkoutData);
+        var shippingAmount = GetShippingAmount(request.Cart);
         var customerEmail = GetCustomerEmail(request, checkoutData);
         var customerName = GetCustomerName(request, checkoutData, shippingAddress.RecipientName);
         var nextSteps = GetNextSteps(customerEmail, paymentStatus);
@@ -119,6 +120,7 @@ public class OrderService
             PostalCode = shippingAddress.PostalCode,
             Country = shippingAddress.Country,
             DeliveryEstimate = GetDeliveryEstimate(shippingMethod, shippingAddress.PostalCode),
+            ShippingAmount = shippingAmount,
             TotalAmount = GetTotalAmount(request.Cart, itemSnapshots),
             CheckoutDataJson = SerializeCheckoutData(request.CheckoutData),
             NextStepsJson = SerializeList(nextSteps),
@@ -513,6 +515,15 @@ public class OrderService
         return items.Sum(item => item.Price * item.Quantity);
     }
 
+    private static decimal? GetShippingAmount(CartResponseDto? cart)
+    {
+        var cartShipping = cart?.CartSummary
+            .FirstOrDefault(item => string.Equals(item.Name, "shipping", StringComparison.OrdinalIgnoreCase))
+            ?.Amount;
+
+        return cartShipping;
+    }
+
     private static List<string> GetNextSteps(string email, string paymentStatus)
     {
         var paymentMessage =
@@ -570,6 +581,7 @@ public class OrderService
             },
             DeliveryEstimate = FirstNonEmpty(order.DeliveryEstimate, "3-5 business days"),
             SubtotalAmount = GetSubtotalAmount(order),
+            ShippingAmount = order.ShippingAmount,
             TotalAmount = order.TotalAmount,
             NextSteps = nextSteps,
             PlacedAt = order.CreatedAt

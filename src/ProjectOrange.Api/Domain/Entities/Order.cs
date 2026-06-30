@@ -21,6 +21,7 @@ public class Order
     public string PostalCode { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
     public string DeliveryEstimate { get; set; } = string.Empty;
+    public decimal? ShippingAmount { get; set; }
     public decimal TotalAmount { get; set; }
     public string CheckoutDataJson { get; set; } = "{}";
     public string NextStepsJson { get; set; } = "[]";
