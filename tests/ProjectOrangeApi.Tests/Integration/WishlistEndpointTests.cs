@@ -114,7 +114,7 @@ public class WishlistEndpointTests
         var problem = Assert.IsType<ProblemDetails>(notFound.Value);
 
         Assert.Equal(StatusCodes.Status404NotFound, notFound.StatusCode);
-        Assert.Equal(ApiErrorCodes.WishlistProductNotFound, problem.Extensions["code"]);
+        Assert.Equal(ApiErrorCodes.Wishlist.ProductNotFound, problem.Extensions["code"]);
         Assert.Empty(db.WishlistItems);
     }
 
