@@ -232,6 +232,127 @@ public class ProductEndpointTests
             });
     }
 
+    [Fact]
+    public async Task GetSearchSuggestions_RanksMatchesAndReturnsAtMostFiveForCurrentSite()
+    {
+        var site = CloneSite(TestSites.Get("ph"));
+        var otherSite = CloneSite(TestSites.Get("fr"));
+        var siteContext = new TestSiteContext();
+        siteContext.SetSite(site);
+
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase($"product-search-suggestions-{Guid.NewGuid():N}")
+            .Options;
+
+        await using var db = new AppDbContext(options);
+        db.Sites.AddRange(site, otherSite);
+        db.Categories.AddRange(
+            new Category { Id = 100, SiteId = site.Id, Name = "Accessories" },
+            new Category { Id = 200, SiteId = otherSite.Id, Name = "Accessories" });
+        db.Products.AddRange(
+            CreateProduct(1000, site.Id, 100, "Mouse", "A compact pointing device.", "Mouse"),
+            CreateProduct(1001, site.Id, 100, "Mouse Pad", "A smooth desk surface.", "Mouse"),
+            CreateProduct(1002, site.Id, 100, "Mouse Bungee", "Keeps cables tidy.", "Mouse"),
+            CreateProduct(1003, site.Id, 100, "Gaming Mouse", "A precise gaming device.", "Mouse"),
+            CreateProduct(1004, site.Id, 100, "Precision Mouse", "A precise work device.", "Mouse"),
+            CreateProduct(1005, site.Id, 100, "Wireless Mouse", "A wireless work device.", "Mouse"),
+            CreateProduct(2000, otherSite.Id, 200, "Mouse Trap", "Must not cross sites.", "Mouse"));
+        await db.SaveChangesAsync();
+
+        var controller = new ProductsController(db, siteContext);
+
+        var response = await controller.GetSearchSuggestions("mouse");
+
+        var ok = Assert.IsType<OkObjectResult>(response.Result);
+        var suggestions = Assert.IsAssignableFrom<IEnumerable<string>>(ok.Value).ToList();
+
+        Assert.Equal(5, suggestions.Count);
+        Assert.Equal("Mouse", suggestions[0]);
+        Assert.Equal(["Mouse Bungee", "Mouse Pad"], suggestions.Skip(1).Take(2));
+        Assert.DoesNotContain("Mouse Trap", suggestions);
+    }
+
+    [Fact]
+    public async Task GetProducts_WithSearch_DefaultsToRelevanceOrdering()
+    {
+        var site = CloneSite(TestSites.Get("ph"));
+        var siteContext = new TestSiteContext();
+        siteContext.SetSite(site);
+
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase($"product-search-{Guid.NewGuid():N}")
+            .Options;
+
+        await using var db = new AppDbContext(options);
+        db.Sites.Add(site);
+        db.Categories.Add(new Category { Id = 100, SiteId = site.Id, Name = "Accessories" });
+        db.Products.AddRange(
+            CreateProduct(1000, site.Id, 100, "Mechanical Keyboard", "For typing.", "Keyboard"),
+            CreateProduct(1001, site.Id, 100, "Keyboard Case", "Protective cover.", "Cases"),
+            CreateProduct(1002, site.Id, 100, "Keyboard", "Compact keyboard.", "Keyboard"),
+            CreateProduct(1003, site.Id, 100, "Desktop Stand", "A stand with a keyboard tray.", "Stands"),
+            CreateProduct(1004, site.Id, 100, "Wireless Mouse", "A pointing device.", "Mouse"));
+        await db.SaveChangesAsync();
+
+        var controller = new ProductsController(db, siteContext);
+
+        var response = await controller.GetProducts(
+            categoryId: null,
+            sortBy: null,
+            minPrice: null,
+            maxPrice: null,
+            search: "  KEYBOARD ");
+
+        var ok = Assert.IsType<OkObjectResult>(response.Result);
+        var products = Assert.IsAssignableFrom<IEnumerable<ProductDto>>(ok.Value).ToList();
+
+        Assert.Equal(
+            ["Keyboard", "Keyboard Case", "Mechanical Keyboard", "Desktop Stand"],
+            products.Select(product => product.Name));
+    }
+
+    [Fact]
+    public async Task GetSearchSuggestions_WithBlankQuery_ReturnsEmptyList()
+    {
+        var site = CloneSite(TestSites.Get("ph"));
+        var siteContext = new TestSiteContext();
+        siteContext.SetSite(site);
+
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase($"blank-product-search-{Guid.NewGuid():N}")
+            .Options;
+
+        await using var db = new AppDbContext(options);
+        var controller = new ProductsController(db, siteContext);
+
+        var response = await controller.GetSearchSuggestions(" ");
+
+        var ok = Assert.IsType<OkObjectResult>(response.Result);
+        Assert.Empty(Assert.IsAssignableFrom<IEnumerable<string>>(ok.Value));
+    }
+
+    private static Product CreateProduct(
+        int id,
+        int siteId,
+        int categoryId,
+        string name,
+        string description,
+        string subcategory)
+    {
+        return new Product
+        {
+            Id = id,
+            SiteId = siteId,
+            CategoryId = categoryId,
+            Name = name,
+            Description = description,
+            SubcategoryName = subcategory,
+            Price = 100m,
+            StockQuantity = 10,
+            ImageUrl = $"/images/products/{id}.png"
+        };
+    }
+
     private static async Task SeedProductWithColorsAsync(AppDbContext db, Site site)
     {
         var category = new Category
