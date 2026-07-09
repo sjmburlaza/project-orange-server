@@ -17,10 +17,10 @@ public class CartEndpointTests
     public static TheoryData<string, decimal, string, decimal, decimal> TaxSummaryCases =>
         new()
         {
-            { "ph", 1_000m, "Included VAT 12%", 107.14m, 1_000m },
-            { "fr", 100m, "Included VAT 20%", 16.67m, 100m },
-            { "jp", 10_000m, "Included Consumption Tax 10%", 909m, 10_000m },
-            { "cn", 100m, "VAT 13%", 13m, 113m }
+            { "ph", 1_000m, "Included VAT (12%)", 107.14m, 1_000m },
+            { "fr", 100m, "Included VAT (20%)", 16.67m, 100m },
+            { "jp", 10_000m, "Included Consumption Tax (10%)", 909m, 10_000m },
+            { "cn", 100m, "VAT (13%)", 13m, 113m }
         };
 
     [Fact]
