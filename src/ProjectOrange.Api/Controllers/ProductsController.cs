@@ -208,6 +208,11 @@ public class ProductsController : ControllerBase
                     {
                         Code = option.Code,
                         Label = option.Label,
+                        Price = GetOptionPrice(
+                            product,
+                            group.Code,
+                            option.Code,
+                            selectedOptions),
                         Hex = option.Hex,
                         ImageUrl = option.ImageUrl,
                         Available = IsOptionAvailable(product, group.Code, option.Code, selectedOptions)
@@ -430,6 +435,8 @@ public class ProductsController : ControllerBase
             Name = product.Name,
             Description = product.Description,
             Price = GetProductPrice(product),
+            ReviewRating = product.ReviewRating,
+            ReviewCount = product.ReviewCount,
             StockQuantity = stockQuantity,
             StockStatus = GetStockStatus(stockQuantity),
             ImageUrl = product.ImageUrl,
@@ -451,6 +458,8 @@ public class ProductsController : ControllerBase
             Name = product.Name,
             Description = product.Description,
             Price = GetProductPrice(product),
+            ReviewRating = product.ReviewRating,
+            ReviewCount = product.ReviewCount,
             StockQuantity = stockQuantity,
             StockStatus = GetStockStatus(stockQuantity),
             ImageUrl = product.ImageUrl,
@@ -476,6 +485,7 @@ public class ProductsController : ControllerBase
                         {
                             Code = option.Code,
                             Label = option.Label,
+                            Price = GetOptionPrice(product, group.Code, option.Code),
                             Hex = option.Hex,
                             ImageUrl = option.ImageUrl
                         })
@@ -616,6 +626,31 @@ public class ProductsController : ControllerBase
         return product.Variants.Any(variant =>
             variant.StockQuantity > 0 &&
             VariantMatches(variant, constraints));
+    }
+
+    private static decimal? GetOptionPrice(
+        Product product,
+        string candidateGroupCode,
+        string candidateOptionCode,
+        IReadOnlyDictionary<string, string>? selectedOptions = null)
+    {
+        var constraints = selectedOptions?
+            .Where(option => !string.Equals(
+                option.Key,
+                candidateGroupCode,
+                StringComparison.OrdinalIgnoreCase))
+            .ToDictionary(
+                option => option.Key,
+                option => option.Value,
+                StringComparer.OrdinalIgnoreCase)
+            ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        constraints[candidateGroupCode] = candidateOptionCode;
+
+        return product.Variants
+            .Where(variant => VariantMatches(variant, constraints))
+            .Select(variant => (decimal?)variant.Price)
+            .Min();
     }
 
     private static bool VariantMatches(

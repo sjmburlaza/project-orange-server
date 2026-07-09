@@ -105,6 +105,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
 			.HasPrecision(18, 2);
 
 		modelBuilder.Entity<Product>()
+			.Property(p => p.ReviewRating)
+			.HasPrecision(2, 1);
+
+		modelBuilder.Entity<Product>()
 			.Property(p => p.SubcategoryName)
 			.HasMaxLength(128)
 			.HasDefaultValue(string.Empty);

@@ -424,6 +424,8 @@ public class CartService : ICartService
             Name = product.Name,
             Description = product.Description,
             Price = GetProductPrice(product),
+            ReviewRating = product.ReviewRating,
+            ReviewCount = product.ReviewCount,
             StockQuantity = stockQuantity,
             StockStatus = GetStockStatus(stockQuantity),
             ImageUrl = product.ImageUrl,
@@ -453,6 +455,7 @@ public class CartService : ICartService
                         {
                             Code = option.Code,
                             Label = option.Label,
+                            Price = GetOptionPrice(product, group.Code, option.Code),
                             Hex = option.Hex,
                             ImageUrl = option.ImageUrl
                         })
@@ -520,6 +523,19 @@ public class CartService : ICartService
             : product.Price;
     }
 
+    private static decimal? GetOptionPrice(
+        Product product,
+        string groupCode,
+        string optionCode)
+    {
+        return product.Variants
+            .Where(variant =>
+                GetVariantOptions(variant).TryGetValue(groupCode, out var variantOptionCode) &&
+                string.Equals(variantOptionCode, optionCode, StringComparison.OrdinalIgnoreCase))
+            .Select(variant => (decimal?)variant.Price)
+            .Min();
+    }
+
     private static int GetProductStockQuantity(Product product)
     {
         return product.Variants.Count > 0
@@ -565,8 +581,10 @@ public class CartService : ICartService
 
         var hasSelectedShipping = cart.ShippingPrice.HasValue;
         var shipping = cart.ShippingPrice.HasValue ? cart.ShippingPrice.Value : 0;
+        var tax = GetTax(subtotal);
 
-        var total = subtotal + addonTotal - discount + shipping;
+        var total = subtotal + addonTotal - discount + shipping
+            + (tax is { IsIncluded: false } ? tax.Amount : 0);
         var cartSummary = new List<CartSummaryAttributeDto>
         {
             new()
@@ -575,6 +593,15 @@ public class CartService : ICartService
                 Amount = subtotal
             }
         };
+
+        if (tax is not null)
+        {
+            cartSummary.Add(new CartSummaryAttributeDto
+            {
+                Name = tax.Name,
+                Amount = tax.Amount
+            });
+        }
 
         cartSummary.AddRange(addonSummary);
 
@@ -635,6 +662,43 @@ public class CartService : ICartService
 
             CartSummary = cartSummary
         };
+    }
+
+    private TaxDetails? GetTax(decimal subtotal)
+    {
+        return _siteContext.SiteCode.ToLowerInvariant() switch
+        {
+            "ph" => CreateIncludedTax("Included VAT (12%)", subtotal, 0.12m, 2),
+            "fr" => CreateIncludedTax("Included VAT (20%)", subtotal, 0.20m, 2),
+            "jp" => CreateIncludedTax("Included Consumption Tax (10%)", subtotal, 0.10m, 0),
+            "cn" => CreateExclusiveTax("VAT (13%)", subtotal, 0.13m, 2),
+            _ => null
+        };
+    }
+
+    private static TaxDetails CreateIncludedTax(
+        string name,
+        decimal subtotal,
+        decimal rate,
+        int decimalPlaces)
+    {
+        var amount = RoundTax(subtotal * rate / (1 + rate), decimalPlaces);
+        return new TaxDetails(name, amount, IsIncluded: true);
+    }
+
+    private static TaxDetails CreateExclusiveTax(
+        string name,
+        decimal subtotal,
+        decimal rate,
+        int decimalPlaces)
+    {
+        var amount = RoundTax(subtotal * rate, decimalPlaces);
+        return new TaxDetails(name, amount, IsIncluded: false);
+    }
+
+    private static decimal RoundTax(decimal amount, int decimalPlaces)
+    {
+        return decimal.Round(amount, decimalPlaces, MidpointRounding.AwayFromZero);
     }
 
     public async Task<CartResponseDto> GetCartByUserIdAsync(string userId)
@@ -1265,4 +1329,6 @@ public class CartService : ICartService
             || character is >= '0' and <= '9'
             || character is '-' or '_';
     }
+
+    private sealed record TaxDetails(string Name, decimal Amount, bool IsIncluded);
 }

@@ -590,6 +590,8 @@ Product responses include:
 - `name`
 - `description`
 - `price`
+- `reviewRating`
+- `reviewCount`
 - `stockQuantity`
 - `imageUrl`
 - `categoryId`
@@ -678,6 +680,12 @@ Cart response shape:
     {
       "name": "Subtotal",
       "amount": 59999,
+      "billingFrequency": "",
+      "displayValue": null
+    },
+    {
+      "name": "Included VAT 12%",
+      "amount": 6428.46,
       "billingFrequency": "",
       "displayValue": null
     },
@@ -1009,12 +1017,23 @@ Add-on types:
 `CartSummary` includes:
 
 - Subtotal
+- Site tax
 - One-time add-on amounts
 - Shipping
 - Discount if present
 - Total
 
 Monthly add-ons are represented with a billing frequency and are not added to the one-time total.
+
+Tax is calculated from the subtotal and rounded away from zero to the currency's
+display precision:
+
+| Site | Summary line | Calculation | Total behavior |
+| --- | --- | --- | --- |
+| Philippines (`ph`) | `Included VAT 12%` | `subtotal * 12% / 112%` | Already included |
+| France (`fr`) | `Included VAT 20%` | `subtotal * 20% / 120%` | Already included |
+| Japan (`jp`) | `Included Consumption Tax 10%` | `subtotal * 10% / 110%` | Already included |
+| China (`cn`) | `VAT 13%` | `subtotal * 13%` | Added to total |
 
 ### Vouchers
 
