@@ -252,6 +252,7 @@ public class AdminProductsController : ControllerBase
         product.Description = NormalizeOptionalText(request.Description);
         product.Price = request.Price;
         product.ReviewRating = request.ReviewRating;
+        product.ReviewCount = request.ReviewCount;
         product.StockQuantity = request.StockQuantity;
         product.ImageUrl = NormalizeOptionalText(request.ImageUrl);
         product.CategoryId = categoryId;
@@ -341,6 +342,11 @@ public class AdminProductsController : ControllerBase
         if (request.ReviewRating is < 0 or > 5)
         {
             result.AddError(nameof(request.ReviewRating), "Product review rating must be between 0 and 5.");
+        }
+
+        if (request.ReviewCount < 0)
+        {
+            result.AddError(nameof(request.ReviewCount), "Product review count cannot be negative.");
         }
 
         if (request.StockQuantity < 0)
@@ -552,6 +558,7 @@ public class AdminProductsController : ControllerBase
             Description = product.Description,
             Price = GetProductPrice(product),
             ReviewRating = product.ReviewRating,
+            ReviewCount = product.ReviewCount,
             StockQuantity = stockQuantity,
             StockStatus = GetStockStatus(stockQuantity),
             ImageUrl = product.ImageUrl,
@@ -574,6 +581,7 @@ public class AdminProductsController : ControllerBase
             Description = product.Description,
             Price = GetProductPrice(product),
             ReviewRating = product.ReviewRating,
+            ReviewCount = product.ReviewCount,
             StockQuantity = stockQuantity,
             StockStatus = GetStockStatus(stockQuantity),
             ImageUrl = product.ImageUrl,
@@ -599,6 +607,7 @@ public class AdminProductsController : ControllerBase
                         {
                             Code = option.Code,
                             Label = option.Label,
+                            Price = GetOptionPrice(product, group.Code, option.Code),
                             Hex = option.Hex,
                             ImageUrl = option.ImageUrl
                         })
@@ -673,6 +682,19 @@ public class AdminProductsController : ControllerBase
         return product.Variants.Count > 0
             ? product.Variants.Min(variant => variant.Price)
             : product.Price;
+    }
+
+    private static decimal? GetOptionPrice(
+        Product product,
+        string groupCode,
+        string optionCode)
+    {
+        return product.Variants
+            .Where(variant =>
+                GetVariantOptions(variant).TryGetValue(groupCode, out var variantOptionCode) &&
+                string.Equals(variantOptionCode, optionCode, StringComparison.OrdinalIgnoreCase))
+            .Select(variant => (decimal?)variant.Price)
+            .Min();
     }
 
     private static int GetProductStockQuantity(Product product)

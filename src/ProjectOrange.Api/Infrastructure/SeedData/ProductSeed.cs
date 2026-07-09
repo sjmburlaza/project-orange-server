@@ -42,6 +42,7 @@ public static class ProductSeed
                     Description = product.Description,
                     Price = product.Price,
                     ReviewRating = GetReviewRating(site.Id, product.Id),
+                    ReviewCount = GetReviewCount(site.Id, product.Id),
                     StockQuantity = product.StockQuantity,
                     ImageUrl = product.ImageUrl,
                     SubcategoryName = product.SubcategoryName,
@@ -59,6 +60,11 @@ public static class ProductSeed
     {
         var ratingIndex = ((baseProductId * 7) + (siteId * 3)) % ReviewRatings.Length;
         return ReviewRatings[ratingIndex];
+    }
+
+    private static int GetReviewCount(int siteId, int baseProductId)
+    {
+        return ((baseProductId * 137) + (siteId * 389)) % 2400 + 25;
     }
 
     public static int GetProductId(int siteId, int baseProductId)

@@ -591,6 +591,7 @@ Product responses include:
 - `description`
 - `price`
 - `reviewRating`
+- `reviewCount`
 - `stockQuantity`
 - `imageUrl`
 - `categoryId`

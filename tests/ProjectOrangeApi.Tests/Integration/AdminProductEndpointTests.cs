@@ -35,6 +35,7 @@ public class AdminProductEndpointTests
         Assert.Equal(nameof(AdminProductsController.GetProduct), created.ActionName);
         Assert.Equal("Admin Test Phone", product.Name);
         Assert.Equal(4.6m, product.ReviewRating);
+        Assert.Equal(246, product.ReviewCount);
         Assert.Equal("Phones", product.CategoryName);
         Assert.Equal("Flagship", product.SubcategoryName);
         Assert.Equal(["Fast chip", "Bright display"], product.Features);
@@ -85,6 +86,7 @@ public class AdminProductEndpointTests
             Description = "Updated product description.",
             Price = 1800m,
             ReviewRating = 4.2m,
+            ReviewCount = 84,
             StockQuantity = 3,
             ImageUrl = "/images/products/updated-admin-product.png",
             CategoryId = category.Id,
@@ -137,6 +139,7 @@ public class AdminProductEndpointTests
         var updated = Assert.IsType<ProductConfigureDto>(ok.Value);
         Assert.Equal("Updated Admin Product", updated.Name);
         Assert.Equal(4.2m, updated.ReviewRating);
+        Assert.Equal(84, updated.ReviewCount);
         Assert.Equal(["Updated feature"], updated.Features);
         Assert.Single(updated.ItemSpecs);
         Assert.Single(updated.OptionGroups);
@@ -252,6 +255,7 @@ public class AdminProductEndpointTests
             Description = "A phone created through the admin API.",
             Price = 999m,
             ReviewRating = 4.6m,
+            ReviewCount = 246,
             StockQuantity = 10,
             ImageUrl = "/images/products/admin-test-phone.png",
             CategoryId = categoryId,

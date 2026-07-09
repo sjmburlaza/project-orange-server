@@ -45,24 +45,6 @@ public static class ProductOptionSeed
     public const string BoomMicOptionCode = "boom";
     public const string DetachableMicOptionCode = "detachable";
 
-    private static readonly Dictionary<int, ProductOptionProfile> ProfilesByBaseProductId = new()
-    {
-        [1] = ProductOptionProfile.Phone,
-        [2] = ProductOptionProfile.Phone,
-        [3] = ProductOptionProfile.Phone,
-        [4] = ProductOptionProfile.Phone,
-        [5] = ProductOptionProfile.Phone,
-        [6] = ProductOptionProfile.Laptop,
-        [7] = ProductOptionProfile.Laptop,
-        [8] = ProductOptionProfile.Laptop,
-        [9] = ProductOptionProfile.Laptop,
-        [10] = ProductOptionProfile.Laptop,
-        [20] = ProductOptionProfile.Monitor,
-        [21] = ProductOptionProfile.Monitor,
-        [22] = ProductOptionProfile.Monitor,
-        [23] = ProductOptionProfile.Monitor
-    };
-
     private static readonly Dictionary<string, ProductOptionProfile> AccessoryProfilesBySubcategory =
         new(StringComparer.OrdinalIgnoreCase)
         {
@@ -96,31 +78,33 @@ public static class ProductOptionSeed
             return GetOptionProfile(product);
         }
 
-        foreach (var site in SiteSeed.Sites)
-        {
-            foreach (var profile in ProfilesByBaseProductId)
-            {
-                if (ProductSeed.GetProductId(site.Id, profile.Key) == productId)
-                {
-                    return profile.Value;
-                }
-            }
-        }
-
         return ProductOptionProfile.None;
+    }
+
+    public static string[] GetColorOptionCodes(ProductOptionProfile profile)
+    {
+        return GetOptionGroupDefinitions(profile)
+            .Where(group => group.Code == ColorGroupCode)
+            .SelectMany(group => group.Options)
+            .Select(option => option.Code)
+            .ToArray();
     }
 
     private static ProductOptionProfile GetOptionProfile(Product product)
     {
-        foreach (var site in SiteSeed.Sites)
+        if (product.CategoryId == CategorySeed.GetCategoryId(product.SiteId, 1))
         {
-            foreach (var profile in ProfilesByBaseProductId)
-            {
-                if (ProductSeed.GetProductId(site.Id, profile.Key) == product.Id)
-                {
-                    return profile.Value;
-                }
-            }
+            return ProductOptionProfile.Phone;
+        }
+
+        if (product.CategoryId == CategorySeed.GetCategoryId(product.SiteId, 2))
+        {
+            return ProductOptionProfile.Laptop;
+        }
+
+        if (product.CategoryId == CategorySeed.GetCategoryId(product.SiteId, 4))
+        {
+            return ProductOptionProfile.Monitor;
         }
 
         var accessoryCategoryId = CategorySeed.GetCategoryId(product.SiteId, 3);
@@ -183,7 +167,9 @@ public static class ProductOptionSeed
                 new(ColorGroupCode, "Color",
                 [
                     new(BlackOptionCode, "Black", "#111827"),
-                    new(BlueOptionCode, "Blue", "#2563eb")
+                    new(BlueOptionCode, "Blue", "#2563eb"),
+                    new(SilverOptionCode, "Silver", "#d1d5db"),
+                    new(WhiteOptionCode, "White", "#f9fafb")
                 ]),
                 new(StorageGroupCode, "Storage",
                 [
@@ -197,7 +183,9 @@ public static class ProductOptionSeed
                 new(ColorGroupCode, "Color",
                 [
                     new(MidnightOptionCode, "Midnight", "#1f2937"),
-                    new(SilverOptionCode, "Silver", "#d1d5db")
+                    new(SilverOptionCode, "Silver", "#d1d5db"),
+                    new(BlackOptionCode, "Black", "#111827"),
+                    new(WhiteOptionCode, "White", "#f9fafb")
                 ]),
                 new(MemoryGroupCode, "Memory",
                 [
@@ -217,7 +205,9 @@ public static class ProductOptionSeed
                 new(ColorGroupCode, "Color",
                 [
                     new(BlackOptionCode, "Black", "#111827"),
-                    new(SilverOptionCode, "Silver", "#d1d5db")
+                    new(SilverOptionCode, "Silver", "#d1d5db"),
+                    new(WhiteOptionCode, "White", "#f9fafb"),
+                    new(BlueOptionCode, "Blue", "#2563eb")
                 ]),
                 new(StandGroupCode, "Stand",
                 [
@@ -230,7 +220,9 @@ public static class ProductOptionSeed
                 new(ColorGroupCode, "Color",
                 [
                     new(BlackOptionCode, "Black", "#111827"),
-                    new(SilverOptionCode, "Silver", "#d1d5db")
+                    new(SilverOptionCode, "Silver", "#d1d5db"),
+                    new(WhiteOptionCode, "White", "#f9fafb"),
+                    new(BlueOptionCode, "Blue", "#2563eb")
                 ]),
                 new(ConnectionGroupCode, "Connection",
                 [
@@ -253,7 +245,9 @@ public static class ProductOptionSeed
                 new(ColorGroupCode, "Color",
                 [
                     new(BlackOptionCode, "Black", "#111827"),
-                    new(SilverOptionCode, "Silver", "#d1d5db")
+                    new(SilverOptionCode, "Silver", "#d1d5db"),
+                    new(WhiteOptionCode, "White", "#f9fafb"),
+                    new(BlueOptionCode, "Blue", "#2563eb")
                 ]),
                 new(ConnectionGroupCode, "Connection",
                 [
@@ -276,7 +270,9 @@ public static class ProductOptionSeed
                 new(ColorGroupCode, "Color",
                 [
                     new(BlackOptionCode, "Black", "#111827"),
-                    new(WhiteOptionCode, "White", "#f9fafb")
+                    new(WhiteOptionCode, "White", "#f9fafb"),
+                    new(BlueOptionCode, "Blue", "#2563eb"),
+                    new(SilverOptionCode, "Silver", "#d1d5db")
                 ]),
                 new(FormFactorGroupCode, "Fit",
                 [
@@ -294,7 +290,9 @@ public static class ProductOptionSeed
                 new(ColorGroupCode, "Color",
                 [
                     new(BlackOptionCode, "Black", "#111827"),
-                    new(SilverOptionCode, "Silver", "#d1d5db")
+                    new(SilverOptionCode, "Silver", "#d1d5db"),
+                    new(WhiteOptionCode, "White", "#f9fafb"),
+                    new(BlueOptionCode, "Blue", "#2563eb")
                 ]),
                 new(ConnectionGroupCode, "Connection",
                 [
@@ -312,7 +310,9 @@ public static class ProductOptionSeed
                 new(ColorGroupCode, "Color",
                 [
                     new(BlackOptionCode, "Black", "#111827"),
-                    new(WhiteOptionCode, "White", "#f9fafb")
+                    new(WhiteOptionCode, "White", "#f9fafb"),
+                    new(BlueOptionCode, "Blue", "#2563eb"),
+                    new(SilverOptionCode, "Silver", "#d1d5db")
                 ]),
                 new(ConnectionGroupCode, "Connection",
                 [

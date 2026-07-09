@@ -46,6 +46,7 @@ public class WishlistEndpointTests
         Assert.Equal(1000, item.ProductId);
         Assert.Equal("Orange Phone", item.Product.Name);
         Assert.Equal(4.8m, item.Product.ReviewRating);
+        Assert.Equal(512, item.Product.ReviewCount);
         Assert.Equal("Phones", item.Product.CategoryName);
         Assert.Equal("Smartphones", item.Product.SubcategoryName);
         Assert.Equal(1, await db.WishlistItems.CountAsync());
@@ -225,6 +226,7 @@ public class WishlistEndpointTests
             Description = "A phone for wishlist endpoint tests.",
             Price = 999m,
             ReviewRating = 4.8m,
+            ReviewCount = 512,
             StockQuantity = 7,
             ImageUrl = "/images/products/orange-phone.png",
             CategoryId = category.Id,

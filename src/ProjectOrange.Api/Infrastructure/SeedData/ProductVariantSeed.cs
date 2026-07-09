@@ -334,7 +334,7 @@ public static class ProductVariantSeed
 
     private static VariantDefinition[] GetVariantDefinitions(ProductOptionSeed.ProductOptionProfile profile)
     {
-        return profile switch
+        var definitions = profile switch
         {
             ProductOptionSeed.ProductOptionProfile.Phone => PhoneVariants,
             ProductOptionSeed.ProductOptionProfile.Laptop => LaptopVariants,
@@ -346,6 +346,43 @@ public static class ProductVariantSeed
             ProductOptionSeed.ProductOptionProfile.Headset => HeadsetVariants,
             _ => []
         };
+
+        return AddMissingColorVariants(definitions, ProductOptionSeed.GetColorOptionCodes(profile));
+    }
+
+    private static VariantDefinition[] AddMissingColorVariants(
+        VariantDefinition[] definitions,
+        IEnumerable<string> colorOptionCodes)
+    {
+        if (definitions.Length == 0)
+        {
+            return definitions;
+        }
+
+        var existingColorCodes = definitions
+            .SelectMany(definition => definition.Options)
+            .Where(option => option.GroupCode == ProductOptionSeed.ColorGroupCode)
+            .Select(option => option.OptionCode)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var expandedDefinitions = definitions.ToList();
+        var nextIndex = definitions.Max(definition => definition.Index) + 1;
+        var template = definitions[0];
+
+        foreach (var colorOptionCode in colorOptionCodes.Where(color => !existingColorCodes.Contains(color)))
+        {
+            expandedDefinitions.Add(template with
+            {
+                Index = nextIndex++,
+                StockWeight = 1,
+                Options = template.Options
+                    .Select(option => option.GroupCode == ProductOptionSeed.ColorGroupCode
+                        ? option with { OptionCode = colorOptionCode }
+                        : option)
+                    .ToArray()
+            });
+        }
+
+        return expandedDefinitions.ToArray();
     }
 
     private static decimal GetPrice(decimal basePrice, decimal priceMultiplier)
@@ -358,9 +395,60 @@ public static class ProductVariantSeed
         IReadOnlyCollection<VariantDefinition> definitions,
         ProductOptionSeed.ProductOptionProfile profile)
     {
-        return profile == ProductOptionSeed.ProductOptionProfile.Phone
+        var stockQuantities = profile == ProductOptionSeed.ProductOptionProfile.Phone
             ? AllocatePhoneStock(totalStockQuantity, definitions)
             : AllocateWeightedStock(totalStockQuantity, definitions);
+
+        EnsureEachColorIsInStock(totalStockQuantity, definitions, stockQuantities);
+        return stockQuantities;
+    }
+
+    private static void EnsureEachColorIsInStock(
+        int totalStockQuantity,
+        IReadOnlyCollection<VariantDefinition> definitions,
+        Dictionary<int, int> stockQuantities)
+    {
+        var variantsByColor = definitions
+            .Select(definition => new
+            {
+                Definition = definition,
+                Color = definition.Options.First(option =>
+                    option.GroupCode == ProductOptionSeed.ColorGroupCode).OptionCode
+            })
+            .GroupBy(item => item.Color, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        if (totalStockQuantity < variantsByColor.Length)
+        {
+            return;
+        }
+
+        foreach (var colorVariants in variantsByColor)
+        {
+            if (colorVariants.Any(item => stockQuantities[item.Definition.Index] > 0))
+            {
+                continue;
+            }
+
+            var donorColor = variantsByColor
+                .Where(group => group.Sum(item => stockQuantities[item.Definition.Index]) > 1)
+                .OrderByDescending(group => group.Sum(item => stockQuantities[item.Definition.Index]))
+                .ThenBy(group => group.Key, StringComparer.OrdinalIgnoreCase)
+                .First();
+            var donor = donorColor
+                .Where(item => stockQuantities[item.Definition.Index] > 0)
+                .OrderByDescending(item => stockQuantities[item.Definition.Index])
+                .ThenBy(item => item.Definition.Index)
+                .First()
+                .Definition;
+            var recipient = colorVariants
+                .OrderBy(item => item.Definition.Index)
+                .First()
+                .Definition;
+
+            stockQuantities[donor.Index]--;
+            stockQuantities[recipient.Index]++;
+        }
     }
 
     private static Dictionary<int, int> AllocatePhoneStock(

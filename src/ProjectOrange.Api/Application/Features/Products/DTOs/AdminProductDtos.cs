@@ -6,6 +6,7 @@ public class AdminProductRequest
     public string Description { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public decimal ReviewRating { get; set; }
+    public int ReviewCount { get; set; }
     public int StockQuantity { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
     public int CategoryId { get; set; }

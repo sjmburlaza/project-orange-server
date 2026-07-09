@@ -425,6 +425,7 @@ public class CartService : ICartService
             Description = product.Description,
             Price = GetProductPrice(product),
             ReviewRating = product.ReviewRating,
+            ReviewCount = product.ReviewCount,
             StockQuantity = stockQuantity,
             StockStatus = GetStockStatus(stockQuantity),
             ImageUrl = product.ImageUrl,
@@ -454,6 +455,7 @@ public class CartService : ICartService
                         {
                             Code = option.Code,
                             Label = option.Label,
+                            Price = GetOptionPrice(product, group.Code, option.Code),
                             Hex = option.Hex,
                             ImageUrl = option.ImageUrl
                         })
@@ -519,6 +521,19 @@ public class CartService : ICartService
         return product.Variants.Count > 0
             ? product.Variants.Min(variant => variant.Price)
             : product.Price;
+    }
+
+    private static decimal? GetOptionPrice(
+        Product product,
+        string groupCode,
+        string optionCode)
+    {
+        return product.Variants
+            .Where(variant =>
+                GetVariantOptions(variant).TryGetValue(groupCode, out var variantOptionCode) &&
+                string.Equals(variantOptionCode, optionCode, StringComparison.OrdinalIgnoreCase))
+            .Select(variant => (decimal?)variant.Price)
+            .Min();
     }
 
     private static int GetProductStockQuantity(Product product)

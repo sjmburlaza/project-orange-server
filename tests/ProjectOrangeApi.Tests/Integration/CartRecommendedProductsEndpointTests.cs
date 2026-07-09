@@ -50,6 +50,7 @@ public class CartRecommendedProductsEndpointTests
         Assert.Equal(["Low-profile switches", "Bluetooth connectivity"], keyboard.Features);
         Assert.Equal(["Desk Keyboard", "USB-C cable"], keyboard.WhatsInTheBox);
         Assert.Equal(4.5m, keyboard.ReviewRating);
+        Assert.Equal(315, keyboard.ReviewCount);
         var variant = Assert.Single(keyboard.Variants);
         Assert.Equal(100100, variant.Id);
         Assert.Equal("KEYBOARD-BLACK", variant.Sku);
@@ -216,6 +217,7 @@ public class CartRecommendedProductsEndpointTests
             Description = description,
             Price = price,
             ReviewRating = 4.5m,
+            ReviewCount = 315,
             StockQuantity = stockQuantity,
             ImageUrl = $"/images/products/{id}.png",
             CategoryId = category.Id,

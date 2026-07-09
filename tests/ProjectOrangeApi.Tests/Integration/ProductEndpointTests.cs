@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectOrangeApi.Controllers;
@@ -35,9 +36,16 @@ public class ProductEndpointTests
     public void ProductSeed_AllProducts_HaveReviewRatings()
     {
         Assert.All(ProductSeed.Products, product =>
-            Assert.InRange(product.ReviewRating, 0.1m, 5m));
+        {
+            Assert.InRange(product.ReviewRating, 0.1m, 5m);
+            Assert.True(product.ReviewCount > 0);
+        });
         Assert.True(ProductSeed.Products
             .Select(product => product.ReviewRating)
+            .Distinct()
+            .Count() > 1);
+        Assert.True(ProductSeed.Products
+            .Select(product => product.ReviewCount)
             .Distinct()
             .Count() > 1);
     }
@@ -92,13 +100,44 @@ public class ProductEndpointTests
             });
 
             var variants = variantsByProductId[product.Id];
-            Assert.Equal(4, variants.Count);
+            Assert.True(variants.Count >= 4);
             Assert.Contains(variants, variant => variant.Id == ProductVariantSeed.GetDefaultVariantId(product.Id));
             Assert.All(variants, variant =>
             {
                 Assert.True(variantOptionsByVariantId.ContainsKey(variant.Id));
                 Assert.Equal(groups.Count, variantOptionsByVariantId[variant.Id].Count);
             });
+        });
+    }
+
+    [Fact]
+    public void ProductOptionSeed_AllProducts_HaveAtLeastFourColorsWithVariants()
+    {
+        var colorGroupsByProductId = ProductOptionSeed.OptionGroups
+            .Where(group => group.Code == ProductOptionSeed.ColorGroupCode)
+            .ToDictionary(group => group.ProductId);
+        var optionsByGroupId = ProductOptionSeed.Options
+            .GroupBy(option => option.ProductOptionGroupId)
+            .ToDictionary(group => group.Key, group => group.ToList());
+        var variantsByProductId = ProductVariantSeed.Variants
+            .GroupBy(variant => variant.ProductId)
+            .ToDictionary(group => group.Key, group => group.ToList());
+        var variantOptionsByVariantId = ProductVariantSeed.VariantOptions
+            .GroupBy(variantOption => variantOption.ProductVariantId)
+            .ToDictionary(group => group.Key, group => group.ToList());
+
+        Assert.All(ProductSeed.Products, product =>
+        {
+            var colorGroup = colorGroupsByProductId[product.Id];
+            var colors = optionsByGroupId[colorGroup.Id];
+            var stockedVariantColorOptionIds = variantsByProductId[product.Id]
+                .Where(variant => variant.StockQuantity > 0)
+                .SelectMany(variant => variantOptionsByVariantId[variant.Id])
+                .Select(variantOption => variantOption.ProductOptionId)
+                .ToHashSet();
+
+            Assert.True(colors.Count >= 4);
+            Assert.All(colors, color => Assert.Contains(color.Id, stockedVariantColorOptionIds));
         });
     }
 
@@ -148,8 +187,42 @@ public class ProductEndpointTests
 
         Assert.Equal(["Color", "Connection", "Layout", "Switch"], result.OptionGroups.Select(group => group.Label));
         Assert.All(result.OptionGroups, group => Assert.NotEmpty(group.Options));
-        Assert.Equal(4, result.Variants.Count);
+        Assert.All(result.OptionGroups, group =>
+            Assert.All(group.Options, option =>
+            {
+                var expectedPrice = result.Variants
+                    .Where(variant => variant.Options[group.Code] == option.Code)
+                    .Min(variant => variant.Price);
+
+                Assert.Equal(expectedPrice, option.Price);
+            }));
+        Assert.True(result.Variants.Count >= 4);
         Assert.All(result.Variants, variant => Assert.Equal(result.OptionGroups.Count, variant.Options.Count));
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext()
+        };
+        controller.Request.QueryString = new QueryString(
+            "?connection=bluetooth&form-factor=compact&switch=linear");
+
+        var optionsResponse = await controller.GetProductOptions(product.Id);
+        var optionsOk = Assert.IsType<OkObjectResult>(optionsResponse.Result);
+        var optionsResult = Assert.IsType<ProductOptionsResponseDto>(optionsOk.Value);
+
+        Assert.All(optionsResult.OptionGroups, group =>
+            Assert.All(group.Options, option =>
+            {
+                var expectedPrice = result.Variants
+                    .Where(variant => optionsResult.SelectedOptions
+                        .Where(selection => selection.Key != group.Code)
+                        .All(selection => variant.Options[selection.Key] == selection.Value))
+                    .Where(variant => variant.Options[group.Code] == option.Code)
+                    .Select(variant => (decimal?)variant.Price)
+                    .Min();
+
+                Assert.Equal(expectedPrice, option.Price);
+            }));
     }
 
     [Fact]
@@ -179,6 +252,7 @@ public class ProductEndpointTests
             Description = "Compact RGB mechanical keyboard.",
             Price = 3500m,
             ReviewRating = 4.7m,
+            ReviewCount = 128,
             StockQuantity = 25,
             ImageUrl = "/images/products/mechanical-keyboard.png",
             CategoryId = 100,
@@ -200,6 +274,7 @@ public class ProductEndpointTests
 
         Assert.Equal("Keyboard", product.SubcategoryName);
         Assert.Equal(4.7m, product.ReviewRating);
+        Assert.Equal(128, product.ReviewCount);
     }
 
     [Fact]
