@@ -14,6 +14,15 @@ namespace ProjectOrangeApi.Tests.Integration;
 
 public class CartEndpointTests
 {
+    public static TheoryData<string, decimal, string, decimal, decimal> TaxSummaryCases =>
+        new()
+        {
+            { "ph", 1_000m, "Included VAT 12%", 107.14m, 1_000m },
+            { "fr", 100m, "Included VAT 20%", 16.67m, 100m },
+            { "jp", 10_000m, "Included Consumption Tax 10%", 909m, 10_000m },
+            { "cn", 100m, "VAT 13%", 13m, 113m }
+        };
+
     [Fact]
     public async Task GetCart_ReturnsEntryTotalPrice()
     {
@@ -65,6 +74,74 @@ public class CartEndpointTests
         using var document = JsonDocument.Parse(json);
         Assert.Equal(37.50m, document.RootElement.GetProperty("totalPrice").GetDecimal());
         Assert.Equal("Smartphones", document.RootElement.GetProperty("subcategoryName").GetString());
+    }
+
+    [Theory]
+    [MemberData(nameof(TaxSummaryCases))]
+    public async Task GetCart_ReturnsSiteTaxSummary(
+        string siteCode,
+        decimal subtotal,
+        string taxName,
+        decimal taxAmount,
+        decimal total)
+    {
+        var site = CloneSite(TestSites.Get(siteCode));
+        var siteContext = new TestSiteContext();
+        siteContext.SetSite(site);
+
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase($"cart-tax-{siteCode}-{Guid.NewGuid():N}")
+            .Options;
+
+        await using var db = new AppDbContext(options);
+        db.Sites.Add(site);
+        db.Carts.Add(new Cart
+        {
+            Id = 200,
+            SiteId = site.Id,
+            Code = $"CART-TAX-{siteCode.ToUpperInvariant()}",
+            Entries =
+            [
+                new CartItem
+                {
+                    Id = 201,
+                    ProductId = 1,
+                    ProductName = "Orange Product",
+                    Price = subtotal,
+                    Quantity = 1,
+                    StockQuantity = 10,
+                    ImageUrl = "/images/products/orange-product.png",
+                    CategoryName = "Phones"
+                }
+            ]
+        });
+        await db.SaveChangesAsync();
+
+        var controller = CreateController(db, siteContext);
+
+        var response = await controller.GetCart($"CART-TAX-{siteCode.ToUpperInvariant()}");
+
+        var ok = Assert.IsType<OkObjectResult>(response.Result);
+        var cart = Assert.IsType<CartResponseDto>(ok.Value);
+
+        Assert.Collection(
+            cart.CartSummary,
+            item =>
+            {
+                Assert.Equal("Subtotal", item.Name);
+                Assert.Equal(subtotal, item.Amount);
+            },
+            item =>
+            {
+                Assert.Equal(taxName, item.Name);
+                Assert.Equal(taxAmount, item.Amount);
+            },
+            item => Assert.Equal("Shipping", item.Name),
+            item =>
+            {
+                Assert.Equal("Total", item.Name);
+                Assert.Equal(total, item.Amount);
+            });
     }
 
     private static CartsController CreateController(AppDbContext db, TestSiteContext siteContext)
