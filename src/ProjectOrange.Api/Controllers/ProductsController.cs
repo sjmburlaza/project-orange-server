@@ -28,9 +28,11 @@ public class ProductsController : ControllerBase
         [FromQuery] int? categoryId,
         [FromQuery] string? sortBy,
         [FromQuery] decimal? minPrice,
-        [FromQuery] decimal? maxPrice
+        [FromQuery] decimal? maxPrice,
+        [FromQuery] string? search = null
     )
     {
+        var normalizedSearch = NormalizeSearch(search);
         var query = _context.Products
             .Include(p => p.Category)
             .Include(p => p.ItemSpecs)
@@ -56,6 +58,16 @@ public class ProductsController : ControllerBase
             query = query.Where(p => p.Price <= maxPrice.Value);
         }
 
+        if (normalizedSearch is not null)
+        {
+            query = query.Where(product =>
+                product.Name.ToLower().Contains(normalizedSearch) ||
+                product.Description.ToLower().Contains(normalizedSearch) ||
+                product.SubcategoryName.ToLower().Contains(normalizedSearch) ||
+                (product.Category != null &&
+                    product.Category.Name.ToLower().Contains(normalizedSearch)));
+        }
+
         query = sortBy switch
         {
             "price-asc" => query.OrderBy(p => p.Price),
@@ -67,7 +79,95 @@ public class ProductsController : ControllerBase
 
         var products = await query.ToListAsync();
 
+        if (normalizedSearch is not null && string.IsNullOrWhiteSpace(sortBy))
+        {
+            products = products
+                .OrderBy(product => GetProductSearchScore(product, normalizedSearch))
+                .ThenBy(product => product.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(product => product.Id)
+                .ToList();
+        }
+
         return Ok(products.Select(MapProduct));
+    }
+
+    [HttpGet("search/suggestions")]
+    [HttpGet("search-suggestions")]
+    public async Task<ActionResult<IEnumerable<string>>> GetSearchSuggestions(
+        [FromQuery] string? query,
+        [FromQuery(Name = "q")] string? queryAlias = null)
+    {
+        var normalizedSearch = NormalizeSearch(query) ?? NormalizeSearch(queryAlias);
+
+        if (normalizedSearch is null)
+        {
+            return Ok(Array.Empty<string>());
+        }
+
+        var matchingProducts = await _context.Products
+            .AsNoTracking()
+            .Where(product =>
+                product.SiteId == _siteContext.SiteId &&
+                (product.Name.ToLower().Contains(normalizedSearch) ||
+                    product.Description.ToLower().Contains(normalizedSearch) ||
+                    product.SubcategoryName.ToLower().Contains(normalizedSearch) ||
+                    (product.Category != null &&
+                        product.Category.Name.ToLower().Contains(normalizedSearch))))
+            .Select(product => new
+            {
+                product.Name,
+                product.Description,
+                product.SubcategoryName,
+                CategoryName = product.Category == null ? string.Empty : product.Category.Name
+            })
+            .ToListAsync();
+
+        var matchingCategories = await _context.Categories
+            .AsNoTracking()
+            .Where(category =>
+                category.SiteId == _siteContext.SiteId &&
+                category.Name.ToLower().Contains(normalizedSearch))
+            .Select(category => category.Name)
+            .ToListAsync();
+
+        var suggestions = new List<(string Term, int Score)>();
+
+        suggestions.AddRange(matchingCategories.Select(category =>
+            (category, GetTextSearchScore(category, normalizedSearch, sourcePenalty: 0))));
+
+        foreach (var product in matchingProducts)
+        {
+            suggestions.Add((
+                product.Name,
+                GetProductSearchScore(
+                    product.Name,
+                    product.Description,
+                    product.SubcategoryName,
+                    product.CategoryName,
+                    normalizedSearch)));
+
+            AddMatchingTerm(
+                suggestions,
+                product.SubcategoryName,
+                normalizedSearch,
+                sourcePenalty: 10);
+        }
+
+        var result = suggestions
+            .Where(suggestion => !string.IsNullOrWhiteSpace(suggestion.Term))
+            .GroupBy(suggestion => suggestion.Term.Trim(), StringComparer.OrdinalIgnoreCase)
+            .Select(group => new
+            {
+                Term = group.Key,
+                Score = group.Min(suggestion => suggestion.Score)
+            })
+            .OrderBy(suggestion => suggestion.Score)
+            .ThenBy(suggestion => suggestion.Term, StringComparer.OrdinalIgnoreCase)
+            .Take(5)
+            .Select(suggestion => suggestion.Term)
+            .ToList();
+
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -212,6 +312,99 @@ public class ProductsController : ControllerBase
             "trade-in" => _siteContext.TradeInEnabled,
             _ => true
         };
+    }
+
+    private static string? NormalizeSearch(string? search)
+    {
+        var normalized = search?.Trim().ToLowerInvariant();
+        return string.IsNullOrWhiteSpace(normalized) ? null : normalized;
+    }
+
+    private static void AddMatchingTerm(
+        ICollection<(string Term, int Score)> suggestions,
+        string term,
+        string normalizedSearch,
+        int sourcePenalty)
+    {
+        if (!string.IsNullOrWhiteSpace(term) &&
+            term.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase))
+        {
+            suggestions.Add((
+                term,
+                GetTextSearchScore(term, normalizedSearch, sourcePenalty)));
+        }
+    }
+
+    private static int GetProductSearchScore(Product product, string normalizedSearch)
+    {
+        return GetProductSearchScore(
+            product.Name,
+            product.Description,
+            product.SubcategoryName,
+            product.Category?.Name ?? string.Empty,
+            normalizedSearch);
+    }
+
+    private static int GetProductSearchScore(
+        string name,
+        string description,
+        string subcategoryName,
+        string categoryName,
+        string normalizedSearch)
+    {
+        return new[]
+        {
+            GetTextSearchScore(name, normalizedSearch, sourcePenalty: 0),
+            GetTextSearchScore(subcategoryName, normalizedSearch, sourcePenalty: 1_000),
+            GetTextSearchScore(categoryName, normalizedSearch, sourcePenalty: 2_000),
+            GetTextSearchScore(description, normalizedSearch, sourcePenalty: 3_000)
+        }.Min();
+    }
+
+    private static int GetTextSearchScore(
+        string text,
+        string normalizedSearch,
+        int sourcePenalty)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return int.MaxValue;
+        }
+
+        var normalizedText = text.Trim().ToLowerInvariant();
+
+        if (normalizedText == normalizedSearch)
+        {
+            return sourcePenalty;
+        }
+
+        if (normalizedText.StartsWith(normalizedSearch, StringComparison.Ordinal))
+        {
+            return 100 + sourcePenalty;
+        }
+
+        if (StartsAnyWordWith(normalizedText, normalizedSearch))
+        {
+            return 200 + sourcePenalty;
+        }
+
+        return normalizedText.Contains(normalizedSearch, StringComparison.Ordinal)
+            ? 300 + sourcePenalty
+            : int.MaxValue;
+    }
+
+    private static bool StartsAnyWordWith(string text, string normalizedSearch)
+    {
+        for (var index = 1; index < text.Length; index++)
+        {
+            if (!char.IsLetterOrDigit(text[index - 1]) &&
+                text.AsSpan(index).StartsWith(normalizedSearch, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private IQueryable<Product> LoadProductConfigureQuery()

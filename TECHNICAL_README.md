@@ -560,7 +560,8 @@ Unless otherwise noted, endpoints support both:
 
 | Method | Route | Auth | Description |
 | --- | --- | --- | --- |
-| `GET` | `/api/products` | Public | Lists products for the resolved site. Supports filters and sorting. |
+| `GET` | `/api/products` | Public | Lists products for the resolved site. Supports search, filters, and sorting. |
+| `GET` | `/api/products/search/suggestions?query=` | Public | Returns up to five relevance-ranked catalog search terms for autocomplete. |
 | `GET` | `/api/products/{id}` | Public | Gets one product by ID for the resolved site. |
 | `GET` | `/api/products/{id}/addons` | Public | Lists eligible add-ons for a product category and current site feature flags. |
 | `GET` | `/api/products/{id}/insurance-plans` | Public | Lists insurance plans if insurance is enabled for the site. |
@@ -581,6 +582,7 @@ Product query parameters:
 | `sortBy` | string | Supports `price-asc`, `price-desc`, `name-asc`, `name-desc`; defaults to ID ordering. |
 | `minPrice` | decimal | Minimum product price. |
 | `maxPrice` | decimal | Maximum product price. |
+| `search` | string | Matches product names, descriptions, categories, and subcategories. Results default to relevance ordering unless `sortBy` is supplied. |
 
 Product responses include:
 
