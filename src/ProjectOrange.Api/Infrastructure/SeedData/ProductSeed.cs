@@ -6,6 +6,21 @@ public static class ProductSeed
 {
     private const int LegacyProductsPerSite = 20;
     private const int FirstAdditionalProductId = LegacyProductsPerSite + 1;
+    private static readonly decimal[] ReviewRatings =
+    [
+        3.8m,
+        3.9m,
+        4.0m,
+        4.1m,
+        4.2m,
+        4.3m,
+        4.4m,
+        4.5m,
+        4.6m,
+        4.7m,
+        4.8m,
+        4.9m
+    ];
 
     private static readonly IReadOnlyDictionary<string, ProductSeedEntry[]> ProductsBySite =
         new Dictionary<string, ProductSeedEntry[]>(StringComparer.OrdinalIgnoreCase)
@@ -26,6 +41,7 @@ public static class ProductSeed
                     Name = product.Name,
                     Description = product.Description,
                     Price = product.Price,
+                    ReviewRating = GetReviewRating(site.Id, product.Id),
                     StockQuantity = product.StockQuantity,
                     ImageUrl = product.ImageUrl,
                     SubcategoryName = product.SubcategoryName,
@@ -38,6 +54,12 @@ public static class ProductSeed
                     CategoryId = CategorySeed.GetCategoryId(site.Id, product.CategoryId)
                 }))
             .ToArray();
+
+    private static decimal GetReviewRating(int siteId, int baseProductId)
+    {
+        var ratingIndex = ((baseProductId * 7) + (siteId * 3)) % ReviewRatings.Length;
+        return ReviewRatings[ratingIndex];
+    }
 
     public static int GetProductId(int siteId, int baseProductId)
     {

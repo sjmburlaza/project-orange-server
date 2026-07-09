@@ -251,6 +251,7 @@ public class AdminProductsController : ControllerBase
         product.Name = NormalizeRequiredText(request.Name);
         product.Description = NormalizeOptionalText(request.Description);
         product.Price = request.Price;
+        product.ReviewRating = request.ReviewRating;
         product.StockQuantity = request.StockQuantity;
         product.ImageUrl = NormalizeOptionalText(request.ImageUrl);
         product.CategoryId = categoryId;
@@ -335,6 +336,11 @@ public class AdminProductsController : ControllerBase
         if (request.Price < 0)
         {
             result.AddError(nameof(request.Price), "Product price cannot be negative.");
+        }
+
+        if (request.ReviewRating is < 0 or > 5)
+        {
+            result.AddError(nameof(request.ReviewRating), "Product review rating must be between 0 and 5.");
         }
 
         if (request.StockQuantity < 0)
@@ -545,6 +551,7 @@ public class AdminProductsController : ControllerBase
             Name = product.Name,
             Description = product.Description,
             Price = GetProductPrice(product),
+            ReviewRating = product.ReviewRating,
             StockQuantity = stockQuantity,
             StockStatus = GetStockStatus(stockQuantity),
             ImageUrl = product.ImageUrl,
@@ -566,6 +573,7 @@ public class AdminProductsController : ControllerBase
             Name = product.Name,
             Description = product.Description,
             Price = GetProductPrice(product),
+            ReviewRating = product.ReviewRating,
             StockQuantity = stockQuantity,
             StockStatus = GetStockStatus(stockQuantity),
             ImageUrl = product.ImageUrl,

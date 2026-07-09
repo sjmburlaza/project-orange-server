@@ -32,6 +32,17 @@ public class ProductEndpointTests
         };
 
     [Fact]
+    public void ProductSeed_AllProducts_HaveReviewRatings()
+    {
+        Assert.All(ProductSeed.Products, product =>
+            Assert.InRange(product.ReviewRating, 0.1m, 5m));
+        Assert.True(ProductSeed.Products
+            .Select(product => product.ReviewRating)
+            .Distinct()
+            .Count() > 1);
+    }
+
+    [Fact]
     public void ProductSeed_Accessories_HaveAllowedSubcategoryNames()
     {
         var accessoryProducts = ProductSeed.Products
@@ -167,6 +178,7 @@ public class ProductEndpointTests
             Name = "Mechanical Keyboard",
             Description = "Compact RGB mechanical keyboard.",
             Price = 3500m,
+            ReviewRating = 4.7m,
             StockQuantity = 25,
             ImageUrl = "/images/products/mechanical-keyboard.png",
             CategoryId = 100,
@@ -187,6 +199,7 @@ public class ProductEndpointTests
         var product = Assert.Single(products);
 
         Assert.Equal("Keyboard", product.SubcategoryName);
+        Assert.Equal(4.7m, product.ReviewRating);
     }
 
     [Fact]

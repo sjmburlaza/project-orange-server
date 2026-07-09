@@ -135,6 +135,7 @@ public class WishlistService : IWishlistService
             Name = product.Name,
             Description = product.Description,
             Price = GetProductPrice(product),
+            ReviewRating = product.ReviewRating,
             StockQuantity = stockQuantity,
             StockStatus = GetStockStatus(stockQuantity),
             ImageUrl = product.ImageUrl,

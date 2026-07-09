@@ -590,6 +590,7 @@ Product responses include:
 - `name`
 - `description`
 - `price`
+- `reviewRating`
 - `stockQuantity`
 - `imageUrl`
 - `categoryId`
