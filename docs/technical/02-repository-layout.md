@@ -35,7 +35,7 @@
 |       +-- ProjectOrange.Api.http
 |       +-- appsettings.json
 |       +-- appsettings.Development.json
-+-- ProjectOrangeApi.sln
++-- ProjectOrange.sln
 +-- README.md
 ```
 

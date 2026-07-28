@@ -10,5 +10,5 @@ Before merging backend changes, check:
 - Are cart/order snapshots still backward compatible?
 - Are error codes stable for frontend handling?
 - Does Swagger still start in development?
-- Does `dotnet build ProjectOrangeApi.sln --configuration Release` pass?
+- Does `dotnet build ProjectOrange.sln --configuration Release` pass?
 - Does the frontend need documentation updates for new request/response shapes?

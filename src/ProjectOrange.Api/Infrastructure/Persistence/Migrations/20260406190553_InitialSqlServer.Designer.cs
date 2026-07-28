@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ProjectOrangeApi.Data;
+using ProjectOrange.Data;
 
 #nullable disable
 
-namespace ProjectOrangeApi.Migrations
+namespace ProjectOrange.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260406190553_InitialSqlServer")]
@@ -25,7 +25,7 @@ namespace ProjectOrangeApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Category", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,7 +59,7 @@ namespace ProjectOrangeApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Order", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -86,7 +86,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.OrderItem", b =>
+            modelBuilder.Entity("ProjectOrange.Models.OrderItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -115,7 +115,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Product", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -173,13 +173,13 @@ namespace ProjectOrangeApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.OrderItem", b =>
+            modelBuilder.Entity("ProjectOrange.Models.OrderItem", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Order", null)
+                    b.HasOne("ProjectOrange.Models.Order", null)
                         .WithMany("Items")
                         .HasForeignKey("OrderId");
 
-                    b.HasOne("ProjectOrangeApi.Models.Product", "Product")
+                    b.HasOne("ProjectOrange.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -188,9 +188,9 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Product", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Product", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Category", "Category")
+                    b.HasOne("ProjectOrange.Models.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -199,12 +199,12 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Category", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Order", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Order", b =>
                 {
                     b.Navigation("Items");
                 });

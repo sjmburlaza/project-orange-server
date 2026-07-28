@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using ProjectOrangeApi.Data;
-using ProjectOrangeApi.Data.Seeds;
+using ProjectOrange.Data;
+using ProjectOrange.Data.Seeds;
 
-namespace ProjectOrangeApi.Services;
+namespace ProjectOrange.Services;
 
 public class SiteResolutionMiddleware
 {

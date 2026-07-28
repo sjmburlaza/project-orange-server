@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using ProjectOrangeApi.Data;
-using ProjectOrangeApi.Services;
-using ProjectOrangeApi.Models;
-using ProjectOrangeApi.Contracts;
-using ProjectOrangeApi.Authorization;
-using ProjectOrangeApi.Data.Seeds;
+using ProjectOrange.Data;
+using ProjectOrange.Services;
+using ProjectOrange.Models;
+using ProjectOrange.Contracts;
+using ProjectOrange.Authorization;
+using ProjectOrange.Data.Seeds;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,7 +61,7 @@ builder.Services.AddSingleton<TradeInSessionService>();
 builder.Services.AddHttpClient<GeoCountryService>(client =>
 {
     client.Timeout = TimeSpan.FromSeconds(2);
-    client.DefaultRequestHeaders.UserAgent.ParseAdd("ProjectOrangeApi/1.0");
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("ProjectOrange/1.0");
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>

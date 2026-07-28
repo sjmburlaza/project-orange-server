@@ -1,6 +1,6 @@
-using ProjectOrangeApi.Models;
+using ProjectOrange.Models;
 
-namespace ProjectOrangeApi.DTOs;
+namespace ProjectOrange.DTOs;
 
 public record SiteFeaturesDto(
     bool Insurance,

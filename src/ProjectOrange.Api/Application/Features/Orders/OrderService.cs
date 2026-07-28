@@ -1,10 +1,10 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using ProjectOrangeApi.Data;
-using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Models;
+using ProjectOrange.Data;
+using ProjectOrange.DTOs;
+using ProjectOrange.Models;
 
-namespace ProjectOrangeApi.Services;
+namespace ProjectOrange.Services;
 
 public class OrderService
 {

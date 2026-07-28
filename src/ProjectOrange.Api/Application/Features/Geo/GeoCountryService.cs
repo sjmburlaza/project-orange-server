@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Primitives;
 
-namespace ProjectOrangeApi.Services;
+namespace ProjectOrange.Services;
 
 public sealed class GeoCountryService
 {

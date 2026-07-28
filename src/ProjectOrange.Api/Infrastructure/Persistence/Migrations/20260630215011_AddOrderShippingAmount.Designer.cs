@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ProjectOrangeApi.Data;
+using ProjectOrange.Data;
 
 #nullable disable
 
-namespace ProjectOrangeApi.Migrations
+namespace ProjectOrange.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260630215011_AddOrderShippingAmount")]
@@ -214,7 +214,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.AnalyticsEvent", b =>
+            modelBuilder.Entity("ProjectOrange.Models.AnalyticsEvent", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(128)
@@ -279,7 +279,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("AnalyticsEvents");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.AnalyticsEventItem", b =>
+            modelBuilder.Entity("ProjectOrange.Models.AnalyticsEventItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -319,7 +319,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("AnalyticsEventItems");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.AppUser", b =>
+            modelBuilder.Entity("ProjectOrange.Models.AppUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -387,7 +387,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.AuthSession", b =>
+            modelBuilder.Entity("ProjectOrange.Models.AuthSession", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -427,7 +427,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("AuthSessions");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Cart", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Cart", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -468,7 +468,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.CartItem", b =>
+            modelBuilder.Entity("ProjectOrange.Models.CartItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -526,7 +526,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("CartItems");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.CartItemAddon", b =>
+            modelBuilder.Entity("ProjectOrange.Models.CartItemAddon", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -590,7 +590,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("CartItemAddons");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.CartVoucher", b =>
+            modelBuilder.Entity("ProjectOrange.Models.CartVoucher", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -620,7 +620,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("CartVouchers");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Category", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -765,7 +765,7 @@ namespace ProjectOrangeApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Order", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -876,7 +876,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.OrderItem", b =>
+            modelBuilder.Entity("ProjectOrange.Models.OrderItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -945,7 +945,7 @@ namespace ProjectOrangeApi.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Product", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2298,7 +2298,7 @@ namespace ProjectOrangeApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductOption", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductOption", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -7132,7 +7132,7 @@ namespace ProjectOrangeApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductOptionGroup", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductOptionGroup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -9230,7 +9230,7 @@ namespace ProjectOrangeApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductSpec", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductSpec", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -10938,7 +10938,7 @@ namespace ProjectOrangeApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductVariant", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductVariant", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -15007,7 +15007,7 @@ namespace ProjectOrangeApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductVariantOption", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductVariantOption", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -22425,7 +22425,7 @@ namespace ProjectOrangeApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Site", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Site", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -22541,7 +22541,7 @@ namespace ProjectOrangeApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.WishlistItem", b =>
+            modelBuilder.Entity("ProjectOrange.Models.WishlistItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -22581,7 +22581,7 @@ namespace ProjectOrangeApi.Migrations
 
             modelBuilder.Entity("CartItemSpec", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.CartItem", null)
+                    b.HasOne("ProjectOrange.Models.CartItem", null)
                         .WithMany("ItemSpecs")
                         .HasForeignKey("CartItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22599,7 +22599,7 @@ namespace ProjectOrangeApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.AppUser", null)
+                    b.HasOne("ProjectOrange.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22608,7 +22608,7 @@ namespace ProjectOrangeApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.AppUser", null)
+                    b.HasOne("ProjectOrange.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22623,7 +22623,7 @@ namespace ProjectOrangeApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProjectOrangeApi.Models.AppUser", null)
+                    b.HasOne("ProjectOrange.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22632,16 +22632,16 @@ namespace ProjectOrangeApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.AppUser", null)
+                    b.HasOne("ProjectOrange.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.AnalyticsEvent", b =>
+            modelBuilder.Entity("ProjectOrange.Models.AnalyticsEvent", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Site", "Site")
+                    b.HasOne("ProjectOrange.Models.Site", "Site")
                         .WithMany("AnalyticsEvents")
                         .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -22650,9 +22650,9 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Site");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.AnalyticsEventItem", b =>
+            modelBuilder.Entity("ProjectOrange.Models.AnalyticsEventItem", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.AnalyticsEvent", "AnalyticsEvent")
+                    b.HasOne("ProjectOrange.Models.AnalyticsEvent", "AnalyticsEvent")
                         .WithMany("Items")
                         .HasForeignKey("AnalyticsEventId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22661,15 +22661,15 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("AnalyticsEvent");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.AuthSession", b =>
+            modelBuilder.Entity("ProjectOrange.Models.AuthSession", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Site", "Site")
+                    b.HasOne("ProjectOrange.Models.Site", "Site")
                         .WithMany("AuthSessions")
                         .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProjectOrangeApi.Models.AppUser", "User")
+                    b.HasOne("ProjectOrange.Models.AppUser", "User")
                         .WithMany("AuthSessions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22680,15 +22680,15 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Cart", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Cart", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Site", "Site")
+                    b.HasOne("ProjectOrange.Models.Site", "Site")
                         .WithMany("Carts")
                         .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProjectOrangeApi.Models.AppUser", "User")
+                    b.HasOne("ProjectOrange.Models.AppUser", "User")
                         .WithMany("Carts")
                         .HasForeignKey("UserId");
 
@@ -22697,9 +22697,9 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.CartItem", b =>
+            modelBuilder.Entity("ProjectOrange.Models.CartItem", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Cart", "Cart")
+                    b.HasOne("ProjectOrange.Models.Cart", "Cart")
                         .WithMany("Entries")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22708,9 +22708,9 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Cart");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.CartItemAddon", b =>
+            modelBuilder.Entity("ProjectOrange.Models.CartItemAddon", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.CartItem", "CartItem")
+                    b.HasOne("ProjectOrange.Models.CartItem", "CartItem")
                         .WithMany("Addons")
                         .HasForeignKey("CartItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22719,9 +22719,9 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("CartItem");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.CartVoucher", b =>
+            modelBuilder.Entity("ProjectOrange.Models.CartVoucher", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Cart", "Cart")
+                    b.HasOne("ProjectOrange.Models.Cart", "Cart")
                         .WithMany("AppliedVouchers")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22730,9 +22730,9 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Cart");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Category", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Category", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Site", "Site")
+                    b.HasOne("ProjectOrange.Models.Site", "Site")
                         .WithMany("Categories")
                         .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -22741,9 +22741,9 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Site");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Order", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Order", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Site", "Site")
+                    b.HasOne("ProjectOrange.Models.Site", "Site")
                         .WithMany("Orders")
                         .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -22752,13 +22752,13 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Site");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.OrderItem", b =>
+            modelBuilder.Entity("ProjectOrange.Models.OrderItem", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Order", "Order")
+                    b.HasOne("ProjectOrange.Models.Order", "Order")
                         .WithMany("Items")
                         .HasForeignKey("OrderId");
 
-                    b.HasOne("ProjectOrangeApi.Models.Product", "Product")
+                    b.HasOne("ProjectOrange.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22769,15 +22769,15 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Product", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Product", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Category", "Category")
+                    b.HasOne("ProjectOrange.Models.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProjectOrangeApi.Models.Site", "Site")
+                    b.HasOne("ProjectOrange.Models.Site", "Site")
                         .WithMany("Products")
                         .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -22788,9 +22788,9 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Site");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductOption", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductOption", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.ProductOptionGroup", "ProductOptionGroup")
+                    b.HasOne("ProjectOrange.Models.ProductOptionGroup", "ProductOptionGroup")
                         .WithMany("Options")
                         .HasForeignKey("ProductOptionGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22799,9 +22799,9 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("ProductOptionGroup");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductOptionGroup", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductOptionGroup", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Product", "Product")
+                    b.HasOne("ProjectOrange.Models.Product", "Product")
                         .WithMany("OptionGroups")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22810,9 +22810,9 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductSpec", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductSpec", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Product", "Product")
+                    b.HasOne("ProjectOrange.Models.Product", "Product")
                         .WithMany("ItemSpecs")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22821,9 +22821,9 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductVariant", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductVariant", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Product", "Product")
+                    b.HasOne("ProjectOrange.Models.Product", "Product")
                         .WithMany("Variants")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22832,15 +22832,15 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductVariantOption", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductVariantOption", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.ProductOption", "ProductOption")
+                    b.HasOne("ProjectOrange.Models.ProductOption", "ProductOption")
                         .WithMany("VariantOptions")
                         .HasForeignKey("ProductOptionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProjectOrangeApi.Models.ProductVariant", "ProductVariant")
+                    b.HasOne("ProjectOrange.Models.ProductVariant", "ProductVariant")
                         .WithMany("VariantOptions")
                         .HasForeignKey("ProductVariantId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22851,21 +22851,21 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("ProductVariant");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.WishlistItem", b =>
+            modelBuilder.Entity("ProjectOrange.Models.WishlistItem", b =>
                 {
-                    b.HasOne("ProjectOrangeApi.Models.Product", "Product")
+                    b.HasOne("ProjectOrange.Models.Product", "Product")
                         .WithMany("WishlistItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProjectOrangeApi.Models.Site", "Site")
+                    b.HasOne("ProjectOrange.Models.Site", "Site")
                         .WithMany("WishlistItems")
                         .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProjectOrangeApi.Models.AppUser", "User")
+                    b.HasOne("ProjectOrange.Models.AppUser", "User")
                         .WithMany("WishlistItems")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -22878,12 +22878,12 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.AnalyticsEvent", b =>
+            modelBuilder.Entity("ProjectOrange.Models.AnalyticsEvent", b =>
                 {
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.AppUser", b =>
+            modelBuilder.Entity("ProjectOrange.Models.AppUser", b =>
                 {
                     b.Navigation("AuthSessions");
 
@@ -22892,31 +22892,31 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("WishlistItems");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Cart", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Cart", b =>
                 {
                     b.Navigation("AppliedVouchers");
 
                     b.Navigation("Entries");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.CartItem", b =>
+            modelBuilder.Entity("ProjectOrange.Models.CartItem", b =>
                 {
                     b.Navigation("Addons");
 
                     b.Navigation("ItemSpecs");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Category", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Order", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Order", b =>
                 {
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Product", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Product", b =>
                 {
                     b.Navigation("ItemSpecs");
 
@@ -22927,22 +22927,22 @@ namespace ProjectOrangeApi.Migrations
                     b.Navigation("WishlistItems");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductOption", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductOption", b =>
                 {
                     b.Navigation("VariantOptions");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductOptionGroup", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductOptionGroup", b =>
                 {
                     b.Navigation("Options");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.ProductVariant", b =>
+            modelBuilder.Entity("ProjectOrange.Models.ProductVariant", b =>
                 {
                     b.Navigation("VariantOptions");
                 });
 
-            modelBuilder.Entity("ProjectOrangeApi.Models.Site", b =>
+            modelBuilder.Entity("ProjectOrange.Models.Site", b =>
                 {
                     b.Navigation("AnalyticsEvents");
 

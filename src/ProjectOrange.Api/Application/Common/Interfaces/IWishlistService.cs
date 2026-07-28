@@ -1,6 +1,6 @@
-using ProjectOrangeApi.DTOs;
+using ProjectOrange.DTOs;
 
-namespace ProjectOrangeApi.Contracts;
+namespace ProjectOrange.Contracts;
 
 public interface IWishlistService
 {

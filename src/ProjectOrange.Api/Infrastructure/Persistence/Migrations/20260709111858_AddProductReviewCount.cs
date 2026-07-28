@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace ProjectOrangeApi.Infrastructure.Persistence.Migrations
+namespace ProjectOrange.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class AddProductReviewCount : Migration

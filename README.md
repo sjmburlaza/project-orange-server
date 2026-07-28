@@ -47,7 +47,7 @@ For architecture details, endpoint references, business rules, and extension gui
 |   +-- Infrastructure/           # Persistence, seed data, middleware
 |   +-- Config/                   # Default and site-specific checkout forms
 +-- tests/                        # Test projects, when present
-+-- ProjectOrangeApi.sln          # Solution file
++-- ProjectOrange.sln          # Solution file
 +-- docs/                         # Setup and technical documentation
 ```
 

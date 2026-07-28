@@ -1,7 +1,7 @@
-using ProjectOrangeApi.Data.Seeds;
-using ProjectOrangeApi.Models;
+using ProjectOrange.Data.Seeds;
+using ProjectOrange.Models;
 
-namespace ProjectOrangeApi.Tests.Support;
+namespace ProjectOrange.Tests.Support;
 
 internal static class TestSites
 {

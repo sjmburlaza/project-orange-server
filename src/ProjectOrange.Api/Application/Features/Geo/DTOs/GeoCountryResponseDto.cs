@@ -1,3 +1,3 @@
-namespace ProjectOrangeApi.DTOs;
+namespace ProjectOrange.DTOs;
 
 public sealed record GeoCountryResponseDto(string? Code);

@@ -1,8 +1,8 @@
-using ProjectOrangeApi.Services;
-using ProjectOrangeApi.Tests.Support;
+using ProjectOrange.Services;
+using ProjectOrange.Tests.Support;
 using Xunit;
 
-namespace ProjectOrangeApi.Tests.Unit;
+namespace ProjectOrange.Tests.Unit;
 
 public class ShippingPricingServiceTests
 {

@@ -1,6 +1,6 @@
-using ProjectOrangeApi.DTOs;
+using ProjectOrange.DTOs;
 
-namespace ProjectOrangeApi.Data.Seeds;
+namespace ProjectOrange.Data.Seeds;
 
 public static class CitySeed
 {

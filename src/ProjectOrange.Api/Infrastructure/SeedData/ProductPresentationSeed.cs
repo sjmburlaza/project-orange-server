@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace ProjectOrangeApi.Data.Seeds;
+namespace ProjectOrange.Data.Seeds;
 
 public static class ProductPresentationSeed
 {

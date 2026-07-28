@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace ProjectOrangeApi.DTOs;
+namespace ProjectOrange.DTOs;
 
 public class FulfillmentOptionDto
 {

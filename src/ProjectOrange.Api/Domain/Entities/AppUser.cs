@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace ProjectOrangeApi.Models;
+namespace ProjectOrange.Models;
 
 public class AppUser : IdentityUser
 {

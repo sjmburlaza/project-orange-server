@@ -14,11 +14,11 @@ Build job:
 ```text
 checkout
 setup-dotnet 10.0.x
-dotnet restore ProjectOrangeApi.sln
-dotnet build ProjectOrangeApi.sln --configuration Release --no-restore
+dotnet restore ProjectOrange.sln
+dotnet build ProjectOrange.sln --configuration Release --no-restore
 ```
 
-The repository includes `tests/ProjectOrangeApi.Tests` for unit and endpoint-level coverage. Recommended next coverage areas are:
+The repository includes `tests/ProjectOrange.Tests` for unit and endpoint-level coverage. Recommended next coverage areas are:
 
 - Unit tests for `CartService` voucher/add-on/shipping summary rules.
 - Unit tests for `OrderService` stock validation and total calculation.

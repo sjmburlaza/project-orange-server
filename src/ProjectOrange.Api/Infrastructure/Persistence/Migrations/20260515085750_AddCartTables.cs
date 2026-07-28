@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ProjectOrangeApi.Migrations
+namespace ProjectOrange.Migrations
 {
     /// <inheritdoc />
     public partial class AddCartTables : Migration

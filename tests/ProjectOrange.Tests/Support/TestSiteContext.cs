@@ -1,7 +1,7 @@
-using ProjectOrangeApi.Models;
-using ProjectOrangeApi.Services;
+using ProjectOrange.Models;
+using ProjectOrange.Services;
 
-namespace ProjectOrangeApi.Tests.Support;
+namespace ProjectOrange.Tests.Support;
 
 internal sealed class TestSiteContext : ISiteContextAccessor
 {

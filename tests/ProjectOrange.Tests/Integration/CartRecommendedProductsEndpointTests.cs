@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ProjectOrangeApi.Controllers;
-using ProjectOrangeApi.Data;
-using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Models;
-using ProjectOrangeApi.Services;
-using ProjectOrangeApi.Tests.Support;
+using ProjectOrange.Controllers;
+using ProjectOrange.Data;
+using ProjectOrange.DTOs;
+using ProjectOrange.Models;
+using ProjectOrange.Services;
+using ProjectOrange.Tests.Support;
 using Xunit;
 
-namespace ProjectOrangeApi.Tests.Integration;
+namespace ProjectOrange.Tests.Integration;
 
 public class CartRecommendedProductsEndpointTests
 {

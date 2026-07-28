@@ -1,4 +1,4 @@
-namespace ProjectOrangeApi.Models;
+namespace ProjectOrange.Models;
 
 public class CartVoucher
 {

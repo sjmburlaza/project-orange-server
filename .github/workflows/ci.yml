@@ -28,7 +28,7 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Restore
-        run: dotnet restore ProjectOrangeApi.sln
+        run: dotnet restore ProjectOrange.sln
 
       - name: Build
-        run: dotnet build ProjectOrangeApi.sln --configuration Release --no-restore
+        run: dotnet build ProjectOrange.sln --configuration Release --no-restore

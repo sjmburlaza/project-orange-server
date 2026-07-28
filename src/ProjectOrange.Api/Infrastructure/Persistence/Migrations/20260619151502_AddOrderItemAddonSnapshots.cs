@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace ProjectOrangeApi.Migrations
+namespace ProjectOrange.Migrations
 {
     /// <inheritdoc />
     public partial class AddOrderItemAddonSnapshots : Migration

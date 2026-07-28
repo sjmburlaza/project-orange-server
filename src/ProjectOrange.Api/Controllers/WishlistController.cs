@@ -1,11 +1,11 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProjectOrangeApi.Contracts;
-using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Services;
+using ProjectOrange.Contracts;
+using ProjectOrange.DTOs;
+using ProjectOrange.Services;
 
-namespace ProjectOrangeApi.Controllers;
+namespace ProjectOrange.Controllers;
 
 [ApiController]
 [Authorize]

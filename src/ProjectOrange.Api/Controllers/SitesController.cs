@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ProjectOrangeApi.Data;
-using ProjectOrangeApi.DTOs;
+using ProjectOrange.Data;
+using ProjectOrange.DTOs;
 
-namespace ProjectOrangeApi.Controllers;
+namespace ProjectOrange.Controllers;
 
 [ApiController]
 [Route("api/sites")]

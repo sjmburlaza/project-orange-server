@@ -20,7 +20,7 @@ Jwt__Key
 Run locally:
 
 ```bash
-dotnet restore ProjectOrangeApi.sln
+dotnet restore ProjectOrange.sln
 dotnet ef database update --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 dotnet run --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 ```
@@ -53,8 +53,8 @@ Use `GET /api/sites` to discover configured sites.
 ## Useful Commands
 
 ```bash
-dotnet build ProjectOrangeApi.sln
-dotnet test ProjectOrangeApi.sln
+dotnet build ProjectOrange.sln
+dotnet test ProjectOrange.sln
 dotnet ef migrations add <MigrationName> --project src/ProjectOrange.Api/ProjectOrange.Api.csproj --output-dir Infrastructure/Persistence/Migrations
 ```
 

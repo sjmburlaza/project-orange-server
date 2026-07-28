@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-using ProjectOrangeApi.Data;
+using ProjectOrange.Data;
 
 #nullable disable
 
-namespace ProjectOrangeApi.Migrations
+namespace ProjectOrange.Migrations
 {
     /// <inheritdoc />
     [DbContext(typeof(AppDbContext))]

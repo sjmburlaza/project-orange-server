@@ -1,4 +1,4 @@
-namespace ProjectOrangeApi.Services;
+namespace ProjectOrange.Services;
 
 public static class ApiErrorCodes
 {
