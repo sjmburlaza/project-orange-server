@@ -1,7 +1,7 @@
-using ProjectOrangeApi.Data.Seeds;
-using ProjectOrangeApi.DTOs;
+using ProjectOrange.Data.Seeds;
+using ProjectOrange.DTOs;
 
-namespace ProjectOrangeApi.Services;
+namespace ProjectOrange.Services;
 
 public class ShippingPricingService
 {

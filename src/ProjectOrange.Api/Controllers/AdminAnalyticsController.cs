@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProjectOrangeApi.Authorization;
-using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Services;
+using ProjectOrange.Authorization;
+using ProjectOrange.DTOs;
+using ProjectOrange.Services;
 
-namespace ProjectOrangeApi.Controllers;
+namespace ProjectOrange.Controllers;
 
 [ApiController]
 [Authorize(Roles = AppRoles.Admin)]

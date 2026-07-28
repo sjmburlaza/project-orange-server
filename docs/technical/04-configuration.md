@@ -40,7 +40,7 @@ ASP.NET Core converts double underscores into configuration nesting:
 
 ```bash
 ConnectionStrings__DefaultConnection="Server=localhost,1433;Database=ProjectOrangeDb;User Id=sa;Password=<password>;TrustServerCertificate=True"
-Jwt__Issuer="ProjectOrangeApi"
+Jwt__Issuer="ProjectOrange"
 Jwt__Audience="ProjectOrangeClient"
 Jwt__Key="<long-secret>"
 PasswordReset__ClientResetUrl="http://localhost:4200/reset-password"
@@ -52,7 +52,7 @@ Prefer .NET user secrets or environment variables for local credentials:
 
 ```bash
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost,1433;Database=ProjectOrangeDb;User Id=sa;Password=<password>;TrustServerCertificate=True" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
-dotnet user-secrets set "Jwt:Issuer" "ProjectOrangeApi" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
+dotnet user-secrets set "Jwt:Issuer" "ProjectOrange" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 dotnet user-secrets set "Jwt:Audience" "ProjectOrangeClient" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 dotnet user-secrets set "Jwt:Key" "<long-secret>" --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 ```

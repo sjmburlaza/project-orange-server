@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ProjectOrangeApi.DTOs;
+namespace ProjectOrange.DTOs;
 
 public class AddWishlistItemRequest
 {

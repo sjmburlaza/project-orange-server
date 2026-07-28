@@ -1,4 +1,4 @@
-namespace ProjectOrangeApi.Data.Seeds;
+namespace ProjectOrange.Data.Seeds;
 
 public static class InsurancePlanSeed
 {

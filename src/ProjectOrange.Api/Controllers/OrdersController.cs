@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Services;
+using ProjectOrange.DTOs;
+using ProjectOrange.Services;
 
-namespace ProjectOrangeApi.Controllers;
+namespace ProjectOrange.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

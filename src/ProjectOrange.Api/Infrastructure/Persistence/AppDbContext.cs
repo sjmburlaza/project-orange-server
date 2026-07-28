@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using ProjectOrangeApi.Models;
-using ProjectOrangeApi.Data.Seeds;
+using ProjectOrange.Models;
+using ProjectOrange.Data.Seeds;
 
-namespace ProjectOrangeApi.Data;
+namespace ProjectOrange.Data;
 
 public class AppDbContext : IdentityDbContext<AppUser>
 {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
-using ProjectOrangeApi.Authorization;
+using ProjectOrange.Authorization;
 
-namespace ProjectOrangeApi.Data.Seeds;
+namespace ProjectOrange.Data.Seeds;
 
 public static class RoleSeed
 {

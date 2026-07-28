@@ -1,4 +1,4 @@
-namespace ProjectOrangeApi.Authorization;
+namespace ProjectOrange.Authorization;
 
 public static class RolePermissionMap
 {

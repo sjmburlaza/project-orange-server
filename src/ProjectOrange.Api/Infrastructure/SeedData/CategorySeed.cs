@@ -1,7 +1,7 @@
 using System.Text.Json;
-using ProjectOrangeApi.Models;
+using ProjectOrange.Models;
 
-namespace ProjectOrangeApi.Data.Seeds;
+namespace ProjectOrange.Data.Seeds;
 
 public static class CategorySeed
 {

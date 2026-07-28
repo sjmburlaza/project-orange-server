@@ -1,7 +1,7 @@
 using System.Text.Json;
-using ProjectOrangeApi.DTOs;
+using ProjectOrange.DTOs;
 
-namespace ProjectOrangeApi.Services;
+namespace ProjectOrange.Services;
 
 public class CheckoutFormService
 {

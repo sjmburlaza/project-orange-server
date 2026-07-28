@@ -1,6 +1,6 @@
-using ProjectOrangeApi.Models;
+using ProjectOrange.Models;
 
-namespace ProjectOrangeApi.Services;
+namespace ProjectOrange.Services;
 
 public class SiteContext : ISiteContextAccessor
 {

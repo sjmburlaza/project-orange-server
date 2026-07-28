@@ -1,8 +1,8 @@
 using System.Text.Json;
-using ProjectOrangeApi.DTOs;
+using ProjectOrange.DTOs;
 using Xunit;
 
-namespace ProjectOrangeApi.Tests.Unit;
+namespace ProjectOrange.Tests.Unit;
 
 public class CheckoutFormConfigTests
 {
@@ -99,7 +99,7 @@ public class CheckoutFormConfigTests
 
         while (directory is not null)
         {
-            if (File.Exists(Path.Combine(directory.FullName, "ProjectOrangeApi.sln")))
+            if (File.Exists(Path.Combine(directory.FullName, "ProjectOrange.sln")))
             {
                 return directory.FullName;
             }
@@ -107,7 +107,7 @@ public class CheckoutFormConfigTests
             directory = directory.Parent;
         }
 
-        throw new DirectoryNotFoundException("Could not locate ProjectOrangeApi.sln.");
+        throw new DirectoryNotFoundException("Could not locate ProjectOrange.sln.");
     }
 
     private static List<CheckoutFieldDto> GetCustomerFields(CheckoutFormDto form)

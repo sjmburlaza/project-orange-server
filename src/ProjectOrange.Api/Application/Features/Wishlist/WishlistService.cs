@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using ProjectOrangeApi.Contracts;
-using ProjectOrangeApi.Data;
-using ProjectOrangeApi.Data.Seeds;
-using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Models;
+using ProjectOrange.Contracts;
+using ProjectOrange.Data;
+using ProjectOrange.Data.Seeds;
+using ProjectOrange.DTOs;
+using ProjectOrange.Models;
 
-namespace ProjectOrangeApi.Services;
+namespace ProjectOrange.Services;
 
 public class WishlistService : IWishlistService
 {

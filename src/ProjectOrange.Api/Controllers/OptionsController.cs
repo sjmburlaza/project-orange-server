@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using ProjectOrangeApi.Data.Seeds;
-using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Services;
+using ProjectOrange.Data.Seeds;
+using ProjectOrange.DTOs;
+using ProjectOrange.Services;
 
-namespace ProjectOrangeApi.Controllers;
+namespace ProjectOrange.Controllers;
 
 [ApiController]
 [Route("api/options")]

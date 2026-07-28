@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ProjectOrangeApi.Controllers;
-using ProjectOrangeApi.Data;
-using ProjectOrangeApi.Data.Seeds;
-using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Services;
+using ProjectOrange.Controllers;
+using ProjectOrange.Data;
+using ProjectOrange.Data.Seeds;
+using ProjectOrange.DTOs;
+using ProjectOrange.Services;
 using Xunit;
 
-namespace ProjectOrangeApi.Tests.Integration;
+namespace ProjectOrange.Tests.Integration;
 
 public class FulfillmentEndpointTests : IClassFixture<FulfillmentApiFixture>
 {

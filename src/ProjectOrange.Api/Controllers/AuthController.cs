@@ -7,13 +7,13 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using ProjectOrangeApi.Authorization;
-using ProjectOrangeApi.Data;
-using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Models;
-using ProjectOrangeApi.Services;
+using ProjectOrange.Authorization;
+using ProjectOrange.Data;
+using ProjectOrange.DTOs;
+using ProjectOrange.Models;
+using ProjectOrange.Services;
 
-namespace ProjectOrangeApi.Controllers;
+namespace ProjectOrange.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

@@ -1,4 +1,4 @@
-namespace ProjectOrangeApi.Data.Seeds;
+namespace ProjectOrange.Data.Seeds;
 
 internal static class ChinaProductSeed
 {

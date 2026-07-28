@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace ProjectOrangeApi.Services;
+namespace ProjectOrange.Services;
 
 public class ApiErrorException : Exception
 {

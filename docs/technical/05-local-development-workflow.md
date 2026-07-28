@@ -15,8 +15,8 @@ dotnet tool install --global dotnet-ef
 ## Restore, Build, Migrate, Run
 
 ```bash
-dotnet restore ProjectOrangeApi.sln
-dotnet build ProjectOrangeApi.sln
+dotnet restore ProjectOrange.sln
+dotnet build ProjectOrange.sln
 dotnet ef database update --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 dotnet run --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 ```
@@ -35,5 +35,5 @@ dotnet run --project src/ProjectOrange.Api/ProjectOrange.Api.csproj
 The file defaults to:
 
 ```http
-@ProjectOrangeApi_HostAddress = http://localhost:5175
+@ProjectOrange_HostAddress = http://localhost:5175
 ```

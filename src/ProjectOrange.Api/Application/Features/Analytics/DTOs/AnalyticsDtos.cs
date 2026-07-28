@@ -1,4 +1,4 @@
-namespace ProjectOrangeApi.DTOs;
+namespace ProjectOrange.DTOs;
 
 public static class AnalyticsEventTypes
 {

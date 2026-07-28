@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ProjectOrangeApi.Models;
+namespace ProjectOrange.Models;
 
 public class Category
 {

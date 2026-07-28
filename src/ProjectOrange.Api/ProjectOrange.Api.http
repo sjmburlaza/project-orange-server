@@ -1,17 +1,17 @@
-@ProjectOrangeApi_HostAddress = http://localhost:5175
+@ProjectOrange_HostAddress = http://localhost:5175
 
 ###
 
-GET {{ProjectOrangeApi_HostAddress}}/api/geo/country
+GET {{ProjectOrange_HostAddress}}/api/geo/country
 CF-IPCountry: PH
 
 ###
 
-GET {{ProjectOrangeApi_HostAddress}}/api/admin/analytics/dashboard?period=last-7-days
+GET {{ProjectOrange_HostAddress}}/api/admin/analytics/dashboard?period=last-7-days
 
 ###
 
-POST {{ProjectOrangeApi_HostAddress}}/api/analytics/events
+POST {{ProjectOrange_HostAddress}}/api/analytics/events
 Content-Type: application/json
 
 {
@@ -26,11 +26,11 @@ Content-Type: application/json
 
 ###
 
-GET {{ProjectOrangeApi_HostAddress}}/api/orders/lookup?orderNumber=OR-20260619-1234&email=juan@example.com
+GET {{ProjectOrange_HostAddress}}/api/orders/lookup?orderNumber=OR-20260619-1234&email=juan@example.com
 
 ###
 
-POST {{ProjectOrangeApi_HostAddress}}/api/auth/forgot-password
+POST {{ProjectOrange_HostAddress}}/api/auth/forgot-password
 Content-Type: application/json
 
 {
@@ -39,7 +39,7 @@ Content-Type: application/json
 
 ###
 
-POST {{ProjectOrangeApi_HostAddress}}/api/auth/reset-password
+POST {{ProjectOrange_HostAddress}}/api/auth/reset-password
 Content-Type: application/json
 
 {

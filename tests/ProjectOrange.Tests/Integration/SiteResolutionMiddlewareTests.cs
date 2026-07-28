@@ -2,12 +2,12 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using ProjectOrangeApi.Data;
-using ProjectOrangeApi.Data.Seeds;
-using ProjectOrangeApi.Services;
+using ProjectOrange.Data;
+using ProjectOrange.Data.Seeds;
+using ProjectOrange.Services;
 using Xunit;
 
-namespace ProjectOrangeApi.Tests.Integration;
+namespace ProjectOrange.Tests.Integration;
 
 public class SiteResolutionMiddlewareTests
 {

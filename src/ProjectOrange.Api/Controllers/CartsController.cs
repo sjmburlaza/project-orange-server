@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Services;
-using ProjectOrangeApi.Contracts;
+using ProjectOrange.DTOs;
+using ProjectOrange.Services;
+using ProjectOrange.Contracts;
 using System.Security.Claims;
 
-namespace ProjectOrangeApi.Controllers;
+namespace ProjectOrange.Controllers;
 
 [ApiController]
 [Route("api/carts")]

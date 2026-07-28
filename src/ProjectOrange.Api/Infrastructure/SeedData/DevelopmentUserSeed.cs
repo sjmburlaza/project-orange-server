@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
-using ProjectOrangeApi.Authorization;
-using ProjectOrangeApi.Models;
+using ProjectOrange.Authorization;
+using ProjectOrange.Models;
 
-namespace ProjectOrangeApi.Data.Seeds;
+namespace ProjectOrange.Data.Seeds;
 
 public static class DevelopmentUserSeed
 {

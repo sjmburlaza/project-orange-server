@@ -1,13 +1,13 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ProjectOrangeApi.Data;
-using ProjectOrangeApi.Data.Seeds;
-using ProjectOrangeApi.DTOs;
-using ProjectOrangeApi.Models;
-using ProjectOrangeApi.Services;
+using ProjectOrange.Data;
+using ProjectOrange.Data.Seeds;
+using ProjectOrange.DTOs;
+using ProjectOrange.Models;
+using ProjectOrange.Services;
 
-namespace ProjectOrangeApi.Controllers;
+namespace ProjectOrange.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

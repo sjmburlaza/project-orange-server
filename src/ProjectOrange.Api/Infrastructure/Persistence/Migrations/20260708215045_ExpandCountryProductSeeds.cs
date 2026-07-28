@@ -4,7 +4,7 @@
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace ProjectOrangeApi.Infrastructure.Persistence.Migrations
+namespace ProjectOrange.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class ExpandCountryProductSeeds : Migration
